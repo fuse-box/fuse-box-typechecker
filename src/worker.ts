@@ -1,17 +1,23 @@
 import * as ts from 'typescript';
 
 let myClass: TypeCheckPluginClass = null;
-let firstRun = true;
+
+
 
 class TypeCheckPluginClass {
     private tsConfig: any;
     private program: any;
+    private firstRun: boolean;
 
 
-    constructor(tsConfig: any) {
-        this.tsConfig = tsConfig;
+    constructor() {
+        this.firstRun = true; // need to know later
+        // nothing atm
     }
 
+    public setTsConfig(tsConfig: any) {
+        this.tsConfig = tsConfig;
+    }
 
     public typecheck() {
 
@@ -21,6 +27,8 @@ class TypeCheckPluginClass {
         let setRedTextColor = this.setRedTextColor;
         let setBlueTextColor = this.setBlueTextColor;
         let setGreenTextColor = this.setGreenTextColor;
+        let program = this.program;
+        let tsConfig = this.tsConfig;
 
 
         // tell use we are starting type checking
@@ -38,12 +46,12 @@ class TypeCheckPluginClass {
             useCaseSensitiveFileNames: true
         };
 
-        const parsed = ts.parseJsonConfigFileContent(this.tsConfig, parseConfigHost, '.', null, 'tsconfig.json');
-        this.program = ts.createProgram(parsed.fileNames, parsed.options, null, this.program);
+        const parsed = ts.parseJsonConfigFileContent(tsConfig, parseConfigHost, '.', null, 'tsconfig.json');
+        program = ts.createProgram(parsed.fileNames, parsed.options, null, program);
 
 
         // get diagnostics
-        const diagnostics = ts.getPreEmitDiagnostics(this.program);
+        const diagnostics = ts.getPreEmitDiagnostics(program);
 
         // loop diagnostics
         let messages = [];
@@ -82,10 +90,10 @@ class TypeCheckPluginClass {
         write('\n\n');
 
 
-        let optionsErrors = this.program.getOptionsDiagnostics().length;
-        let globalErrors = this.program.getGlobalDiagnostics().length;
-        let syntacticErrors = this.program.getSyntacticDiagnostics().length;
-        let semantic = this.program.getSemanticDiagnostics().length;
+        let optionsErrors = program.getOptionsDiagnostics().length;
+        let globalErrors = program.getGlobalDiagnostics().length;
+        let syntacticErrors = program.getSyntacticDiagnostics().length;
+        let semantic = program.getSemanticDiagnostics().length;
         let totals = optionsErrors + globalErrors + syntacticErrors + semantic;
 
 
@@ -104,7 +112,7 @@ class TypeCheckPluginClass {
             write(':< looks like you have some work to do...\n\n');
         } else {
             setGreenTextColor();
-            write(':> No errors!\n\n');
+            write(':> No errors while type checking!\n\n');
         }
 
 
@@ -115,7 +123,7 @@ class TypeCheckPluginClass {
         write(`\n`);
 
 
-        firstRun = false;
+        this.firstRun = false; // need to know later
 
     }
 
@@ -147,12 +155,12 @@ class TypeCheckPluginClass {
 }
 
 
-
+myClass = new TypeCheckPluginClass();
 process.on('message', function (msg: any) {
     let type = msg.type;
     switch (type) {
         case 'tsconfig':
-            myClass = new TypeCheckPluginClass(msg.data);
+            myClass.setTsConfig(msg.data);
             break;
         case 'run':
             myClass.typecheck();

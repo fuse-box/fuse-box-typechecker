@@ -1,17 +1,21 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var ts = require("typescript");
 var myClass = null;
-var firstRun = true;
 var TypeCheckPluginClass = (function () {
-    function TypeCheckPluginClass(tsConfig) {
-        this.tsConfig = tsConfig;
+    function TypeCheckPluginClass() {
+        this.firstRun = true;
     }
+    TypeCheckPluginClass.prototype.setTsConfig = function (tsConfig) {
+        this.tsConfig = tsConfig;
+    };
     TypeCheckPluginClass.prototype.typecheck = function () {
         var write = this.writeText;
         var resetTextColor = this.resetTextColor;
         var setRedTextColor = this.setRedTextColor;
         var setBlueTextColor = this.setBlueTextColor;
         var setGreenTextColor = this.setGreenTextColor;
+        var program = this.program;
+        var tsConfig = this.tsConfig;
         setBlueTextColor();
         write('\nStarting type checking thread, please wait...\n\n');
         console.time('Typechecking time');
@@ -21,9 +25,9 @@ var TypeCheckPluginClass = (function () {
             readFile: ts.sys.readFile,
             useCaseSensitiveFileNames: true
         };
-        var parsed = ts.parseJsonConfigFileContent(this.tsConfig, parseConfigHost, '.', null, 'tsconfig.json');
-        this.program = ts.createProgram(parsed.fileNames, parsed.options, null, this.program);
-        var diagnostics = ts.getPreEmitDiagnostics(this.program);
+        var parsed = ts.parseJsonConfigFileContent(tsConfig, parseConfigHost, '.', null, 'tsconfig.json');
+        program = ts.createProgram(parsed.fileNames, parsed.options, null, program);
+        var diagnostics = ts.getPreEmitDiagnostics(program);
         var messages = [];
         if (diagnostics.length > 0) {
             messages = diagnostics.map(function (diag) {
@@ -41,10 +45,10 @@ var TypeCheckPluginClass = (function () {
         }
         setBlueTextColor();
         write('\n\n');
-        var optionsErrors = this.program.getOptionsDiagnostics().length;
-        var globalErrors = this.program.getGlobalDiagnostics().length;
-        var syntacticErrors = this.program.getSyntacticDiagnostics().length;
-        var semantic = this.program.getSemanticDiagnostics().length;
+        var optionsErrors = program.getOptionsDiagnostics().length;
+        var globalErrors = program.getGlobalDiagnostics().length;
+        var syntacticErrors = program.getSyntacticDiagnostics().length;
+        var semantic = program.getSemanticDiagnostics().length;
         var totals = optionsErrors + globalErrors + syntacticErrors + semantic;
         if (totals) {
             write("Errors:" + totals + "\n");
@@ -60,13 +64,13 @@ var TypeCheckPluginClass = (function () {
         }
         else {
             setGreenTextColor();
-            write(':> No errors!\n\n');
+            write(':> No errors while type checking!\n\n');
         }
         setBlueTextColor();
         console.timeEnd('Typechecking time');
         resetTextColor();
         write("\n");
-        firstRun = false;
+        this.firstRun = false;
     };
     TypeCheckPluginClass.prototype.writeText = function (text) {
         ts.sys.write(text);
@@ -85,11 +89,12 @@ var TypeCheckPluginClass = (function () {
     };
     return TypeCheckPluginClass;
 }());
+myClass = new TypeCheckPluginClass();
 process.on('message', function (msg) {
     var type = msg.type;
     switch (type) {
         case 'tsconfig':
-            myClass = new TypeCheckPluginClass(msg.data);
+            myClass.setTsConfig(msg.data);
             break;
         case 'run':
             myClass.typecheck();
