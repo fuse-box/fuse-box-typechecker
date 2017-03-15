@@ -8,7 +8,7 @@ var TypeCheckPluginClass = (function () {
     TypeCheckPluginClass.prototype.setTsConfig = function (tsConfig) {
         this.tsConfig = tsConfig;
     };
-    TypeCheckPluginClass.prototype.typecheck = function () {
+    TypeCheckPluginClass.prototype.typecheck = function (quit) {
         var write = this.writeText;
         var resetTextColor = this.resetTextColor;
         var setRedTextColor = this.setRedTextColor;
@@ -71,6 +71,13 @@ var TypeCheckPluginClass = (function () {
         resetTextColor();
         write("\n");
         this.firstRun = false;
+        if (quit) {
+            write("Quiting typechecker\n");
+            process.exit(1);
+        }
+        else {
+            write("Keeping typechecker alive\n");
+        }
     };
     TypeCheckPluginClass.prototype.writeText = function (text) {
         ts.sys.write(text);
@@ -97,7 +104,7 @@ process.on('message', function (msg) {
             myClass.setTsConfig(msg.data);
             break;
         case 'run':
-            myClass.typecheck();
+            myClass.typecheck(msg.quit);
             break;
     }
 });

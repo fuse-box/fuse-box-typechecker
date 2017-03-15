@@ -19,7 +19,7 @@ class TypeCheckPluginClass {
         this.tsConfig = tsConfig;
     }
 
-    public typecheck() {
+    public typecheck(quit: boolean) {
 
         // shortcuts
         let write = this.writeText;
@@ -125,6 +125,13 @@ class TypeCheckPluginClass {
 
         this.firstRun = false; // need to know later
 
+        if (quit) {
+            write(`Quiting typechecker\n`);
+            process.exit(1);
+        } else {
+            write(`Keeping typechecker alive\n`);
+        }
+
     }
 
 
@@ -163,7 +170,7 @@ process.on('message', function (msg: any) {
             myClass.setTsConfig(msg.data);
             break;
         case 'run':
-            myClass.typecheck();
+            myClass.typecheck(msg.quit);
             break;
     }
 });

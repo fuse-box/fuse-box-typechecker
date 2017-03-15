@@ -3,7 +3,7 @@ var child = require("child_process");
 var path = require("path");
 var TypeCheckPluginClass = (function () {
     function TypeCheckPluginClass(options) {
-        this.options = options;
+        this.options = options || {};
         this.slave = child.fork(path.join(__dirname, 'worker.js'), [], options);
         this.firstRun = true;
     }
@@ -12,7 +12,8 @@ var TypeCheckPluginClass = (function () {
         this.slave.send({ type: 'tsconfig', data: tsConfig });
     };
     TypeCheckPluginClass.prototype.bundleEnd = function () {
-        this.slave.send({ type: 'run' });
+        this.slave.send({ type: 'run', quit: this.options.quit });
+        this.firstRun = false;
     };
     return TypeCheckPluginClass;
 }());

@@ -10,7 +10,7 @@ export class TypeCheckPluginClass {
     private slave: any;
 
     constructor(options: any) {
-        this.options = options;
+        this.options = options || {};
         this.slave = child.fork(path.join(__dirname, 'worker.js'), [], options);
         this.firstRun = true;
     }
@@ -22,9 +22,8 @@ export class TypeCheckPluginClass {
 
 
     public bundleEnd() {
-
-        this.slave.send({ type: 'run'});
-
+        this.slave.send({ type: 'run', quit: this.options.quit});
+        this.firstRun = false;
     }
 
 
@@ -39,3 +38,4 @@ export class TypeCheckPluginClass {
 export const TypeCheckPlugin = (options: any) => {
     return new TypeCheckPluginClass(options);
 };
+
