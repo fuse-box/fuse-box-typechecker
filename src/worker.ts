@@ -2,6 +2,20 @@ import * as ts from 'typescript';
 
 let myClass: TypeCheckPluginClass = null;
 
+interface OptionsInterface {
+    quit?: boolean;
+    throwOnSyntactic?: boolean;
+    throwOnSemantic?: boolean;
+    throwOnGlobal?: boolean;
+    throwOnOptions?: boolean;
+}
+
+
+interface MsgInterface {
+    type?: string;
+    options?: OptionsInterface;
+    data?: any;
+}
 
 
 class TypeCheckPluginClass {
@@ -19,8 +33,7 @@ class TypeCheckPluginClass {
         this.tsConfig = tsConfig;
     }
 
-    public typecheck(quit: boolean) {
-
+    public typecheck(options: OptionsInterface) {
         // shortcuts
         let write = this.writeText;
         let resetTextColor = this.resetTextColor;
@@ -93,8 +106,8 @@ class TypeCheckPluginClass {
         let optionsErrors = program.getOptionsDiagnostics().length;
         let globalErrors = program.getGlobalDiagnostics().length;
         let syntacticErrors = program.getSyntacticDiagnostics().length;
-        let semantic = program.getSemanticDiagnostics().length;
-        let totals = optionsErrors + globalErrors + syntacticErrors + semantic;
+        let semanticErrors = program.getSemanticDiagnostics().length;
+        let totals = optionsErrors + globalErrors + syntacticErrors + semanticErrors;
 
 
         if (totals) {
@@ -103,7 +116,7 @@ class TypeCheckPluginClass {
             write(`└── Options: ${optionsErrors}\n`);
             write(`└── Global: ${globalErrors}\n`);
             write(`└── Syntactic: ${syntacticErrors}\n`);
-            write(`└── Semantic: ${semantic}\n\n`);
+            write(`└── Semantic: ${semanticErrors}\n\n`);
         }
 
 
@@ -125,11 +138,21 @@ class TypeCheckPluginClass {
 
         this.firstRun = false; // need to know later
 
-        if (quit) {
-            write(`Quiting typechecker\n`);
-            process.exit(1);
-        } else {
-            write(`Keeping typechecker alive\n`);
+
+        switch (true) {
+            case options.throwOnGlobal && globalErrors > 0:
+            case options.throwOnOptions && optionsErrors > 0:
+            case options.throwOnSemantic && semanticErrors > 0:
+            case options.throwOnSyntactic && syntacticErrors > 0:
+                process.send('error');
+                process.exit(0);
+                break;
+            case options.quit:
+                write(`Quiting typechecker\n`);
+                process.exit(0);
+                break;
+            default:
+                write(`Keeping typechecker alive\n`);
         }
 
     }
@@ -162,15 +185,16 @@ class TypeCheckPluginClass {
 }
 
 
+
 myClass = new TypeCheckPluginClass();
-process.on('message', function (msg: any) {
+process.on('message', function (msg: MsgInterface) {
     let type = msg.type;
     switch (type) {
         case 'tsconfig':
             myClass.setTsConfig(msg.data);
             break;
         case 'run':
-            myClass.typecheck(msg.quit);
+            myClass.typecheck(msg.options);
             break;
     }
 });

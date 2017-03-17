@@ -72,6 +72,15 @@ var build = function () {
 build();
 ```
 
+```
 
+interface OptionsInterface {
+    quit?: boolean;  //quits after first runs
+    throwOnSyntactic?: boolean; // exits with error code 1 if any error
+    throwOnSemantic?: boolean; // exits with error code 1 if any error
+    throwOnGlobal?: boolean; // exits with error code 1 if any error
+    throwOnOptions?: boolean; // exits with error code 1 if any error
+}
+```
 
 
