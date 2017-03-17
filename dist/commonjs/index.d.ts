@@ -1,5 +1,5 @@
 export declare class TypeCheckPluginClass {
-    private options;
+    options: any;
     private firstRun;
     private slave;
     constructor(options: any);

@@ -5,15 +5,33 @@ var TypeCheckPluginClass = (function () {
     function TypeCheckPluginClass(options) {
         this.options = options || {};
         this.slave = child.fork(path.join(__dirname, 'worker.js'), [], options);
+        this.slave.on('message', function (err) {
+            if (err = 'error') {
+                console.log('error typechecker');
+                process.exit(1);
+            }
+        });
         this.firstRun = true;
     }
     TypeCheckPluginClass.prototype.init = function (context) {
-        var tsConfig = context.getTypeScriptConfig();
-        this.slave.send({ type: 'tsconfig', data: tsConfig });
+        if (this.options.quit && this.firstRun) {
+            var tsConfig = context.getTypeScriptConfig();
+            this.slave.send({ type: 'tsconfig', data: tsConfig });
+        }
+        if (!this.options.quit && !this.firstRun) {
+            var tsConfig = context.getTypeScriptConfig();
+            this.slave.send({ type: 'tsconfig', data: tsConfig });
+        }
     };
     TypeCheckPluginClass.prototype.bundleEnd = function () {
-        this.slave.send({ type: 'run', quit: this.options.quit });
-        this.firstRun = false;
+        if (this.options.quit && this.firstRun) {
+            this.slave.send({ type: 'run', options: this.options });
+            this.firstRun = false;
+        }
+        if (!this.options.quit && !this.firstRun) {
+            this.slave.send({ type: 'run', options: this.options });
+            this.firstRun = false;
+        }
     };
     return TypeCheckPluginClass;
 }());

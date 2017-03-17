@@ -8,7 +8,7 @@ var TypeCheckPluginClass = (function () {
     TypeCheckPluginClass.prototype.setTsConfig = function (tsConfig) {
         this.tsConfig = tsConfig;
     };
-    TypeCheckPluginClass.prototype.typecheck = function (quit) {
+    TypeCheckPluginClass.prototype.typecheck = function (options) {
         var write = this.writeText;
         var resetTextColor = this.resetTextColor;
         var setRedTextColor = this.setRedTextColor;
@@ -48,15 +48,15 @@ var TypeCheckPluginClass = (function () {
         var optionsErrors = program.getOptionsDiagnostics().length;
         var globalErrors = program.getGlobalDiagnostics().length;
         var syntacticErrors = program.getSyntacticDiagnostics().length;
-        var semantic = program.getSemanticDiagnostics().length;
-        var totals = optionsErrors + globalErrors + syntacticErrors + semantic;
+        var semanticErrors = program.getSemanticDiagnostics().length;
+        var totals = optionsErrors + globalErrors + syntacticErrors + semanticErrors;
         if (totals) {
             write("Errors:" + totals + "\n");
             setRedTextColor();
             write("\u2514\u2500\u2500 Options: " + optionsErrors + "\n");
             write("\u2514\u2500\u2500 Global: " + globalErrors + "\n");
             write("\u2514\u2500\u2500 Syntactic: " + syntacticErrors + "\n");
-            write("\u2514\u2500\u2500 Semantic: " + semantic + "\n\n");
+            write("\u2514\u2500\u2500 Semantic: " + semanticErrors + "\n\n");
         }
         if (totals) {
             setRedTextColor();
@@ -71,12 +71,20 @@ var TypeCheckPluginClass = (function () {
         resetTextColor();
         write("\n");
         this.firstRun = false;
-        if (quit) {
-            write("Quiting typechecker\n");
-            process.exit(1);
-        }
-        else {
-            write("Keeping typechecker alive\n");
+        switch (true) {
+            case options.throwOnGlobal && globalErrors > 0:
+            case options.throwOnOptions && optionsErrors > 0:
+            case options.throwOnSemantic && semanticErrors > 0:
+            case options.throwOnSyntactic && syntacticErrors > 0:
+                process.send('error');
+                process.exit(0);
+                break;
+            case options.quit:
+                write("Quiting typechecker\n");
+                process.exit(0);
+                break;
+            default:
+                write("Keeping typechecker alive\n");
         }
     };
     TypeCheckPluginClass.prototype.writeText = function (text) {
@@ -104,7 +112,7 @@ process.on('message', function (msg) {
             myClass.setTsConfig(msg.data);
             break;
         case 'run':
-            myClass.typecheck(msg.quit);
+            myClass.typecheck(msg.options);
             break;
     }
 });
