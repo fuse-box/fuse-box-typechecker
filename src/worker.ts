@@ -4,6 +4,7 @@ let myClass: TypeCheckPluginClass = null;
 
 interface OptionsInterface {
     quit?: boolean;
+    bundles: string[];
     throwOnSyntactic?: boolean;
     throwOnSemantic?: boolean;
     throwOnGlobal?: boolean;
