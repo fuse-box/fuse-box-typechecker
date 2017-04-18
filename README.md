@@ -1,5 +1,7 @@
 # fuse-box-typechecker
 
+## (needs fuse-box 1.4.1-preview.7 ++)
+
 ### How to install
 ```npm install git://github.com/fuse-box/fuse-box-typechecker --save-dev```
 
@@ -13,41 +15,31 @@
 
 var build = function () {
 
-    let TypeCheckPlugin = require('fuse-box-typechecker').TypeCheckPlugin
-    let fb = require("fsbx");
-    let fuse = fb.FuseBox;
+    const TypeCheckPlugin = require('fuse-box-typechecker').TypeCheckPlugin
+    
+    const {
+        FuseBox,
+        HTMLPlugin,
+        RawPlugin,
+        TypeScriptHelpers
+    } = require("fsbx");
 
 
-    let bundle = fuse.init({
-        homeDir: "./src",
-        outFile: "./bundle/fb-app-bundle.js",
-        useCache: false,
-        sourceMap: {
-            bundleReference: "./fb-app-bundle.js.map",
-            outFile: "./bundle/fb-app-bundle.js.map",
-        },
+    const fuse = FuseBox.init({
+        homeDir: "src",
+        output: "dist/$name.js",
         plugins: [
-            fb.CSSPlugin(),
-            fb.HTMLPlugin({
-                useDefault: true
-            }),
-            fb.TypeScriptHelpers(),
-            fb.SourceMapPlainJsPlugin(),
-            TypeCheckPlugin()
-
-        ]
+           TypeCheckPlugin({bundles:['app']}),
+            HTMLPlugin(), 
+            [".css", RawPlugin({extensions: ['.css']})], 
+            TypeScriptHelpers()
+            
+            ]
     });
 
-    // Start dev server and set it to root,need this because bundle is under folder "bundle"
-    // as you see under we set entry to main.ts, here I put it inside [] because I want to control what modules get into bundle
-    // never have more then 1 entry
-    bundle.devServer(`
-            > [main.ts]
-            + [**/*.ts]
-            + [**/*.html] 
-            + [**/*.css]
-            + bluebird
-            + whatwg-fetch
+    fuse.bundle("vendor")
+        .cache(true)
+        .instructions(` 
             + aurelia-bootstrapper
             + fuse-box-aurelia-loader
             + aurelia-framework
@@ -63,18 +55,29 @@ var build = function () {
             + aurelia-templating-resources 
             + aurelia-event-aggregator 
             + aurelia-history-browser 
-            + aurelia-templating-router`, {
-        root: './'
-    });
+            + aurelia-templating-router`) 
 
-}
+
+    fuse.bundle("app")
+        //.watch(false).cache(false)
+        .sourceMaps(true)
+        .instructions(` 
+            > [main.ts]
+            + [**/*.{ts,html,css}]`)      
+
+    // don't change the port (know issue with hmr)
+    fuse.dev({ port: 4445, httpServer: true, root:'.' });
+    fuse.run();
+ }
 
 build();
+
 ```
 
 ```
 
 interface OptionsInterface {
+    bundles: string[];
     quit?: boolean;  //quits after first runs
     throwOnSyntactic?: boolean; // exits with error code 1 if any error
     throwOnSemantic?: boolean; // exits with error code 1 if any error

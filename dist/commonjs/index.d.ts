@@ -4,6 +4,6 @@ export declare class TypeCheckPluginClass {
     private slave;
     constructor(options: any);
     init(context: any): void;
-    bundleEnd(): void;
+    bundleEnd(context: any): void;
 }
 export declare const TypeCheckPlugin: (options: any) => TypeCheckPluginClass;

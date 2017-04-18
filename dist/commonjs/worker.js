@@ -8,7 +8,7 @@ var TypeCheckPluginClass = (function () {
     TypeCheckPluginClass.prototype.setTsConfig = function (tsConfig) {
         this.tsConfig = tsConfig;
     };
-    TypeCheckPluginClass.prototype.typecheck = function (options) {
+    TypeCheckPluginClass.prototype.typecheck = function (options, bundleName) {
         var write = this.writeText;
         var resetTextColor = this.resetTextColor;
         var setRedTextColor = this.setRedTextColor;
@@ -17,8 +17,9 @@ var TypeCheckPluginClass = (function () {
         var program = this.program;
         var tsConfig = this.tsConfig;
         setBlueTextColor();
-        write('\nStarting type checking thread, please wait...\n\n');
-        console.time('Typechecking time');
+        write("\nStarting type checking thread for bundle \"" + bundleName + "\", please wait...\n\n");
+        resetTextColor();
+        console.time("Typechecking time bundle: " + bundleName);
         var parseConfigHost = {
             fileExists: ts.sys.fileExists,
             readDirectory: ts.sys.readDirectory,
@@ -40,7 +41,7 @@ var TypeCheckPluginClass = (function () {
                 message += ' ' + ts.flattenDiagnosticMessageText(diag.messageText, '\n');
                 return message;
             });
-            messages.unshift('\n\x1b[34mFile errors:\x1b[91m');
+            messages.unshift("\n\u001B[34mFile errors(" + bundleName + "):\u001B[91m");
             write(messages.join('\n'));
         }
         setBlueTextColor();
@@ -51,7 +52,7 @@ var TypeCheckPluginClass = (function () {
         var semanticErrors = program.getSemanticDiagnostics().length;
         var totals = optionsErrors + globalErrors + syntacticErrors + semanticErrors;
         if (totals) {
-            write("Errors:" + totals + "\n");
+            write("Errors(" + bundleName + "):" + totals + "\n");
             setRedTextColor();
             write("\u2514\u2500\u2500 Options: " + optionsErrors + "\n");
             write("\u2514\u2500\u2500 Global: " + globalErrors + "\n");
@@ -60,14 +61,14 @@ var TypeCheckPluginClass = (function () {
         }
         if (totals) {
             setRedTextColor();
-            write(':< looks like you have some work to do...\n\n');
+            write(":< looks like you have some work to do on bundle :\"" + bundleName + "\"\n\n");
         }
         else {
             setGreenTextColor();
-            write(':> No errors while type checking!\n\n');
+            write(":> No errors while type checking bundle: \"" + bundleName + "\"\n\n");
         }
         setBlueTextColor();
-        console.timeEnd('Typechecking time');
+        console.timeEnd("Typechecking time bundle: " + bundleName);
         resetTextColor();
         write("\n");
         this.firstRun = false;
@@ -112,7 +113,7 @@ process.on('message', function (msg) {
             myClass.setTsConfig(msg.data);
             break;
         case 'run':
-            myClass.typecheck(msg.options);
+            myClass.typecheck(msg.options, msg.bundle);
             break;
     }
 });

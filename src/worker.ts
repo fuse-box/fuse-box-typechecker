@@ -4,6 +4,7 @@ let myClass: TypeCheckPluginClass = null;
 
 interface OptionsInterface {
     quit?: boolean;
+    bundles: string[];
     throwOnSyntactic?: boolean;
     throwOnSemantic?: boolean;
     throwOnGlobal?: boolean;
@@ -15,6 +16,7 @@ interface MsgInterface {
     type?: string;
     options?: OptionsInterface;
     data?: any;
+    bundle?: string;
 }
 
 
@@ -33,7 +35,7 @@ class TypeCheckPluginClass {
         this.tsConfig = tsConfig;
     }
 
-    public typecheck(options: OptionsInterface) {
+    public typecheck(options: OptionsInterface, bundleName: string) {
         // shortcuts
         let write = this.writeText;
         let resetTextColor = this.resetTextColor;
@@ -46,11 +48,11 @@ class TypeCheckPluginClass {
 
         // tell use we are starting type checking
         setBlueTextColor();
-        write('\nStarting type checking thread, please wait...\n\n');
-
+        write(`\nStarting type checking thread for bundle "${bundleName}", please wait...\n\n`);
+        resetTextColor();
         // start timing
         // tslint:disable-next-line:no-console
-        console.time('Typechecking time');
+        console.time(`Typechecking time bundle: ${bundleName}`);
 
         const parseConfigHost: any = {
             fileExists: ts.sys.fileExists,
@@ -92,7 +94,7 @@ class TypeCheckPluginClass {
             });
 
             // write errors
-            messages.unshift('\n\x1b[34mFile errors:\x1b[91m');
+            messages.unshift(`\n\x1b[34mFile errors(${bundleName}):\x1b[91m`);
             write(messages.join('\n'));
 
 
@@ -111,7 +113,7 @@ class TypeCheckPluginClass {
 
 
         if (totals) {
-            write(`Errors:${totals}\n`);
+            write(`Errors(${bundleName}):${totals}\n`);
             setRedTextColor();
             write(`└── Options: ${optionsErrors}\n`);
             write(`└── Global: ${globalErrors}\n`);
@@ -122,16 +124,16 @@ class TypeCheckPluginClass {
 
         if (totals) {
             setRedTextColor();
-            write(':< looks like you have some work to do...\n\n');
+            write(`:< looks like you have some work to do on bundle :"${bundleName}"\n\n`);
         } else {
             setGreenTextColor();
-            write(':> No errors while type checking!\n\n');
+            write(`:> No errors while type checking bundle: "${bundleName}"\n\n`);
         }
 
 
         setBlueTextColor();
         // tslint:disable-next-line:no-console
-        console.timeEnd('Typechecking time');
+        console.timeEnd(`Typechecking time bundle: ${bundleName}`);
         resetTextColor();
         write(`\n`);
 
@@ -194,7 +196,7 @@ process.on('message', function (msg: MsgInterface) {
             myClass.setTsConfig(msg.data);
             break;
         case 'run':
-            myClass.typecheck(msg.options);
+            myClass.typecheck(msg.options, msg.bundle);
             break;
     }
 });
