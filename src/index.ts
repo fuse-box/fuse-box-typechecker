@@ -8,6 +8,8 @@ export class TypeCheckPluginClass {
     public options: any;
     private firstRun: boolean;
     private slave: any;
+    private countBundles = 0;
+    private countBundleEnd = 0;
 
     constructor(options: any) {
         this.options = options || {};
@@ -22,54 +24,48 @@ export class TypeCheckPluginClass {
         this.firstRun = true;
     }
 
+
     public init(context: any) {
-        if (this.options.bundles[0] === context.bundle.name) {
-            if (this.options.quit && this.firstRun) {
-                let tsConfig = context.getTypeScriptConfig();
-                this.slave.send({ type: 'tsconfig', data: tsConfig });
-            }
-
-            if (!this.options.quit && this.firstRun) {
-                let tsConfig = context.getTypeScriptConfig();
-                this.slave.send({ type: 'tsconfig', data: tsConfig });
-            }
-
-            if (!this.options.quit && !this.firstRun) {
-                let tsConfig = context.getTypeScriptConfig();
-                this.slave.send({ type: 'tsconfig', data: tsConfig });
+        if (this.countBundles === 0) {
+            let tsConfig = context.getTypeScriptConfig();
+            switch (true) {
+                case this.options.quit && this.firstRun:
+                    this.slave.send({ type: 'tsconfig', data: tsConfig });
+                    break;
+                case !this.options.quit && this.firstRun:
+                    this.slave.send({ type: 'tsconfig', data: tsConfig });
+                    break;
+                case !this.options.quit && !this.firstRun:
+                    this.slave.send({ type: 'tsconfig', data: tsConfig });
+                    break;
             }
         }
+        this.countBundles++;
     }
 
 
-    public bundleEnd(context: any) {
-        if (this.options.bundles.length === 0) {
-            console.warn("\n Typechecker \n No bundle selected, sample;\n TypeCheckPlugin({bundles:['app']})\n");
-        } else {
-            if (this.options.bundles[0] === context.bundle.name) {              
-                switch(true){
-                    case this.options.quit && this.firstRun :
-                    this.slave.send({ type: 'run', options: this.options, bundle: context.bundle.name});
-                    this.firstRun = false;
-                    break;
+    public bundleEnd() {
+        this.countBundleEnd++;
+        if (this.countBundleEnd = this.countBundles) {
+            setTimeout(() => {
+                switch (true) {
+                    case this.options.quit && this.firstRun:
+                        this.slave.send({ type: 'run', options: this.options });
+                        this.firstRun = false;
+                        break;
                     case !this.options.quit && this.firstRun:
-                    this.slave.send({ type: 'run', options: this.options, bundle: context.bundle.name });
-                    this.firstRun = false;
-                    break;
-                    case !this.options.quit && !this.firstRun :
-                    this.slave.send({ type: 'run', options: this.options, bundle: context.bundle.name });
-                    this.firstRun = false;
+                        this.slave.send({ type: 'run', options: this.options });
+                        this.firstRun = false;
+                        break;
+                    case !this.options.quit && !this.firstRun:
+                        this.slave.send({ type: 'run', options: this.options });
+                        this.firstRun = false;
                 }
-            }
+            }, 100);
+            this.countBundleEnd = 0;
+            this.countBundles = 0;
         }
-        
     }
-
-
-
-
-
-
 }
 
 

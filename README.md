@@ -29,7 +29,7 @@ var build = function () {
         homeDir: "src",
         output: "dist/$name.js",
         plugins: [
-           TypeCheckPlugin({bundles:['app']}), // Only put in 1, main one to "src" folder...
+           TypeCheckPlugin(), // se interface in the bottom for options
             HTMLPlugin(), 
             [".css", RawPlugin({extensions: ['.css']})], 
             TypeScriptHelpers()
@@ -77,8 +77,7 @@ build();
 ```
 
 interface OptionsInterface {
-    bundles: string[]; // only put in main, having it as array so its easier to expand later without breaking
-    quit?: boolean;  //quits after first runs
+    quit?: boolean;  //quits after first run
     throwOnSyntactic?: boolean; // exits with error code 1 if any error
     throwOnSemantic?: boolean; // exits with error code 1 if any error
     throwOnGlobal?: boolean; // exits with error code 1 if any error

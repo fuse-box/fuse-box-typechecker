@@ -3,15 +3,25 @@ var ts = require("typescript");
 var myClass = null;
 var TypeCheckPluginClass = (function () {
     function TypeCheckPluginClass() {
-        this.firstRun = true;
     }
     TypeCheckPluginClass.prototype.setTsConfig = function (tsConfig) {
         this.tsConfig = tsConfig;
+        var parseConfigHost = {
+            fileExists: ts.sys.fileExists,
+            readDirectory: ts.sys.readDirectory,
+            readFile: ts.sys.readFile,
+            useCaseSensitiveFileNames: true
+        };
+        var start = new Date().getTime();
+        var parsed = ts.parseJsonConfigFileContent(this.tsConfig, parseConfigHost, '.', null, 'tsconfig.json');
+        this.program = ts.createProgram(parsed.fileNames, parsed.options, null, this.program);
+        this.diagnostics = ts.getPreEmitDiagnostics(this.program);
+        this.elapsed = new Date().getTime() - start;
     };
-    TypeCheckPluginClass.prototype.typecheck = function (options, bundleName) {
+    TypeCheckPluginClass.prototype.typecheck = function (options) {
         var write = this.writeText;
+        var diagnostics = this.diagnostics;
         var program = this.program;
-        var TS_CONFIG = this.tsConfig;
         var TEXT_WHITE = '\x1b[0m';
         var TEXT_RED = '\x1b[91m';
         var TEXT_UNDERLINE_START = '\x1B[4m';
@@ -23,17 +33,6 @@ var TypeCheckPluginClass = (function () {
         var TEXT_ITALIC_START = '\x1b[90m';
         var TEXT_ITALIC_END = '\x1b[0m';
         var TEXT_END_LINE = '\n';
-        write("" + TEXT_WHITE + TEXT_END_LINE + "Typechecking.. \"" + bundleName + "\", please wait..." + TEXT_END_LINE + TEXT_END_LINE);
-        console.time("" + TEXT_WHITE + TEXT_ITALIC_START + "Typechecking time bundle \"" + bundleName + "\"" + TEXT_ITALIC_END);
-        var parseConfigHost = {
-            fileExists: ts.sys.fileExists,
-            readDirectory: ts.sys.readDirectory,
-            readFile: ts.sys.readFile,
-            useCaseSensitiveFileNames: true
-        };
-        var parsed = ts.parseJsonConfigFileContent(TS_CONFIG, parseConfigHost, '.', null, 'tsconfig.json');
-        program = ts.createProgram(parsed.fileNames, parsed.options, null, program);
-        var diagnostics = ts.getPreEmitDiagnostics(program);
         write("" + TEXT_END_LINE + TEXT_INVERT_START + TEXT_BOLD_START + "Typechecker plugin" + TEXT_BOLD_END + TEXT_INVERT_END + TEXT_END_LINE);
         var messages = [];
         if (diagnostics.length > 0) {
@@ -49,7 +48,7 @@ var TypeCheckPluginClass = (function () {
                 message += ' ' + ts.flattenDiagnosticMessageText(diag.messageText, TEXT_END_LINE);
                 return message;
             });
-            messages.unshift("" + TEXT_END_LINE + TEXT_WHITE + TEXT_UNDERLINE_START + "File errors(" + bundleName + "):" + TEXT_UNDERLINE_END);
+            messages.unshift("" + TEXT_END_LINE + TEXT_WHITE + TEXT_UNDERLINE_START + "File errors:" + TEXT_UNDERLINE_END);
             write(messages.join('\n'));
         }
         write(TEXT_WHITE + TEXT_END_LINE + TEXT_END_LINE);
@@ -58,7 +57,7 @@ var TypeCheckPluginClass = (function () {
         var syntacticErrors = program.getSyntacticDiagnostics().length;
         var semanticErrors = program.getSemanticDiagnostics().length;
         var totals = optionsErrors + globalErrors + syntacticErrors + semanticErrors;
-        write(TEXT_UNDERLINE_START + "Errors(" + bundleName + "):" + totals + TEXT_UNDERLINE_END + TEXT_END_LINE);
+        write(TEXT_UNDERLINE_START + "Errors:" + totals + TEXT_UNDERLINE_END + TEXT_END_LINE);
         if (totals) {
             write((optionsErrors ? TEXT_RED : TEXT_WHITE) + "\u2514\u2500\u2500 Options: " + optionsErrors + TEXT_END_LINE);
             write((globalErrors ? TEXT_RED : TEXT_WHITE) + "\u2514\u2500\u2500 Global: " + globalErrors + TEXT_END_LINE);
@@ -66,8 +65,7 @@ var TypeCheckPluginClass = (function () {
             write((semanticErrors ? TEXT_RED : TEXT_WHITE) + "\u2514\u2500\u2500 Semantic: " + semanticErrors + TEXT_END_LINE + TEXT_END_LINE);
         }
         write(TEXT_ITALIC_START);
-        console.timeEnd("" + TEXT_WHITE + TEXT_ITALIC_START + "Typechecking time bundle \"" + bundleName + "\"" + TEXT_ITALIC_END);
-        this.firstRun = false;
+        write("" + TEXT_WHITE + TEXT_ITALIC_START + "Typechecking time: " + this.elapsed + "ms" + TEXT_ITALIC_END + TEXT_END_LINE);
         switch (true) {
             case options.throwOnGlobal && globalErrors > 0:
             case options.throwOnOptions && optionsErrors > 0:
@@ -98,7 +96,7 @@ process.on('message', function (msg) {
             myClass.setTsConfig(msg.data);
             break;
         case 'run':
-            myClass.typecheck(msg.options, msg.bundle);
+            myClass.typecheck(msg.options);
             break;
     }
 });
