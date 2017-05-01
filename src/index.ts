@@ -23,7 +23,7 @@ export class TypeCheckPluginClass {
     }
 
     public init(context: any) {
-        if (this.options.bundles[0] == context.bundle.name) {
+        if (this.options.bundles[0] === context.bundle.name) {
             if (this.options.quit && this.firstRun) {
                 let tsConfig = context.getTypeScriptConfig();
                 this.slave.send({ type: 'tsconfig', data: tsConfig });
@@ -46,7 +46,7 @@ export class TypeCheckPluginClass {
         if (this.options.bundles.length === 0) {
             console.warn("\n Typechecker \n No bundle selected, sample;\n TypeCheckPlugin({bundles:['app']})\n");
         } else {
-            if (this.options.bundles[0] == context.bundle.name) {              
+            if (this.options.bundles[0] === context.bundle.name) {              
                 switch(true){
                     case this.options.quit && this.firstRun :
                     this.slave.send({ type: 'run', options: this.options, bundle: context.bundle.name});

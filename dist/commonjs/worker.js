@@ -10,67 +10,63 @@ var TypeCheckPluginClass = (function () {
     };
     TypeCheckPluginClass.prototype.typecheck = function (options, bundleName) {
         var write = this.writeText;
-        var resetTextColor = this.resetTextColor;
-        var setRedTextColor = this.setRedTextColor;
-        var setBlueTextColor = this.setBlueTextColor;
-        var setGreenTextColor = this.setGreenTextColor;
         var program = this.program;
-        var tsConfig = this.tsConfig;
-        setBlueTextColor();
-        write("\nStarting type checking thread for bundle \"" + bundleName + "\", please wait...\n\n");
-        resetTextColor();
-        console.time("Typechecking time bundle: " + bundleName);
+        var TS_CONFIG = this.tsConfig;
+        var TEXT_WHITE = '\x1b[0m';
+        var TEXT_RED = '\x1b[91m';
+        var TEXT_UNDERLINE_START = '\x1B[4m';
+        var TEXT_UNDERLINE_END = '\x1B[24m';
+        var TEXT_BOLD_START = '\x1B[1m';
+        var TEXT_BOLD_END = '\x1B[22m';
+        var TEXT_INVERT_START = '\x1B[7m';
+        var TEXT_INVERT_END = '\x1B[27m';
+        var TEXT_ITALIC_START = '\x1b[90m';
+        var TEXT_ITALIC_END = '\x1b[0m';
+        var TEXT_END_LINE = '\n';
+        write("" + TEXT_WHITE + TEXT_END_LINE + "Typechecking.. \"" + bundleName + "\", please wait..." + TEXT_END_LINE + TEXT_END_LINE);
+        console.time("" + TEXT_WHITE + TEXT_ITALIC_START + "Typechecking time bundle \"" + bundleName + "\"" + TEXT_ITALIC_END);
         var parseConfigHost = {
             fileExists: ts.sys.fileExists,
             readDirectory: ts.sys.readDirectory,
             readFile: ts.sys.readFile,
             useCaseSensitiveFileNames: true
         };
-        var parsed = ts.parseJsonConfigFileContent(tsConfig, parseConfigHost, '.', null, 'tsconfig.json');
+        var parsed = ts.parseJsonConfigFileContent(TS_CONFIG, parseConfigHost, '.', null, 'tsconfig.json');
         program = ts.createProgram(parsed.fileNames, parsed.options, null, program);
         var diagnostics = ts.getPreEmitDiagnostics(program);
+        write("" + TEXT_END_LINE + TEXT_INVERT_START + TEXT_BOLD_START + "Typechecker plugin" + TEXT_BOLD_END + TEXT_INVERT_END + TEXT_END_LINE);
         var messages = [];
         if (diagnostics.length > 0) {
             messages = diagnostics.map(function (diag) {
-                var message = '└── ' + ts.DiagnosticCategory[diag.category];
+                var message = TEXT_RED + "\u2514\u2500\u2500 ";
                 if (diag.file) {
                     var _a = diag.file.getLineAndCharacterOfPosition(diag.start), line = _a.line, character = _a.character;
-                    message += ":TS" + diag.code + ":";
-                    message += diag.file.fileName + ":(" + (line + 1) + ":" + (character + 1) + "):";
+                    message += diag.file.fileName + ": (" + (line + 1) + ":" + (character + 1) + "):";
+                    message += TEXT_WHITE;
+                    message += ts.DiagnosticCategory[diag.category];
+                    message += " TS" + diag.code + ":";
                 }
-                message += ' ' + ts.flattenDiagnosticMessageText(diag.messageText, '\n');
+                message += ' ' + ts.flattenDiagnosticMessageText(diag.messageText, TEXT_END_LINE);
                 return message;
             });
-            messages.unshift("\n\u001B[34mFile errors(" + bundleName + "):\u001B[91m");
+            messages.unshift("" + TEXT_END_LINE + TEXT_WHITE + TEXT_UNDERLINE_START + "File errors(" + bundleName + "):" + TEXT_UNDERLINE_END);
             write(messages.join('\n'));
         }
-        setBlueTextColor();
-        write('\n\n');
+        write(TEXT_WHITE + TEXT_END_LINE + TEXT_END_LINE);
         var optionsErrors = program.getOptionsDiagnostics().length;
         var globalErrors = program.getGlobalDiagnostics().length;
         var syntacticErrors = program.getSyntacticDiagnostics().length;
         var semanticErrors = program.getSemanticDiagnostics().length;
         var totals = optionsErrors + globalErrors + syntacticErrors + semanticErrors;
+        write(TEXT_UNDERLINE_START + "Errors(" + bundleName + "):" + totals + TEXT_UNDERLINE_END + TEXT_END_LINE);
         if (totals) {
-            write("Errors(" + bundleName + "):" + totals + "\n");
-            setRedTextColor();
-            write("\u2514\u2500\u2500 Options: " + optionsErrors + "\n");
-            write("\u2514\u2500\u2500 Global: " + globalErrors + "\n");
-            write("\u2514\u2500\u2500 Syntactic: " + syntacticErrors + "\n");
-            write("\u2514\u2500\u2500 Semantic: " + semanticErrors + "\n\n");
+            write((optionsErrors ? TEXT_RED : TEXT_WHITE) + "\u2514\u2500\u2500 Options: " + optionsErrors + TEXT_END_LINE);
+            write((globalErrors ? TEXT_RED : TEXT_WHITE) + "\u2514\u2500\u2500 Global: " + globalErrors + TEXT_END_LINE);
+            write((syntacticErrors ? TEXT_RED : TEXT_WHITE) + "\u2514\u2500\u2500 Syntactic: " + syntacticErrors + TEXT_END_LINE);
+            write((semanticErrors ? TEXT_RED : TEXT_WHITE) + "\u2514\u2500\u2500 Semantic: " + semanticErrors + TEXT_END_LINE + TEXT_END_LINE);
         }
-        if (totals) {
-            setRedTextColor();
-            write(":< looks like you have some work to do on bundle :\"" + bundleName + "\"\n\n");
-        }
-        else {
-            setGreenTextColor();
-            write(":> No errors while type checking bundle: \"" + bundleName + "\"\n\n");
-        }
-        setBlueTextColor();
-        console.timeEnd("Typechecking time bundle: " + bundleName);
-        resetTextColor();
-        write("\n");
+        write(TEXT_ITALIC_START);
+        console.timeEnd("" + TEXT_WHITE + TEXT_ITALIC_START + "Typechecking time bundle \"" + bundleName + "\"" + TEXT_ITALIC_END);
         this.firstRun = false;
         switch (true) {
             case options.throwOnGlobal && globalErrors > 0:
@@ -81,27 +77,16 @@ var TypeCheckPluginClass = (function () {
                 process.exit(0);
                 break;
             case options.quit:
-                write("Quiting typechecker\n");
+                write(TEXT_ITALIC_START + "Quiting typechecker" + TEXT_ITALIC_END + TEXT_END_LINE + TEXT_END_LINE);
                 process.exit(0);
                 break;
             default:
-                write("Keeping typechecker alive\n");
+                write(TEXT_ITALIC_START + "Keeping typechecker alive" + TEXT_ITALIC_END + TEXT_END_LINE + TEXT_END_LINE);
         }
+        write(TEXT_ITALIC_END);
     };
     TypeCheckPluginClass.prototype.writeText = function (text) {
         ts.sys.write(text);
-    };
-    TypeCheckPluginClass.prototype.resetTextColor = function () {
-        ts.sys.write('\x1b[0m');
-    };
-    TypeCheckPluginClass.prototype.setRedTextColor = function () {
-        ts.sys.write('\x1b[91m');
-    };
-    TypeCheckPluginClass.prototype.setBlueTextColor = function () {
-        ts.sys.write('\x1b[34m');
-    };
-    TypeCheckPluginClass.prototype.setGreenTextColor = function () {
-        ts.sys.write('\x1b[32m');
     };
     return TypeCheckPluginClass;
 }());

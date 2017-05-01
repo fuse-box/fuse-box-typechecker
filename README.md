@@ -7,7 +7,7 @@
 
 
 ### Output sample
-![Output sample](https://github.com/fuse-box/fuse-box-typechecker/raw/master/image/sample.png "Output sample")
+![Output sample](https://github.com/fuse-box/fuse-box-typechecker/raw/master/image/sampleNew.png "Output sample")
 
 
 ### How to use
