@@ -1,6 +1,6 @@
 # fuse-box-typechecker
 
-## (needs fuse-box 1.4.1-preview.7 ++)
+## (needs fuse-box 2.0.0.beta.8 ++)
 
 ### How to install
 ```npm install git://github.com/fuse-box/fuse-box-typechecker --save-dev```
