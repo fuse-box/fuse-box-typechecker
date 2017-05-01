@@ -15,7 +15,7 @@ var TypeCheckPluginClass = (function () {
         this.firstRun = true;
     }
     TypeCheckPluginClass.prototype.init = function (context) {
-        if (this.options.bundles.indexOf(context.bundle.name) !== -1) {
+        if (this.options.bundles[0] == context.bundle.name) {
             if (this.options.quit && this.firstRun) {
                 var tsConfig = context.getTypeScriptConfig();
                 this.slave.send({ type: 'tsconfig', data: tsConfig });
@@ -31,22 +31,25 @@ var TypeCheckPluginClass = (function () {
         }
     };
     TypeCheckPluginClass.prototype.bundleEnd = function (context) {
-        if (this.options.bundles.indexOf(context.bundle.name) !== -1) {
-            if (this.options.quit && this.firstRun) {
-                this.slave.send({ type: 'run', options: this.options, bundle: context.bundle.name });
-                this.firstRun = false;
-            }
-            if (!this.options.quit && this.firstRun) {
-                this.slave.send({ type: 'run', options: this.options, bundle: context.bundle.name });
-                this.firstRun = false;
-            }
-            if (!this.options.quit && !this.firstRun) {
-                this.slave.send({ type: 'run', options: this.options, bundle: context.bundle.name });
-                this.firstRun = false;
-            }
-        }
         if (this.options.bundles.length === 0) {
             console.warn("\n Typechecker \n No bundle selected, sample;\n TypeCheckPlugin({bundles:['app']})\n");
+        }
+        else {
+            if (this.options.bundles[0] == context.bundle.name) {
+                switch (true) {
+                    case this.options.quit && this.firstRun:
+                        this.slave.send({ type: 'run', options: this.options, bundle: context.bundle.name });
+                        this.firstRun = false;
+                        break;
+                    case !this.options.quit && this.firstRun:
+                        this.slave.send({ type: 'run', options: this.options, bundle: context.bundle.name });
+                        this.firstRun = false;
+                        break;
+                    case !this.options.quit && !this.firstRun:
+                        this.slave.send({ type: 'run', options: this.options, bundle: context.bundle.name });
+                        this.firstRun = false;
+                }
+            }
         }
     };
     return TypeCheckPluginClass;
