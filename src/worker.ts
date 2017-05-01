@@ -37,22 +37,28 @@ class TypeCheckPluginClass {
 
     public typecheck(options: OptionsInterface, bundleName: string) {
         // shortcuts
-        let write = this.writeText;
-        let resetTextColor = this.resetTextColor;
-        let setRedTextColor = this.setRedTextColor;
-        let setBlueTextColor = this.setBlueTextColor;
-        let setGreenTextColor = this.setGreenTextColor;
+        const write = this.writeText;
         let program = this.program;
-        let tsConfig = this.tsConfig;
+        const TS_CONFIG = this.tsConfig;
+        const TEXT_WHITE = '\x1b[0m';
+        const TEXT_RED = '\x1b[91m';
+        const TEXT_UNDERLINE_START = '\x1B[4m';
+        const TEXT_UNDERLINE_END = '\x1B[24m'
+        const TEXT_BOLD_START = '\x1B[1m';
+        const TEXT_BOLD_END = '\x1B[22m'
+        const TEXT_INVERT_START = '\x1B[7m';
+        const TEXT_INVERT_END = '\x1B[27m'
+        const TEXT_ITALIC_START = '\x1b[90m';
+        const TEXT_ITALIC_END = '\x1b[0m'
+        const TEXT_END_LINE = '\n';
 
 
         // tell use we are starting type checking
-        setBlueTextColor();
-        write(`\nStarting type checking thread for bundle "${bundleName}", please wait...\n\n`);
-        resetTextColor();
+        write(`${TEXT_WHITE}${TEXT_END_LINE}Typechecking.. "${bundleName}", please wait...${TEXT_END_LINE}${TEXT_END_LINE}`);
+
         // start timing
         // tslint:disable-next-line:no-console
-        console.time(`Typechecking time bundle: ${bundleName}`);
+        console.time(`${TEXT_WHITE}${TEXT_ITALIC_START}Typechecking time bundle "${bundleName}"${TEXT_ITALIC_END}`);
 
         const parseConfigHost: any = {
             fileExists: ts.sys.fileExists,
@@ -61,12 +67,12 @@ class TypeCheckPluginClass {
             useCaseSensitiveFileNames: true
         };
 
-        const parsed = ts.parseJsonConfigFileContent(tsConfig, parseConfigHost, '.', null, 'tsconfig.json');
+        const parsed = ts.parseJsonConfigFileContent(TS_CONFIG, parseConfigHost, '.', null, 'tsconfig.json');
         program = ts.createProgram(parsed.fileNames, parsed.options, null, program);
-
 
         // get diagnostics
         const diagnostics = ts.getPreEmitDiagnostics(program);
+        write(`${TEXT_END_LINE}${TEXT_INVERT_START}${TEXT_BOLD_START}Typechecker plugin${TEXT_BOLD_END}${TEXT_INVERT_END}${TEXT_END_LINE}`);
 
         // loop diagnostics
         let messages = [];
@@ -74,7 +80,7 @@ class TypeCheckPluginClass {
             messages = diagnostics.map((diag) => {
 
                 // get message type error, warn, info
-                let message = '└── ' + ts.DiagnosticCategory[diag.category];
+                let message = `${TEXT_RED}└── `;
 
                 // if file
                 if (diag.file) {
@@ -82,28 +88,29 @@ class TypeCheckPluginClass {
                         line,
                         character
                     } = diag.file.getLineAndCharacterOfPosition(diag.start);
-                    message += `:TS${diag.code}:`;
-                    message += `${diag.file.fileName}:(${line + 1}:${character + 1}):`;
+
+                    message += `${diag.file.fileName}: (${line + 1}:${character + 1}):`;
+                    message += TEXT_WHITE;
+                    message += ts.DiagnosticCategory[diag.category];
+                    message += ` TS${diag.code}:`;
                 }
 
                 // flatten error message
-                message += ' ' + ts.flattenDiagnosticMessageText(diag.messageText, '\n');
+
+                message += ' ' + ts.flattenDiagnosticMessageText(diag.messageText, TEXT_END_LINE);
 
                 // return message
                 return message;
             });
 
             // write errors
-            messages.unshift(`\n\x1b[34mFile errors(${bundleName}):\x1b[91m`);
+            messages.unshift(`${TEXT_END_LINE}${TEXT_WHITE}${TEXT_UNDERLINE_START}File errors(${bundleName}):${TEXT_UNDERLINE_END}`);
             write(messages.join('\n'));
-
 
         }
 
 
-        setBlueTextColor();
-        write('\n\n');
-
+        write(TEXT_WHITE + TEXT_END_LINE + TEXT_END_LINE);
 
         let optionsErrors = program.getOptionsDiagnostics().length;
         let globalErrors = program.getGlobalDiagnostics().length;
@@ -111,35 +118,18 @@ class TypeCheckPluginClass {
         let semanticErrors = program.getSemanticDiagnostics().length;
         let totals = optionsErrors + globalErrors + syntacticErrors + semanticErrors;
 
-
+        write(`${TEXT_UNDERLINE_START}Errors(${bundleName}):${totals}${TEXT_UNDERLINE_END}${TEXT_END_LINE}`);
         if (totals) {
-            write(`Errors(${bundleName}):${totals}\n`);
-            setRedTextColor();
-            write(`└── Options: ${optionsErrors}\n`);
-            write(`└── Global: ${globalErrors}\n`);
-            write(`└── Syntactic: ${syntacticErrors}\n`);
-            write(`└── Semantic: ${semanticErrors}\n\n`);
+
+            write(`${optionsErrors ? TEXT_RED : TEXT_WHITE}└── Options: ${optionsErrors}${TEXT_END_LINE}`);
+            write(`${globalErrors ? TEXT_RED : TEXT_WHITE}└── Global: ${globalErrors}${TEXT_END_LINE}`);
+            write(`${syntacticErrors ? TEXT_RED : TEXT_WHITE}└── Syntactic: ${syntacticErrors}${TEXT_END_LINE}`);
+            write(`${semanticErrors ? TEXT_RED : TEXT_WHITE}└── Semantic: ${semanticErrors}${TEXT_END_LINE}${TEXT_END_LINE}`);
         }
-
-
-        if (totals) {
-            setRedTextColor();
-            write(`:< looks like you have some work to do on bundle :"${bundleName}"\n\n`);
-        } else {
-            setGreenTextColor();
-            write(`:> No errors while type checking bundle: "${bundleName}"\n\n`);
-        }
-
-
-        setBlueTextColor();
-        // tslint:disable-next-line:no-console
-        console.timeEnd(`Typechecking time bundle: ${bundleName}`);
-        resetTextColor();
-        write(`\n`);
-
+        write(TEXT_ITALIC_START)
+        console.timeEnd(`${TEXT_WHITE}${TEXT_ITALIC_START}Typechecking time bundle "${bundleName}"${TEXT_ITALIC_END}`);
 
         this.firstRun = false; // need to know later
-
 
         switch (true) {
             case options.throwOnGlobal && globalErrors > 0:
@@ -150,12 +140,13 @@ class TypeCheckPluginClass {
                 process.exit(0);
                 break;
             case options.quit:
-                write(`Quiting typechecker\n`);
+                write(`${TEXT_ITALIC_START}Quiting typechecker${TEXT_ITALIC_END}${TEXT_END_LINE}${TEXT_END_LINE}`);
                 process.exit(0);
                 break;
             default:
-                write(`Keeping typechecker alive\n`);
+                write(`${TEXT_ITALIC_START}Keeping typechecker alive${TEXT_ITALIC_END}${TEXT_END_LINE}${TEXT_END_LINE}`);
         }
+        write(TEXT_ITALIC_END)
 
     }
 
@@ -164,25 +155,6 @@ class TypeCheckPluginClass {
         ts.sys.write(text);
     }
 
-
-    private resetTextColor() {
-        ts.sys.write('\x1b[0m');
-    }
-
-
-    private setRedTextColor() {
-        ts.sys.write('\x1b[91m');
-    }
-
-
-    private setBlueTextColor() {
-        ts.sys.write('\x1b[34m');
-    }
-
-
-    private setGreenTextColor() {
-        ts.sys.write('\x1b[32m');
-    }
 
 }
 
