@@ -6,13 +6,10 @@
 ```npm install git://github.com/fuse-box/fuse-box-typechecker --save-dev```
 
 
-### Output sample
-![Output sample](https://github.com/fuse-box/fuse-box-typechecker/raw/master/image/sampleNew.png "Output sample")
-
-
 ### How to use
 ```javascript
 
+// load
 var TypeHelper = require('fuse-box-typechecker').TypeHelper
 
 
@@ -37,5 +34,7 @@ testAsync.runAsync();
 
 ```
 
+### Output sample
+![Output sample](https://github.com/fuse-box/fuse-box-typechecker/raw/master/image/sampleNew2.png "Output sample")
 
 
