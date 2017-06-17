@@ -13,12 +13,26 @@
 ### How to use
 ```javascript
 
-var TypeHelper = require('./dist/commonjs/index.js').TypeHelper
+var TypeHelper = require('fuse-box-typechecker').TypeHelper
 
-var ts = TypeHelper({
-    tsConfig: './tsconfig.json'
+
+// test async worker
+var testSync = TypeHelper({
+    tsConfig: './tsconfig.json',
+    name: 'Test Sync'
 })
-ts.runSync();
+
+testSync.runSync();
+
+
+
+// test sync worker
+var testAsync = TypeHelper({
+    tsConfig: './tsconfig.json',
+    name: 'Test async'
+})
+
+testAsync.runAsync();
 
 
 ```
