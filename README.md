@@ -47,6 +47,6 @@ testWatch.runWatch('./src');*/
 ```
 
 ### Output sample
-![Output sample](https://github.com/fuse-box/fuse-box-typechecker/raw/master/image/sampleNew2.png "Output sample")
+![Output sample](https://github.com/vegarringdal/fuse-box-typechecker/raw/master/image/sampleNew2.png "Output sample")
 
 
