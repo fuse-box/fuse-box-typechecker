@@ -136,8 +136,12 @@ export class Checker {
             case options.throwOnOptions && optionsErrors > 0:
             case options.throwOnSemantic && semanticErrors > 0:
             case options.throwOnSyntactic && syntacticErrors > 0:
-                process.send('error');
-                process.exit(0);
+                if (process.send) {
+                    process.send('error');
+                } else {
+                   throw new Error('options.throwOnXXXXX triggered');
+                }
+                process.exit(1);
                 break;
             case options.quit:
                 write(chalk.grey(`Quiting typechecker${END_LINE}${END_LINE}`));
@@ -149,6 +153,8 @@ export class Checker {
             default:
                 write(chalk.grey(`Keeping typechecker alive${END_LINE}${END_LINE}`));
         }
+
+        return totals;
 
     }
 
