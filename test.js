@@ -1,9 +1,26 @@
 
 var TypeHelper = require('./dist/commonjs/index.js').TypeHelper
 
-var ts = TypeHelper({
-    tsConfig: './tsconfig.json'
+
+
+// test async worker
+var testSync = TypeHelper({
+    tsConfig: './tsconfig.json',
+    name: 'Test Sync'
 })
-ts.runSync();
+
+testSync.runSync();
+
+
+
+// test sync worker
+var testAsync = TypeHelper({
+    tsConfig: './tsconfig.json',
+    name: 'Test async'
+})
+
+testAsync.runAsync();
+
+
 
 

@@ -25,7 +25,7 @@ var Checker = (function () {
         var program = this.program;
         var options = this.options;
         var END_LINE = '\n';
-        write(chalk.bgWhite(chalk.black(END_LINE + "Typechecker plugin " + options.name + END_LINE)));
+        write(chalk.bgWhite(chalk.black(END_LINE + "Typechecker plugin(" + options.type + ") " + options.name + " " + END_LINE)));
         var messages = [];
         if (diagnostics.length > 0) {
             messages = diagnostics.map(function (diag) {
@@ -47,7 +47,7 @@ var Checker = (function () {
         var syntacticErrors = program.getSyntacticDiagnostics().length;
         var semanticErrors = program.getSemanticDiagnostics().length;
         var totals = optionsErrors + globalErrors + syntacticErrors + semanticErrors;
-        write(chalk.underline("Errors:" + totals + END_LINE));
+        write(chalk.underline("" + END_LINE + END_LINE + "Errors:" + totals + END_LINE));
         if (totals) {
             write(chalk[optionsErrors ? 'red' : 'white']("\u2514\u2500\u2500 Options: " + optionsErrors + END_LINE));
             write(chalk[globalErrors ? 'red' : 'white']("\u2514\u2500\u2500 Global: " + globalErrors + END_LINE));
@@ -65,7 +65,10 @@ var Checker = (function () {
                 break;
             case options.quit:
                 write(chalk.grey("Quiting typechecker" + END_LINE + END_LINE));
-                process.exit(0);
+                process.send('done');
+                break;
+            case options.finished:
+                write(chalk.grey("Quiting typechecker" + END_LINE + END_LINE));
                 break;
             default:
                 write(chalk.grey("Keeping typechecker alive" + END_LINE + END_LINE));

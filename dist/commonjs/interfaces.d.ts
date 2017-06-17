@@ -6,7 +6,9 @@ export interface OptionsInterface {
     throwOnGlobal?: boolean;
     throwOnOptions?: boolean;
     tsConfigObj: any;
-    name: string;
+    name?: string;
+    type?: string;
+    finished: boolean;
 }
 export interface MsgInterface {
     type: string;

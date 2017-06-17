@@ -50,7 +50,7 @@ export class Checker {
 
         write(
             chalk.bgWhite(
-                chalk.black(`${END_LINE}Typechecker plugin ${options.name}${END_LINE}`)
+                chalk.black(`${END_LINE}Typechecker plugin(${options.type}) ${options.name} ${END_LINE}`)
             ));
 
         // loop diagnostics
@@ -96,7 +96,7 @@ export class Checker {
         let totals = optionsErrors + globalErrors + syntacticErrors + semanticErrors;
 
         write(
-            chalk.underline(`Errors:${totals}${END_LINE}`)
+            chalk.underline(`${END_LINE}${END_LINE}Errors:${totals}${END_LINE}`)
         );
 
         if (totals) {
@@ -138,7 +138,10 @@ export class Checker {
                 break;
             case options.quit:
                 write(chalk.grey(`Quiting typechecker${END_LINE}${END_LINE}`));
-                process.exit(0);
+                process.send('done')
+                break;
+            case options.finished:
+                write(chalk.grey(`Quiting typechecker${END_LINE}${END_LINE}`));
                 break;
             default:
                 write(chalk.grey(`Keeping typechecker alive${END_LINE}${END_LINE}`));

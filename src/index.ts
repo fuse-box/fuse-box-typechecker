@@ -21,25 +21,26 @@ export class TypeHelperClass {
 
 
 
-    public run() {
+    public runAsync() {
+        let options = Object.assign(this.options, { quit: true, type: 'async' });
         this.createThread();
-        this.configureWorker();
+        this.configureWorker(options);
         this.runWorker();
     }
 
 
 
     public runSync() {
-        let options = Object.assign(this.options, { quit: true });
+        let options = Object.assign(this.options, { finished: true, type: 'sync' });
         this.checker.configure(options);
         this.checker.typecheck();
     }
 
 
 
-    private configureWorker() {
+    private configureWorker(options: OptionsInterface) {
 
-        this.worker.send({ type: 'configure', options: this.options });
+        this.worker.send({ type: 'configure', options: options });
     }
 
 
@@ -53,9 +54,11 @@ export class TypeHelperClass {
     private createThread() {
         this.worker = child.fork(path.join(__dirname, 'worker.js'), [], this.options);
         this.worker.on('message', (err: any) => {
-            if (err = 'error') {
+            if (err === 'error') {
                 console.log('error typechecker');
                 process.exit(1);
+            } else {
+                this.worker.kill();
             }
         });
     }

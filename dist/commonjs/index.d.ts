@@ -4,9 +4,9 @@ export declare class TypeHelperClass {
     private worker;
     private checker;
     constructor(options: OptionsInterface);
-    run(): void;
+    runAsync(): void;
     runSync(): void;
-    private configureWorker();
+    private configureWorker(options);
     private runWorker();
     private createThread();
 }

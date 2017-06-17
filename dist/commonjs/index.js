@@ -9,28 +9,33 @@ var TypeHelperClass = (function () {
         this.options.name = this.options.name ? ':' + this.options.name : '';
         this.options.tsConfigObj = require(path.resolve(process.cwd(), options.tsConfig));
     }
-    TypeHelperClass.prototype.run = function () {
+    TypeHelperClass.prototype.runAsync = function () {
+        var options = Object.assign(this.options, { quit: true, type: 'async' });
         this.createThread();
-        this.configureWorker();
+        this.configureWorker(options);
         this.runWorker();
     };
     TypeHelperClass.prototype.runSync = function () {
-        var options = Object.assign(this.options, { quit: true });
+        var options = Object.assign(this.options, { finished: true, type: 'sync' });
         this.checker.configure(options);
         this.checker.typecheck();
     };
-    TypeHelperClass.prototype.configureWorker = function () {
-        this.worker.send({ type: 'configure', options: this.options });
+    TypeHelperClass.prototype.configureWorker = function (options) {
+        this.worker.send({ type: 'configure', options: options });
     };
     TypeHelperClass.prototype.runWorker = function () {
         this.worker.send({ type: 'run' });
     };
     TypeHelperClass.prototype.createThread = function () {
+        var _this = this;
         this.worker = child.fork(path.join(__dirname, 'worker.js'), [], this.options);
         this.worker.on('message', function (err) {
-            if (err = 'error') {
+            if (err === 'error') {
                 console.log('error typechecker');
                 process.exit(1);
+            }
+            else {
+                _this.worker.kill();
             }
         });
     };
