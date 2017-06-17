@@ -5,3 +5,5 @@ var ts = TypeHelper({
     tsConfig: './tsconfig.json'
 })
 ts.runSync();
+
+

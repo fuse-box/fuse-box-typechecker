@@ -15,6 +15,7 @@ export class TypeHelperClass {
     constructor(options: OptionsInterface) {
         this.checker = new Checker();
         this.options = options;
+        this.options.name = this.options.name ? ':' + this.options.name : '';
         this.options.tsConfigObj = require(path.resolve(process.cwd(), options.tsConfig));
     }
 

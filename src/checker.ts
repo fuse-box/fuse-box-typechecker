@@ -1,5 +1,6 @@
 import * as ts from 'typescript';
-import {OptionsInterface} from './interfaces';
+import * as chalk from 'chalk';
+import { OptionsInterface } from './interfaces';
 
 export class Checker {
 
@@ -44,22 +45,13 @@ export class Checker {
         const diagnostics = this.diagnostics;
         const program = this.program;
         const options = this.options;
+        const END_LINE = '\n';
 
 
-        const TEXT_WHITE = '\x1b[0m';
-        const TEXT_RED = '\x1b[91m';
-        const TEXT_UNDERLINE_START = '\x1B[4m';
-        const TEXT_UNDERLINE_END = '\x1B[24m';
-        const TEXT_BOLD_START = '\x1B[1m';
-        const TEXT_BOLD_END = '\x1B[22m';
-        const TEXT_INVERT_START = '\x1B[7m';
-        const TEXT_INVERT_END = '\x1B[27m';
-        const TEXT_ITALIC_START = '\x1b[90m';
-        const TEXT_ITALIC_END = '\x1b[0m';
-        const TEXT_END_LINE = '\n';
-
-
-        write(`${TEXT_END_LINE}${TEXT_INVERT_START}${TEXT_BOLD_START}Typechecker plugin${TEXT_BOLD_END}${TEXT_INVERT_END}${TEXT_END_LINE}`);
+        write(
+            chalk.bgWhite(
+                chalk.black(`${END_LINE}Typechecker plugin ${options.name}${END_LINE}`)
+            ));
 
         // loop diagnostics
         let messages = [];
@@ -67,7 +59,7 @@ export class Checker {
             messages = diagnostics.map((diag: any) => {
 
                 // get message type error, warn, info
-                let message = `${TEXT_RED}└── `;
+                let message = chalk.red('└── ');
 
                 // if file
                 if (diag.file) {
@@ -76,27 +68,26 @@ export class Checker {
                         character
                     } = diag.file.getLineAndCharacterOfPosition(diag.start);
 
-                    message += `${diag.file.fileName}: (${line + 1}:${character + 1}):`;
-                    message += TEXT_WHITE;
-                    message += ts.DiagnosticCategory[diag.category];
-                    message += ` TS${diag.code}:`;
+                    message += chalk.red(`${diag.file.fileName}: (${line + 1}:${character + 1}):`);
+                    message += chalk.white(ts.DiagnosticCategory[diag.category]);
+                    message += chalk.white(` TS${diag.code}:`);
                 }
 
                 // flatten error message
-                message += ' ' + ts.flattenDiagnosticMessageText(diag.messageText, TEXT_END_LINE);
+                message += ' ' + ts.flattenDiagnosticMessageText(diag.messageText, END_LINE);
 
                 // return message
                 return message;
             });
 
             // write errors
-            messages.unshift(`${TEXT_END_LINE}${TEXT_WHITE}${TEXT_UNDERLINE_START}File errors:${TEXT_UNDERLINE_END}`);
+            messages.unshift(
+                chalk.underline(`${END_LINE}File errors:`)
+            );
+
             write(messages.join('\n'));
 
         }
-
-
-        write(TEXT_WHITE + TEXT_END_LINE + TEXT_END_LINE);
 
         let optionsErrors = program.getOptionsDiagnostics().length;
         let globalErrors = program.getGlobalDiagnostics().length;
@@ -104,16 +95,37 @@ export class Checker {
         let semanticErrors = program.getSemanticDiagnostics().length;
         let totals = optionsErrors + globalErrors + syntacticErrors + semanticErrors;
 
-        write(`${TEXT_UNDERLINE_START}Errors:${totals}${TEXT_UNDERLINE_END}${TEXT_END_LINE}`);
+        write(
+            chalk.underline(`Errors:${totals}${END_LINE}`)
+        );
+
         if (totals) {
 
-            write(`${optionsErrors ? TEXT_RED : TEXT_WHITE}└── Options: ${optionsErrors}${TEXT_END_LINE}`);
-            write(`${globalErrors ? TEXT_RED : TEXT_WHITE}└── Global: ${globalErrors}${TEXT_END_LINE}`);
-            write(`${syntacticErrors ? TEXT_RED : TEXT_WHITE}└── Syntactic: ${syntacticErrors}${TEXT_END_LINE}`);
-            write(`${semanticErrors ? TEXT_RED : TEXT_WHITE}└── Semantic: ${semanticErrors}${TEXT_END_LINE}${TEXT_END_LINE}`);
+            write(
+                chalk[optionsErrors ? 'red' : 'white']
+                    (`└── Options: ${optionsErrors}${END_LINE}`)
+            );
+
+            write(
+                chalk[globalErrors ? 'red' : 'white']
+                    (`└── Global: ${globalErrors}${END_LINE}`)
+            );
+
+            write(
+                chalk[syntacticErrors ? 'red' : 'white']
+                    (`└── Syntactic: ${syntacticErrors}${END_LINE}`)
+            );
+
+            write(
+                chalk[semanticErrors ? 'red' : 'white']
+                    (`└── Semantic: ${semanticErrors}${END_LINE}${END_LINE}`)
+            );
+
         }
-        write(TEXT_ITALIC_START);
-        write(`${TEXT_WHITE}${TEXT_ITALIC_START}Typechecking time: ${this.elapsed}ms${TEXT_ITALIC_END}${TEXT_END_LINE}`);
+
+        write(
+            chalk.grey(`Typechecking time: ${this.elapsed}ms${END_LINE}`)
+        );
 
 
         switch (true) {
@@ -125,13 +137,12 @@ export class Checker {
                 process.exit(0);
                 break;
             case options.quit:
-                write(`${TEXT_ITALIC_START}Quiting typechecker${TEXT_ITALIC_END}${TEXT_END_LINE}${TEXT_END_LINE}`);
+                write(chalk.grey(`Quiting typechecker${END_LINE}${END_LINE}`));
                 process.exit(0);
                 break;
             default:
-                write(`${TEXT_ITALIC_START}Keeping typechecker alive${TEXT_ITALIC_END}${TEXT_END_LINE}${TEXT_END_LINE}`);
+                write(chalk.grey(`Keeping typechecker alive${END_LINE}${END_LINE}`));
         }
-        write(TEXT_ITALIC_END);
 
     }
 

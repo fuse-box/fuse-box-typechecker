@@ -6,6 +6,7 @@ var TypeHelperClass = (function () {
     function TypeHelperClass(options) {
         this.checker = new checker_1.Checker();
         this.options = options;
+        this.options.name = this.options.name ? ':' + this.options.name : '';
         this.options.tsConfigObj = require(path.resolve(process.cwd(), options.tsConfig));
     }
     TypeHelperClass.prototype.run = function () {
