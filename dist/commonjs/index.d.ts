@@ -1,11 +1,13 @@
-export declare class TypeCheckPluginClass {
-    options: any;
-    private firstRun;
-    private slave;
-    private countBundles;
-    private countBundleEnd;
-    constructor(options: any);
-    init(context: any): void;
-    bundleEnd(): void;
+import { OptionsInterface } from './interfaces';
+export declare class TypeHelperClass {
+    private options;
+    private worker;
+    private checker;
+    constructor(options: OptionsInterface);
+    run(): void;
+    runSync(): void;
+    private configureWorker();
+    private runWorker();
+    private createThread();
 }
-export declare const TypeCheckPlugin: (options: any) => TypeCheckPluginClass;
+export declare const TypeHelper: (options: any) => TypeHelperClass;

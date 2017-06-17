@@ -20,13 +20,11 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "moduleResolution": "node",
-    "lib": ["es2017", "dom"]
+    "lib": ["es2015","es2017", "dom"]
   },
   "filesGlob": [
     "./src/**/*.ts",
-    "./node_modules/**/*.ts",
-    "./typings/index.d.ts",
-    "./custom_typings/**/*.d.ts"
+    "./node_modules/**/*.ts"
   ],
   "exclude": [
     "node_modules"
