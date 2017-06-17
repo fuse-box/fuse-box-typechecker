@@ -13,7 +13,10 @@
 var TypeHelper = require('fuse-box-typechecker').TypeHelper
 
 
-// test async worker
+// it checks entire program every time
+
+
+// Sync check
 var testSync = TypeHelper({
     tsConfig: './tsconfig.json',
     name: 'Test Sync'
@@ -23,13 +26,22 @@ testSync.runSync();
 
 
 
-// test sync worker
+// Async check (worker)
 var testAsync = TypeHelper({
     tsConfig: './tsconfig.json',
     name: 'Test async'
 })
 
 testAsync.runAsync();
+
+
+// Watch folder and use worker
+var testWatch = TypeHelper({
+    tsConfig: './tsconfig.json',
+    name: 'Watch Async'
+})
+
+testWatch.runWatch('./src');*/
 
 
 ```

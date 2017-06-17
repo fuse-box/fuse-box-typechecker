@@ -35,6 +35,7 @@
   "dependencies": {
     "@types/chalk": "^0.4.31",
     "@types/node": "^7.0.31",
+    "@types/watch": "^1.0.0",
     "chalk": "^1.1.3",
     "watch": "^1.0.2"
   }

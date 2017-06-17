@@ -26,6 +26,7 @@ var Checker = (function () {
         var options = this.options;
         var END_LINE = '\n';
         write(chalk.bgWhite(chalk.black(END_LINE + "Typechecker plugin(" + options.type + ") " + options.name + " " + END_LINE)));
+        write(chalk.grey("Time:" + new Date().toString() + " " + END_LINE));
         var messages = [];
         if (diagnostics.length > 0) {
             messages = diagnostics.map(function (diag) {

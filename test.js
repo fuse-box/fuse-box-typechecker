@@ -1,7 +1,6 @@
 
 var TypeHelper = require('./dist/commonjs/index.js').TypeHelper
-
-
+var path = require('path')
 
 // test async worker
 var testSync = TypeHelper({
@@ -9,8 +8,7 @@ var testSync = TypeHelper({
     name: 'Test Sync'
 })
 
-testSync.runSync();
-
+testSync.runSync('./src');
 
 
 // test sync worker
@@ -22,5 +20,10 @@ var testAsync = TypeHelper({
 testAsync.runAsync();
 
 
+/*var testWatch = TypeHelper({
+    tsConfig: './tsconfig.json',
+    name: 'Test async'
+})
 
+testWatch.runWatch('./src');*/
 

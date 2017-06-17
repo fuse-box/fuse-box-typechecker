@@ -1,5 +1,6 @@
 import * as ts from 'typescript';
 import * as chalk from 'chalk';
+
 import { OptionsInterface } from './interfaces';
 
 export class Checker {
@@ -10,11 +11,9 @@ export class Checker {
     private elapsed: number;
     private diagnostics: ts.Diagnostic[];
 
-
     constructor() {
         // nothing atm
     }
-
 
 
     public configure(options: any) {
@@ -47,11 +46,15 @@ export class Checker {
         const options = this.options;
         const END_LINE = '\n';
 
-
         write(
             chalk.bgWhite(
                 chalk.black(`${END_LINE}Typechecker plugin(${options.type}) ${options.name} ${END_LINE}`)
             ));
+
+        write(
+            chalk.grey(`Time:${new Date().toString()} ${END_LINE}`)
+        );
+
 
         // loop diagnostics
         let messages = [];
@@ -138,7 +141,7 @@ export class Checker {
                 break;
             case options.quit:
                 write(chalk.grey(`Quiting typechecker${END_LINE}${END_LINE}`));
-                process.send('done')
+                process.send('done');
                 break;
             case options.finished:
                 write(chalk.grey(`Quiting typechecker${END_LINE}${END_LINE}`));
