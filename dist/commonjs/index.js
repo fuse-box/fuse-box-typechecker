@@ -21,7 +21,7 @@ var TypeHelperClass = (function () {
     TypeHelperClass.prototype.runSync = function () {
         var options = Object.assign(this.options, { finished: true, type: 'sync' });
         this.checker.configure(options);
-        this.checker.typecheck();
+        return this.checker.typecheck();
     };
     TypeHelperClass.prototype.runWatch = function (pathToWatch) {
         var _this = this;

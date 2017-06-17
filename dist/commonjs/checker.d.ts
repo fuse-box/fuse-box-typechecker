@@ -6,6 +6,6 @@ export declare class Checker {
     private diagnostics;
     constructor();
     configure(options: any): void;
-    typecheck(): void;
+    typecheck(): number;
     private writeText(text);
 }
