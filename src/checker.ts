@@ -48,8 +48,10 @@ export class Checker {
 
         write(
             chalk.bgWhite(
-                chalk.black(`${END_LINE}Typechecker plugin(${options.type}) ${options.name} ${END_LINE}`)
-            ));
+                chalk.black(`${END_LINE}Typechecker plugin(${options.type}) ${options.name}`)
+            ) +
+            chalk.white(`.${END_LINE}`)
+        );
 
         write(
             chalk.grey(`Time:${new Date().toString()} ${END_LINE}`)
@@ -85,7 +87,7 @@ export class Checker {
 
             // write errors
             messages.unshift(
-                chalk.underline(`${END_LINE}File errors:`)
+                chalk.underline(`${END_LINE}File errors`) + chalk.white(':') // fix windows
             );
 
             write(messages.join('\n'));
@@ -99,7 +101,8 @@ export class Checker {
         let totals = optionsErrors + globalErrors + syntacticErrors + semanticErrors;
 
         write(
-            chalk.underline(`${END_LINE}${END_LINE}Errors:${totals}${END_LINE}`)
+            chalk.underline(`${END_LINE}${END_LINE}Errors`) +
+            chalk.white(`:${totals}${END_LINE}`)
         );
 
         if (totals) {

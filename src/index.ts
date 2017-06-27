@@ -53,18 +53,18 @@ export class TypeHelperClass {
             write(chalk.yellow(`Stating watch on path: ${chalk.white(`${path.resolve(process.cwd(), pathToWatch)}${END_LINE}`)}`));
 
             monitor.on('created', (f: any /*, stat: any*/) => {
-                write(chalk.yellow(`File created: ${f}${END_LINE}`));
+                write(END_LINE+ chalk.yellow(`File created: ${f}${END_LINE}`));
             });
 
             monitor.on('changed', (f: any /*, curr: any, prev: any*/) => {
-                write(chalk.yellow(`File changed: ${chalk.white(`${f}${END_LINE}`)}`));
+                write(END_LINE + chalk.yellow(`File changed: ${chalk.white(`${f}${END_LINE}`)}`));
                 write(chalk.grey(`Calling typechecker${END_LINE}`));
                 this.configureWorker(options);
                 this.runWorker();
             });
 
             monitor.on('removed', (f: any /*, stat: any*/) => {
-                write(chalk.yellow(`File removed: ${chalk.white(`${f}${END_LINE}`)}`));
+                write(END_LINE + chalk.yellow(`File removed: ${chalk.white(`${f}${END_LINE}`)}`));
                 write(chalk.grey(`Calling typechecker${END_LINE}`));
                 this.configureWorker(options);
                 this.runWorker();
