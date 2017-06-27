@@ -21,7 +21,7 @@ var TypeHelperClass = (function () {
     TypeHelperClass.prototype.runSync = function () {
         var options = Object.assign(this.options, { finished: true, type: 'sync' });
         this.checker.configure(options);
-        return this.checker.typecheck();
+        this.checker.typecheck();
     };
     TypeHelperClass.prototype.runWatch = function (pathToWatch) {
         var _this = this;
@@ -33,16 +33,16 @@ var TypeHelperClass = (function () {
         watch.createMonitor(path.resolve(process.cwd(), pathToWatch), function (monitor) {
             write(chalk.yellow("Stating watch on path: " + chalk.white("" + path.resolve(process.cwd(), pathToWatch) + END_LINE)));
             monitor.on('created', function (f) {
-                write(chalk.yellow("File created: " + f + END_LINE));
+                write(END_LINE + chalk.yellow("File created: " + f + END_LINE));
             });
             monitor.on('changed', function (f) {
-                write(chalk.yellow("File changed: " + chalk.white("" + f + END_LINE)));
+                write(END_LINE + chalk.yellow("File changed: " + chalk.white("" + f + END_LINE)));
                 write(chalk.grey("Calling typechecker" + END_LINE));
                 _this.configureWorker(options);
                 _this.runWorker();
             });
             monitor.on('removed', function (f) {
-                write(chalk.yellow("File removed: " + chalk.white("" + f + END_LINE)));
+                write(END_LINE + chalk.yellow("File removed: " + chalk.white("" + f + END_LINE)));
                 write(chalk.grey("Calling typechecker" + END_LINE));
                 _this.configureWorker(options);
                 _this.runWorker();

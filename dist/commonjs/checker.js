@@ -25,7 +25,8 @@ var Checker = (function () {
         var program = this.program;
         var options = this.options;
         var END_LINE = '\n';
-        write(chalk.bgWhite(chalk.black(END_LINE + "Typechecker plugin(" + options.type + ") " + options.name + " " + END_LINE)));
+        write(chalk.bgWhite(chalk.black(END_LINE + "Typechecker plugin(" + options.type + ") " + options.name)) +
+            chalk.white("." + END_LINE));
         write(chalk.grey("Time:" + new Date().toString() + " " + END_LINE));
         var messages = [];
         if (diagnostics.length > 0) {
@@ -40,7 +41,7 @@ var Checker = (function () {
                 message += ' ' + ts.flattenDiagnosticMessageText(diag.messageText, END_LINE);
                 return message;
             });
-            messages.unshift(chalk.underline(END_LINE + "File errors:"));
+            messages.unshift(chalk.underline(END_LINE + "File errors") + chalk.white(':'));
             write(messages.join('\n'));
         }
         var optionsErrors = program.getOptionsDiagnostics().length;
@@ -48,7 +49,8 @@ var Checker = (function () {
         var syntacticErrors = program.getSyntacticDiagnostics().length;
         var semanticErrors = program.getSemanticDiagnostics().length;
         var totals = optionsErrors + globalErrors + syntacticErrors + semanticErrors;
-        write(chalk.underline("" + END_LINE + END_LINE + "Errors:" + totals + END_LINE));
+        write(chalk.underline("" + END_LINE + END_LINE + "Errors") +
+            chalk.white(":" + totals + END_LINE));
         if (totals) {
             write(chalk[optionsErrors ? 'red' : 'white']("\u2514\u2500\u2500 Options: " + optionsErrors + END_LINE));
             write(chalk[globalErrors ? 'red' : 'white']("\u2514\u2500\u2500 Global: " + globalErrors + END_LINE));
