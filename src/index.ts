@@ -2,75 +2,128 @@
 
 import * as child from 'child_process';
 import * as path from 'path';
+import { OptionsInterface } from './interfaces';
+import { Checker } from './checker';
+import * as watch from 'watch';
+import * as ts from 'typescript';
+import * as chalk from 'chalk';
 
 
-export class TypeCheckPluginClass {
-    public options: any;
-    private firstRun: boolean;
-    private slave: any;
-    private countBundles = 0;
-    private countBundleEnd = 0;
+export class TypeHelperClass {
+    private options: OptionsInterface;
+    private worker: child.ChildProcess;
+    private checker: Checker;
+    private monitor: any;
 
-    constructor(options: any) {
-        this.options = options || {};
-        this.options.bundles = this.options.bundles || [];
-        this.slave = child.fork(path.join(__dirname, 'worker.js'), [], options);
-        this.slave.on('message', (err: any) => {
-            if (err = 'error') {
+
+    constructor(options: OptionsInterface) {
+        this.checker = new Checker();
+        this.options = options;
+        this.options.name = this.options.name ? ':' + this.options.name : '';
+        this.options.tsConfigObj = require(path.resolve(process.cwd(), options.tsConfig));
+    }
+
+
+
+    public runAsync() {
+        let options = Object.assign(this.options, { quit: true, type: 'async' });
+        this.createThread();
+        this.configureWorker(options);
+        this.runWorker();
+    }
+
+
+
+    public runSync() {
+        let options = Object.assign(this.options, { finished: true, type: 'sync' });
+        this.checker.configure(options);
+        this.checker.typecheck();
+    }
+
+
+    public runWatch(pathToWatch: string) {
+        let options = Object.assign(this.options, { quit: false, type: 'watch' });
+        const write = this.writeText;
+        const END_LINE = '\n';
+
+        this.createThread();
+        this.configureWorker(options);
+        watch.createMonitor(path.resolve(process.cwd(), pathToWatch), (monitor: any) => {
+
+            write(chalk.yellow(`Stating watch on path: ${chalk.white(`${path.resolve(process.cwd(), pathToWatch)}${END_LINE}`)}`));
+
+            monitor.on('created', (f: any /*, stat: any*/) => {
+                write(END_LINE+ chalk.yellow(`File created: ${f}${END_LINE}`));
+            });
+
+            monitor.on('changed', (f: any /*, curr: any, prev: any*/) => {
+                write(END_LINE + chalk.yellow(`File changed: ${chalk.white(`${f}${END_LINE}`)}`));
+                write(chalk.grey(`Calling typechecker${END_LINE}`));
+                this.configureWorker(options);
+                this.runWorker();
+            });
+
+            monitor.on('removed', (f: any /*, stat: any*/) => {
+                write(END_LINE + chalk.yellow(`File removed: ${chalk.white(`${f}${END_LINE}`)}`));
+                write(chalk.grey(`Calling typechecker${END_LINE}`));
+                this.configureWorker(options);
+                this.runWorker();
+            });
+
+            this.monitor = monitor;
+        });
+        this.runWorker();
+
+    }
+
+
+    public killWorker() {
+        if (this.worker) {
+            this.worker.kill();
+        }
+
+        if (this.monitor) {
+            this.monitor.stop();
+        }
+    }
+
+
+
+    private configureWorker(options: OptionsInterface) {
+
+        this.worker.send({ type: 'configure', options: options });
+    }
+
+
+
+    private runWorker() {
+        this.worker.send({ type: 'run' });
+    }
+
+
+
+    private createThread() {
+        this.worker = child.fork(path.join(__dirname, 'worker.js'), [], this.options);
+        this.worker.on('message', (err: any) => {
+            if (err === 'error') {
                 console.log('error typechecker');
                 process.exit(1);
+            } else {
+                console.log('killing worker');
+                this.killWorker();
             }
         });
-        this.firstRun = true;
     }
 
-
-    public init(context: any) {
-        if (this.countBundles === 0) {
-            let tsConfig = context.getTypeScriptConfig();
-            switch (true) {
-                case this.options.quit && this.firstRun:
-                    this.slave.send({ type: 'tsconfig', data: tsConfig });
-                    break;
-                case !this.options.quit && this.firstRun:
-                    this.slave.send({ type: 'tsconfig', data: tsConfig });
-                    break;
-                case !this.options.quit && !this.firstRun:
-                    this.slave.send({ type: 'tsconfig', data: tsConfig });
-                    break;
-            }
-        }
-        this.countBundles++;
+    private writeText(text: string) {
+        ts.sys.write(text);
     }
 
-
-    public bundleEnd() {
-        this.countBundleEnd++;
-        if (this.countBundleEnd = this.countBundles) {
-            setTimeout(() => {
-                switch (true) {
-                    case this.options.quit && this.firstRun:
-                        this.slave.send({ type: 'run', options: this.options });
-                        this.firstRun = false;
-                        break;
-                    case !this.options.quit && this.firstRun:
-                        this.slave.send({ type: 'run', options: this.options });
-                        this.firstRun = false;
-                        break;
-                    case !this.options.quit && !this.firstRun:
-                        this.slave.send({ type: 'run', options: this.options });
-                        this.firstRun = false;
-                }
-            }, 100);
-            this.countBundleEnd = 0;
-            this.countBundles = 0;
-        }
-    }
 }
 
 
 
-export const TypeCheckPlugin = (options: any) => {
-    return new TypeCheckPluginClass(options);
+export const TypeHelper = (options: any) => {
+    return new TypeHelperClass(options);
 };
 
