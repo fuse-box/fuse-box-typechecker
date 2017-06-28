@@ -1,6 +1,5 @@
 # fuse-box-typechecker
-
-## (needs fuse-box 2.0.0.beta.8 ++)
+Simple helper to do typechecking
 
 ### How to install
 ```npm install git://github.com/fuse-box/fuse-box-typechecker --save-dev```
@@ -35,13 +34,13 @@ var testAsync = TypeHelper({
 testAsync.runAsync();
 
 
-// Watch folder and use worker
+// Watch folder and use worker (uses internal watcher)
 var testWatch = TypeHelper({
     tsConfig: './tsconfig.json',
     name: 'Watch Async'
 })
 
-testWatch.runWatch('./src');*/
+testWatch.runWatch('./src');
 
 
 ```
