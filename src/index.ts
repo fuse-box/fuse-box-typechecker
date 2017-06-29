@@ -58,7 +58,7 @@ export class TypeHelperClass {
 
         this.createThread();
         this.configureWorker(options);
-        let basePath =  this.options.basePath ? this.options.basePath : path.resolve(process.cwd(), pathToWatch);
+        let basePath =  this.options.basePath ? path.resolve(this.options.basePath, pathToWatch) : path.resolve(process.cwd(), pathToWatch);
         watch.createMonitor(basePath, (monitor: any) => {
 
             write(chalk.yellow(`Typechecker watching: ${chalk.white(`${basePath}${END_LINE}`)}`));
