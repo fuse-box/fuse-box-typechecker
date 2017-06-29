@@ -18,6 +18,7 @@ var TypeHelper = require('fuse-box-typechecker').TypeHelper
 // Sync check
 var testSync = TypeHelper({
     tsConfig: './tsconfig.json',
+    basePath:'./',
     name: 'Test Sync'
 })
 
@@ -28,6 +29,7 @@ testSync.runSync();
 // Async check (worker)
 var testAsync = TypeHelper({
     tsConfig: './tsconfig.json',
+    basePath:'./',
     name: 'Test async'
 })
 
@@ -37,6 +39,7 @@ testAsync.runAsync();
 // Watch folder and use worker (uses internal watcher)
 var testWatch = TypeHelper({
     tsConfig: './tsconfig.json',
+    basePath:'./',
     name: 'Watch Async'
 })
 
@@ -57,6 +60,7 @@ interface OptionsInterface {
     throwOnSemantic?: boolean; // if you want it to throwe error
     throwOnGlobal?: boolean; // if you want it to throwe error
     throwOnOptions?: boolean; // if you want it to throwe error
+    basePath: string; //base path to use
     name?: string; // name, will be displayed when it runs, useful when you have more then 1
 }
 ```

@@ -9,8 +9,12 @@ var TypeHelperClass = (function () {
     function TypeHelperClass(options) {
         this.checker = new checker_1.Checker();
         this.options = options;
+        this.options.basePath = options.basePath ? path.resolve(process.cwd(), options.basePath) : null;
+        this.writeText(chalk.yellow("Typechecker basepath: " + chalk.white("" + this.options.basePath + '\n')));
         this.options.name = this.options.name ? ':' + this.options.name : '';
-        this.options.tsConfigObj = require(path.resolve(process.cwd(), options.tsConfig));
+        var tsconf = this.options.basePath ? path.resolve(this.options.basePath, options.tsConfig) : path.resolve(process.cwd(), options.tsConfig);
+        this.options.tsConfigObj = require(tsconf);
+        this.writeText(chalk.yellow("Typechecker tsconfig: " + chalk.white("" + tsconf + '\n')));
     }
     TypeHelperClass.prototype.runAsync = function () {
         var options = Object.assign(this.options, { quit: true, type: 'async' });
@@ -30,8 +34,9 @@ var TypeHelperClass = (function () {
         var END_LINE = '\n';
         this.createThread();
         this.configureWorker(options);
-        watch.createMonitor(path.resolve(process.cwd(), pathToWatch), function (monitor) {
-            write(chalk.yellow("Stating watch on path: " + chalk.white("" + path.resolve(process.cwd(), pathToWatch) + END_LINE)));
+        var basePath = this.options.basePath ? this.options.basePath : path.resolve(process.cwd(), pathToWatch);
+        watch.createMonitor(basePath, function (monitor) {
+            write(chalk.yellow("Typechecker watching: " + chalk.white("" + basePath + END_LINE)));
             monitor.on('created', function (f) {
                 write(END_LINE + chalk.yellow("File created: " + f + END_LINE));
             });

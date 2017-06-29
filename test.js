@@ -5,6 +5,7 @@ var path = require('path')
 // test async worker
 var testSync = TypeHelper({
     tsConfig: './tsconfig.json',
+    basePath:'./',
     name: 'Test Sync'
 })
 
@@ -14,6 +15,7 @@ testSync.runSync('./src');
 // test sync worker
 var testAsync = TypeHelper({
     tsConfig: './tsconfig.json',
+    basePath:'./',
     name: 'Test async'
 })
 
