@@ -14,7 +14,7 @@ var Checker = (function () {
             useCaseSensitiveFileNames: true
         };
         var start = new Date().getTime();
-        var parsed = ts.parseJsonConfigFileContent(this.tsConfig, parseConfigHost, '.', null, 'tsconfig.json');
+        var parsed = ts.parseJsonConfigFileContent(this.tsConfig, parseConfigHost, options.basePath || '.', null, 'tsconfig.json');
         this.program = ts.createProgram(parsed.fileNames, parsed.options, null, this.program);
         this.diagnostics = ts.getPreEmitDiagnostics(this.program);
         this.elapsed = new Date().getTime() - start;

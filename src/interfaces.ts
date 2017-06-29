@@ -7,6 +7,7 @@ export interface OptionsInterface {
     throwOnGlobal?: boolean;
     throwOnOptions?: boolean;
     tsConfigObj: any;
+    basePath: string;
     name?: string;
     type?: string;
     finished: boolean;

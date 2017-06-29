@@ -20,6 +20,7 @@ export class Checker {
         this.tsConfig = options.tsConfigObj;
         this.options = options;
 
+
         // parse it right away, no need to wait...
         const parseConfigHost: any = {
             fileExists: ts.sys.fileExists,
@@ -30,7 +31,7 @@ export class Checker {
 
         // take the time and get program
         let start = new Date().getTime();
-        const parsed = ts.parseJsonConfigFileContent(this.tsConfig, parseConfigHost, '.', null, 'tsconfig.json');
+        const parsed = ts.parseJsonConfigFileContent(this.tsConfig, parseConfigHost, options.basePath || '.', null, 'tsconfig.json');
         this.program = ts.createProgram(parsed.fileNames, parsed.options, null, this.program);
         this.diagnostics = ts.getPreEmitDiagnostics(this.program);
         this.elapsed = new Date().getTime() - start;

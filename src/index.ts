@@ -19,8 +19,18 @@ export class TypeHelperClass {
     constructor(options: OptionsInterface) {
         this.checker = new Checker();
         this.options = options;
+
+        // get/set base path
+        this.options.basePath = options.basePath ? path.resolve(process.cwd(), options.basePath) : null;
+        this.writeText(chalk.yellow(`Typechecker basepath: ${chalk.white(`${this.options.basePath}${'\n'}`)}`));
+
+        // get name
         this.options.name = this.options.name ? ':' + this.options.name : '';
-        this.options.tsConfigObj = require(path.resolve(process.cwd(), options.tsConfig));
+
+        // get tsconfig path and options
+        let tsconf = this.options.basePath ? path.resolve(this.options.basePath, options.tsConfig) : path.resolve(process.cwd(), options.tsConfig);
+        this.options.tsConfigObj = require(tsconf);
+        this.writeText(chalk.yellow(`Typechecker tsconfig: ${chalk.white(`${tsconf}${'\n'}`)}`));
     }
 
 
@@ -48,12 +58,13 @@ export class TypeHelperClass {
 
         this.createThread();
         this.configureWorker(options);
-        watch.createMonitor(path.resolve(process.cwd(), pathToWatch), (monitor: any) => {
+        let basePath =  this.options.basePath ? this.options.basePath : path.resolve(process.cwd(), pathToWatch);
+        watch.createMonitor(basePath, (monitor: any) => {
 
-            write(chalk.yellow(`Stating watch on path: ${chalk.white(`${path.resolve(process.cwd(), pathToWatch)}${END_LINE}`)}`));
+            write(chalk.yellow(`Typechecker watching: ${chalk.white(`${basePath}${END_LINE}`)}`));
 
             monitor.on('created', (f: any /*, stat: any*/) => {
-                write(END_LINE+ chalk.yellow(`File created: ${f}${END_LINE}`));
+                write(END_LINE + chalk.yellow(`File created: ${f}${END_LINE}`));
             });
 
             monitor.on('changed', (f: any /*, curr: any, prev: any*/) => {
