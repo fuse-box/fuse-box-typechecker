@@ -34,7 +34,7 @@ var TypeHelperClass = (function () {
         var END_LINE = '\n';
         this.createThread();
         this.configureWorker(options);
-        var basePath = this.options.basePath ? this.options.basePath : path.resolve(process.cwd(), pathToWatch);
+        var basePath = this.options.basePath ? path.resolve(this.options.basePath, pathToWatch) : path.resolve(process.cwd(), pathToWatch);
         watch.createMonitor(basePath, function (monitor) {
             write(chalk.yellow("Typechecker watching: " + chalk.white("" + basePath + END_LINE)));
             monitor.on('created', function (f) {

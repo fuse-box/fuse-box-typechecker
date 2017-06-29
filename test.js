@@ -22,10 +22,10 @@ var testAsync = TypeHelper({
 testAsync.runAsync();
 
 
-/*var testWatch = TypeHelper({
+var testWatch = TypeHelper({
     tsConfig: './tsconfig.json',
+    basePath:'./',
     name: 'Test async'
 })
-
-testWatch.runWatch('./src');*/
+testWatch.runWatch('./src');
 
