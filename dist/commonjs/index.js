@@ -10,11 +10,23 @@ var TypeHelperClass = (function () {
         this.checker = new checker_1.Checker();
         this.options = options;
         this.options.basePath = options.basePath ? path.resolve(process.cwd(), options.basePath) : null;
-        this.writeText(chalk.yellow("Typechecker basepath: " + chalk.white("" + this.options.basePath + '\n')));
+        this.writeText(chalk.yellow('\n' + "Typechecker basepath: " + chalk.white("" + this.options.basePath + '\n')));
         this.options.name = this.options.name ? ':' + this.options.name : '';
+        var lintOp = this.options.lintoptions;
+        this.options.lintoptions = lintOp ? lintOp : {};
+        this.options.lintoptions = {
+            fix: this.options.lintoptions.fix || null,
+            formatter: 'json',
+            formattersDirectory: this.options.lintoptions.formattersDirectory || null,
+            rulesDirectory: this.options.lintoptions.rulesDirectory || null
+        };
         var tsconf = this.options.basePath ? path.resolve(this.options.basePath, options.tsConfig) : path.resolve(process.cwd(), options.tsConfig);
         this.options.tsConfigObj = require(tsconf);
         this.writeText(chalk.yellow("Typechecker tsconfig: " + chalk.white("" + tsconf + '\n')));
+        if (options.tsLint) {
+            var tsLint = this.options.basePath ? path.resolve(this.options.basePath, options.tsLint) : path.resolve(process.cwd(), options.tsLint);
+            this.writeText(chalk.yellow("Typechecker tsLint: " + chalk.white("" + tsLint + '\n')));
+        }
     }
     TypeHelperClass.prototype.runAsync = function () {
         var options = Object.assign(this.options, { quit: true, type: 'async' });

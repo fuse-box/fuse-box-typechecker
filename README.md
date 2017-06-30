@@ -19,6 +19,7 @@ var TypeHelper = require('fuse-box-typechecker').TypeHelper
 var testSync = TypeHelper({
     tsConfig: './tsconfig.json',
     basePath:'./',
+    tsLint:'./tslint.json', //you do not haveto do tslint too.. just here to show how.
     name: 'Test Sync'
 })
 
@@ -55,12 +56,22 @@ testWatch.runWatch('./src');
 
 ```typescript
 interface OptionsInterface {
-    tsConfig: string; //config file
+    tsConfig: string; //config file (compared to basepath './tsconfig.json')
     throwOnSyntactic?: boolean; // if you want it to throwe error
     throwOnSemantic?: boolean; // if you want it to throwe error
     throwOnGlobal?: boolean; // if you want it to throwe error
     throwOnOptions?: boolean; // if you want it to throwe error
     basePath: string; //base path to use
     name?: string; // name, will be displayed when it runs, useful when you have more then 1
+    tsLint:string; //config file (compared to basepath './tslint.json')
+    lintoptions? Lintoptions; // se below, optional
+}
+
+
+interface Lintoptions {
+    fix?: boolean; //dedault is false
+    formatter?: string; //JSON, can not be edited
+    formattersDirectory?: string; //default is null
+    rulesDirectory?: string; //default is null
 }
 ```

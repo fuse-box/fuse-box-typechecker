@@ -4,8 +4,10 @@ export declare class Checker {
     private program;
     private elapsed;
     private diagnostics;
+    private files;
+    private lintResults;
     constructor();
     configure(options: any): void;
-    typecheck(): number;
+    typecheck(): any;
     private writeText(text);
 }
