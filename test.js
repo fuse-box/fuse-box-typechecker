@@ -1,31 +1,18 @@
 
-var TypeHelper = require('./dist/commonjs/index.js').TypeHelper
 var path = require('path')
 
+//get typehelper (use built source)
+var TypeHelper = require('./dist/commonjs/index.js').TypeHelper
+
 // test async worker
-var testSync = TypeHelper({
+var checker = TypeHelper({
     tsConfig: './tsconfig.json',
     basePath:'./',
+    tsLint:'./tslint.json',
     name: 'Test Sync'
 })
-
-testSync.runSync('./src');
-
-
-// test sync worker
-var testAsync = TypeHelper({
-    tsConfig: './tsconfig.json',
-    basePath:'./',
-    name: 'Test async'
-})
-
-testAsync.runAsync();
-
-
-var testWatch = TypeHelper({
-    tsConfig: './tsconfig.json',
-    basePath:'./',
-    name: 'Test async'
-})
-testWatch.runWatch('./src');
-
+// run
+checker.runSync();
+// options are 
+// checker.runAsync()
+// checker.runWatch('./src')
