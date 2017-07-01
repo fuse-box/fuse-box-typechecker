@@ -56,7 +56,7 @@ export class TypeHelperClass {
      * Runs in own thread/works and quits
      *
      */
-    public runAsync() {
+    public runAsync(): void {
         let options = Object.assign(this.options, { quit: true, type: 'async' });
         this.createThread();
         this.configureWorker(options);
@@ -66,12 +66,30 @@ export class TypeHelperClass {
 
     /**
      * Runs in sync and quits
-     *
+     * Returns total errors
      */
-    public runSync() {
+    public runSync(): number {
         let options = Object.assign(this.options, { finished: true, type: 'sync' });
         this.checker.configure(options);
-        this.checker.typecheck();
+        return this.checker.typecheck();
+    }
+
+
+    /**
+     * Runs in sync but return promise and callbacks and quits
+     *
+     */
+    public runPromise(): Promise<number> {
+        return new Promise((resolve: Function, reject: Function) => {
+            try {
+                let options = Object.assign(this.options, { finished: true, type: 'sync' });
+                this.checker.configure(options);
+                let errors = this.checker.typecheck();
+                resolve(errors);
+            } catch (err) {
+                reject(err);
+            }
+        });
     }
 
 
@@ -80,7 +98,7 @@ export class TypeHelperClass {
      * Creates thread/worker, starts watch on path and runs
      *
      */
-    public runWatch(pathToWatch: string) {
+    public runWatch(pathToWatch: string): void {
         let options = Object.assign(this.options, { quit: false, type: 'watch' });
         const write = this.writeText;
         const END_LINE = '\n';
@@ -121,7 +139,7 @@ export class TypeHelperClass {
      * Kills worker and watch if started
      *
      */
-    public killWorker() {
+    public killWorker(): void {
         if (this.worker) {
             this.worker.kill();
         }
@@ -137,7 +155,7 @@ export class TypeHelperClass {
      * Configure worker, internal function
      *
      */
-    private configureWorker(options: OptionsInterface) {
+    private configureWorker(options: OptionsInterface): void {
         this.worker.send({ type: 'configure', options: options });
     }
 
@@ -147,7 +165,7 @@ export class TypeHelperClass {
      * Tells worker to do a typecheck
      *
      */
-    private runWorker() {
+    private runWorker(): void {
         this.worker.send({ type: 'run' });
     }
 
@@ -158,7 +176,7 @@ export class TypeHelperClass {
      * Creates thread/worker
      *
      */
-    private createThread() {
+    private createThread(): void {
         this.worker = child.fork(path.join(__dirname, 'worker.js'), [], this.options);
         this.worker.on('message', (err: any) => {
             if (err === 'error') {
@@ -177,7 +195,7 @@ export class TypeHelperClass {
      * Helper to write to cmd
      *
      */
-    private writeText(text: string) {
+    private writeText(text: string): void {
         ts.sys.write(text);
     }
 

@@ -40,7 +40,32 @@ export class Checker {
         // get program and get diagnostics and store them diagnostics
         const parsed = ts.parseJsonConfigFileContent(this.tsConfig, parseConfigHost, options.basePath || '.', null);
         this.program = ts.createProgram(parsed.fileNames, parsed.options, null, this.program);
-        this.diagnostics = ts.getPreEmitDiagnostics(this.program);
+
+        // get errors and tag them;
+        this.diagnostics = [];
+        let optionsErrors = this.program.getOptionsDiagnostics().map((obj) => {
+            (<any>obj)._type = 'options';
+            return obj;
+        });
+        this.diagnostics = this.diagnostics.concat(optionsErrors);
+
+        let globalErrors = this.program.getGlobalDiagnostics().map((obj) => {
+            (<any>obj)._type = 'global';
+            return obj;
+        });
+        this.diagnostics = this.diagnostics.concat(globalErrors);
+
+        let syntacticErrors = this.program.getSyntacticDiagnostics().map((obj) => {
+            (<any>obj)._type = 'syntactic';
+            return obj;
+        });
+        this.diagnostics = this.diagnostics.concat(syntacticErrors);
+
+        let semanticErrors = this.program.getSemanticDiagnostics().map((obj) => {
+            (<any>obj)._type = 'semantic';
+            return obj;
+        });
+        this.diagnostics = this.diagnostics.concat(semanticErrors);
 
         // get tslint if json file is supplied
         this.lintResults = [];
@@ -95,15 +120,15 @@ export class Checker {
                         fileName: failure.fileName,
                         line: failure.startPosition.lineAndCharacter.line,
                         char: failure.startPosition.lineAndCharacter.character,
-                        ruleSeverity: failure.ruleSeverity,
+                        ruleSeverity: failure.ruleSeverity.charAt(0).toUpperCase() + failure.ruleSeverity.slice(1),
                         ruleName: failure.ruleName,
                         failure: failure.failure
                     };
 
                     let message = chalk.red('└── ');
-                    message += chalk.red(`${r.fileName}: (${r.line + 1}:${r.char + 1}):`);
-                    message += chalk.white(r.ruleSeverity);
-                    message += chalk.white(` TSLint: "${r.ruleName}":`);
+                    message += chalk[options.yellowOnLint ? 'yellow' : 'red'](`${r.fileName} (${r.line + 1},${r.char + 1}) `);
+                    message += chalk.white(`(${r.ruleSeverity}:`);
+                    message += chalk.white(`${r.ruleName})`);
                     message += ' ' + r.failure;
                     return message;
                 });
@@ -130,6 +155,25 @@ export class Checker {
                 // get message type error, warn, info
                 let message = chalk.red('└── ');
 
+                // set color from options
+                let color: string;
+                switch (diag._type) {
+                    case 'options':
+                        color = options.yellowOnOptions ? 'yellow' : 'red';
+                        break;
+                    case 'global':
+                        color = options.yellowOnGlobal ? 'yellow' : 'red';
+                        break;
+                    case 'syntactic':
+                        color = options.yellowOnSyntactic ? 'yellow' : 'red';
+                        break;
+                    case 'semantic':
+                        color = options.yellowOnSemantic ? 'yellow' : 'red';
+                        break;
+                    default:
+                        color = 'red';
+                }
+
                 // if file
                 if (diag.file) {
                     const {
@@ -137,9 +181,9 @@ export class Checker {
                         character
                     } = diag.file.getLineAndCharacterOfPosition(diag.start);
 
-                    message += chalk.red(`${diag.file.fileName}: (${line + 1}:${character + 1}):`);
-                    message += chalk.white(ts.DiagnosticCategory[diag.category]);
-                    message += chalk.white(` TS${diag.code}:`);
+                    message += chalk[color](`${diag.file.fileName} (${line + 1},${character + 1}) `);
+                    message += chalk.white(`(${ts.DiagnosticCategory[diag.category]}:`);
+                    message += chalk.white(`TS${diag.code})`);
                 }
 
                 // flatten error message
@@ -156,6 +200,15 @@ export class Checker {
             let x = messages.concat(lintResults);
             write(x.join('\n'));
 
+        } else {
+
+            // no type errors, lets just print the lint errors if any
+            if (lintResults.length > 0) {
+                lintResults.unshift(
+                    chalk.underline(`${END_LINE}File errors`) + chalk.white(':') // fix windows
+                );
+                write(lintResults.join('\n'));
+            }
         }
 
         let optionsErrors = program.getOptionsDiagnostics().length;
@@ -173,27 +226,27 @@ export class Checker {
         if (totals) {
 
             write(
-                chalk[optionsErrors ? 'red' : 'white']
+                chalk[optionsErrors ? options.yellowOnOptions ? 'yellow' : 'red' : 'white']
                     (`└── Options: ${optionsErrors}${END_LINE}`)
             );
 
             write(
-                chalk[globalErrors ? 'red' : 'white']
+                chalk[globalErrors ? options.yellowOnGlobal ? 'yellow' : 'red' : 'white']
                     (`└── Global: ${globalErrors}${END_LINE}`)
             );
 
             write(
-                chalk[syntacticErrors ? 'red' : 'white']
+                chalk[syntacticErrors ? options.yellowOnSyntactic ? 'yellow' : 'red' : 'white']
                     (`└── Syntactic: ${syntacticErrors}${END_LINE}`)
             );
 
             write(
-                chalk[semanticErrors ? 'red' : 'white']
+                chalk[semanticErrors ? options.yellowOnSemantic ? 'yellow' : 'red' : 'white']
                     (`└── Semantic: ${semanticErrors}${END_LINE}`)
             );
 
             write(
-                chalk[tsLintErrors ? 'red' : 'white']
+                chalk[tsLintErrors ? options.yellowOnLint ? 'yellow' : 'red' : 'white']
                     (`└── TsLint: ${tsLintErrors}${END_LINE}${END_LINE}`)
             );
 
