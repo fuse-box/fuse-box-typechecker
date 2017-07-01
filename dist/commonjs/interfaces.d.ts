@@ -12,8 +12,13 @@ export interface OptionsInterface {
     throwOnTsLint?: boolean;
     throwOnGlobal?: boolean;
     throwOnOptions?: boolean;
+    yellowOnLint?: boolean;
+    yellowOnOptions?: boolean;
+    yellowOnGlobal?: boolean;
+    yellowOnSemantic?: boolean;
+    yellowOnSyntactic?: boolean;
     tsLint?: string;
-    tsConfigObj: any;
+    tsConfigObj?: any;
     basePath: string;
     name?: string;
     type?: string;

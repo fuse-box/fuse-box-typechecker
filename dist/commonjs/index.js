@@ -37,7 +37,21 @@ var TypeHelperClass = (function () {
     TypeHelperClass.prototype.runSync = function () {
         var options = Object.assign(this.options, { finished: true, type: 'sync' });
         this.checker.configure(options);
-        this.checker.typecheck();
+        return this.checker.typecheck();
+    };
+    TypeHelperClass.prototype.runPromise = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            try {
+                var options = Object.assign(_this.options, { finished: true, type: 'sync' });
+                _this.checker.configure(options);
+                var errors = _this.checker.typecheck();
+                resolve(errors);
+            }
+            catch (err) {
+                reject(err);
+            }
+        });
     };
     TypeHelperClass.prototype.runWatch = function (pathToWatch) {
         var _this = this;

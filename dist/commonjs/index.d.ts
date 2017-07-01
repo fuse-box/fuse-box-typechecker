@@ -6,7 +6,8 @@ export declare class TypeHelperClass {
     private monitor;
     constructor(options: OptionsInterface);
     runAsync(): void;
-    runSync(): void;
+    runSync(): number;
+    runPromise(): Promise<number>;
     runWatch(pathToWatch: string): void;
     killWorker(): void;
     private configureWorker(options);
