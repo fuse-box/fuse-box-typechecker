@@ -13,6 +13,7 @@ var TypeHelper = require('fuse-box-typechecker').TypeHelper
 
 
 // it checks entire program every time
+// see interface at bottom at readmefile for all options
 
 
 // Sync check
@@ -24,6 +25,7 @@ var testSync = TypeHelper({
 })
 
 testSync.runSync();
+
 
 
 
@@ -47,6 +49,25 @@ var testWatch = TypeHelper({
 testWatch.runWatch('./src');
 
 
+
+// as promise/async/await
+
+var doTypeCheck = async() => {
+
+    var checker = TypeHelper({
+        tsConfig: './tsconfig.json',
+        basePath: './',
+        name: 'Test Sync'
+    })
+
+    let totalErrors = await checker.runPromise();
+    Console.log(totalErrors)
+}
+
+doTypeCheck();
+
+
+
 ```
 
 ### Output sample
@@ -61,10 +82,16 @@ interface OptionsInterface {
     throwOnSemantic?: boolean; // if you want it to throwe error
     throwOnGlobal?: boolean; // if you want it to throwe error
     throwOnOptions?: boolean; // if you want it to throwe error
+    throwOnTsLint?:  boolean; // trhow on lint errors
     basePath: string; //base path to use
     name?: string; // name, will be displayed when it runs, useful when you have more then 1
     tsLint:string; //config file (compared to basepath './tslint.json')
     lintoptions? Lintoptions; // se below, optional
+    yellowLint?: boolean; // use yellow color instead of red on TSLint erros
+    yellowOnOptions?: boolean; // use yellow color instead of red on Options erros
+    yellowOnGlobal?: boolean; // use yellow color instead of red on Global erros
+    yellowOnSemantic?: boolean; // use yellow color instead of red on Semantic erros
+    yellowOnSyntactic?: boolean; // use yellow color instead of red on Syntactic erros
 }
 
 
