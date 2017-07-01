@@ -2,7 +2,7 @@
 
 import * as child from 'child_process';
 import * as path from 'path';
-import { Lintoptions, OptionsInterface } from './interfaces';
+import { LintOptions, TypeCheckerOptions } from './interfaces';
 import { Checker } from './checker';
 import * as watch from 'watch';
 import * as ts from 'typescript';
@@ -10,13 +10,13 @@ import * as chalk from 'chalk';
 
 
 export class TypeHelperClass {
-    private options: OptionsInterface;
+    private options: TypeCheckerOptions;
     private worker: child.ChildProcess;
     private checker: Checker;
     private monitor: any;
 
 
-    constructor(options: OptionsInterface) {
+    constructor(options: TypeCheckerOptions) {
         this.checker = new Checker();
         this.options = options;
 
@@ -28,14 +28,14 @@ export class TypeHelperClass {
         this.options.name = this.options.name ? ':' + this.options.name : '';
 
         // tslint options
-        let lintOp = this.options.lintoptions;
-        this.options.lintoptions = lintOp ? lintOp : ({} as Lintoptions);
+        let lintOp = this.options.lintOptions;
+        this.options.lintOptions = lintOp ? lintOp : ({} as LintOptions);
 
-        this.options.lintoptions = {
-            fix: this.options.lintoptions.fix || null, // <- this can be useful to have
+        this.options.lintOptions = {
+            fix: this.options.lintOptions.fix || null, // <- this can be useful to have
             formatter: 'json',
-            formattersDirectory: this.options.lintoptions.formattersDirectory || null,
-            rulesDirectory: this.options.lintoptions.rulesDirectory || null
+            formattersDirectory: this.options.lintOptions.formattersDirectory || null,
+            rulesDirectory: this.options.lintOptions.rulesDirectory || null
         };
 
         // get tsconfig path and options
@@ -155,7 +155,7 @@ export class TypeHelperClass {
      * Configure worker, internal function
      *
      */
-    private configureWorker(options: OptionsInterface): void {
+    private configureWorker(options: TypeCheckerOptions): void {
         this.worker.send({ type: 'configure', options: options });
     }
 

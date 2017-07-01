@@ -3,12 +3,12 @@ import * as chalk from 'chalk';
 import * as tslint from 'tslint';
 import * as path from 'path';
 
-import { OptionsInterface } from './interfaces';
+import { TypeCheckerOptions } from './interfaces';
 
 
 export class Checker {
 
-    private options: OptionsInterface;
+    private options: TypeCheckerOptions;
     private tsConfig: string;
     private program: ts.Program;
     private elapsed: number;
