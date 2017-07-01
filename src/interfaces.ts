@@ -1,5 +1,5 @@
 
-export interface Lintoptions {
+export interface LintOptions {
     fix?: boolean;
     formatter?: string;
     formattersDirectory?: string;
@@ -7,7 +7,7 @@ export interface Lintoptions {
 }
 
 
-export interface  OptionsInterface  {
+export interface  TypeCheckerOptions  {
     quit?: boolean;
     tsConfig: string;
     throwOnSyntactic?: boolean;
@@ -26,10 +26,15 @@ export interface  OptionsInterface  {
     name?: string;
     type?: string;
     finished: boolean;
-    lintoptions?: Lintoptions;
+    lintOptions?: LintOptions;
 }
 
-export interface MsgInterface {
-    type: string;
-    options?: OptionsInterface;
+export interface ICommand {
+    type: CommandType;
+    options?: TypeCheckerOptions;
+}
+
+export enum CommandType {
+    configure,
+    run
 }
