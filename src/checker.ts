@@ -22,6 +22,10 @@ export class Checker {
     // lint result returned by tsLint
     private lintFileResult: tslint.LintResult[];
 
+    // const
+    private END_LINE = '\n';
+
+
     constructor() {
         // nothing atm
     }
@@ -101,7 +105,7 @@ export class Checker {
                     const fileContents = this.program.getSourceFile(file).getFullText();
 
                     // create new linter using lint options and tsprogram
-                    const linter = new tslint.Linter((<tslint.ILinterOptions>options.lintOptions), this.program);
+                    const linter = new tslint.Linter((<tslint.ILinterOptions>options.lintoptions), this.program);
 
                     // lint file using filename, filecontent, and tslint configuration
                     linter.lint(file, fileContents, tsLintConfiguration);
@@ -126,30 +130,171 @@ export class Checker {
      */
     public printResult(isWorker?: boolean) {
 
-        const write = this.writeText;
-        const tsProgram = this.program;
+        // consts
+        const print = this.writeText;
+        const program = this.program;
         const options = this.options;
-        const END_LINE = '\n';
+        const END_LINE = this.END_LINE;
 
-        write(
+        // print header
+        print(
             chalk.bgWhite(
                 chalk.black(`${END_LINE}Typechecker plugin(${options.type}) ${options.name}`)
             ) +
             chalk.white(`.${END_LINE}`)
         );
 
-        write(
+        // print time
+        print(
             chalk.grey(`Time:${new Date().toString()} ${END_LINE}`)
         );
 
+        // get the lint errors messages
+        let lintErrorMessages = this.processLintFiles();
 
+        // loop diagnostics and get the errors messages
+        let tsErrorMessages = this.processTsDiagnostics();
+
+        // combine errors and print if any
+        let allErrors = tsErrorMessages.concat(lintErrorMessages);
+
+        // print if any
+        if (allErrors.length > 0) {
+
+            // insert header
+            allErrors.unshift(
+                chalk.underline(`${END_LINE}File errors`) + chalk.white(':') // fix windows
+            );
+
+            print(allErrors.join(END_LINE));
+        }
+
+        // time for summary >>>>>
+
+        // get errors totals
+        let optionsErrors = program.getOptionsDiagnostics().length;
+        let globalErrors = program.getGlobalDiagnostics().length;
+        let syntacticErrors = program.getSyntacticDiagnostics().length;
+        let semanticErrors = program.getSemanticDiagnostics().length;
+        let tsLintErrors = lintErrorMessages.length;
+        let totalsErrors = optionsErrors + globalErrors + syntacticErrors + semanticErrors + tsLintErrors;
+
+
+
+        // if errors, show user
+        if (totalsErrors) {
+
+            // write header
+            print(
+                chalk.underline(`${END_LINE}${END_LINE}Errors`) +
+                chalk.white(`:${totalsErrors}${END_LINE}`)
+            );
+
+            print(
+                chalk[optionsErrors ? options.yellowOnOptions ? 'yellow' : 'red' : 'white']
+                    (`└── Options: ${optionsErrors}${END_LINE}`)
+            );
+
+            print(
+                chalk[globalErrors ? options.yellowOnGlobal ? 'yellow' : 'red' : 'white']
+                    (`└── Global: ${globalErrors}${END_LINE}`)
+            );
+
+            print(
+                chalk[syntacticErrors ? options.yellowOnSyntactic ? 'yellow' : 'red' : 'white']
+                    (`└── Syntactic: ${syntacticErrors}${END_LINE}`)
+            );
+
+            print(
+                chalk[semanticErrors ? options.yellowOnSemantic ? 'yellow' : 'red' : 'white']
+                    (`└── Semantic: ${semanticErrors}${END_LINE}`)
+            );
+
+            print(
+                chalk[tsLintErrors ? options.yellowOnLint ? 'yellow' : 'red' : 'white']
+                    (`└── TsLint: ${tsLintErrors}${END_LINE}${END_LINE}`)
+            );
+
+        } else {
+            // if there no errors, then also give some feedback about this, so they know its working
+            print(
+                chalk.grey(`All good, no errors :-)${END_LINE}`)
+            );
+        }
+
+        print(
+            chalk.grey(`Typechecking time: ${this.elapsedInspectionTime}ms${END_LINE}`)
+        );
+
+
+        // final check how to end the checker, throw, exit or keep alive
+
+        switch (true) {
+
+            // if throwError is set then callback and quit
+            case options.throwOnGlobal && globalErrors > 0:
+            case options.throwOnOptions && optionsErrors > 0:
+            case options.throwOnSemantic && semanticErrors > 0:
+            case options.throwOnTsLint && tsLintErrors > 0:
+            case options.throwOnSyntactic && syntacticErrors > 0:
+                if (process.send) {
+                    process.send('error');
+                } else {
+                    throw new Error('Typechecker throwing error due to throw options set');
+                }
+                // exit with error
+                process.exit(1);
+                break;
+
+            // if quit is set and its a worker, then post message and callback to main tread and tell its done
+            case options.quit && isWorker:
+                print(chalk.grey(`Quiting typechecker${END_LINE}${END_LINE}`));
+
+                // since Im a worker I need to send back a message;
+                process.send('done');
+                break;
+
+            // if quit is set and not worker, then just post messeage
+            case options.quit && !isWorker:
+                print(chalk.grey(`Quiting typechecker${END_LINE}${END_LINE}`));
+                break;
+
+            // default action
+            default:
+                print(chalk.grey(`Keeping typechecker alive${END_LINE}${END_LINE}`));
+        }
+
+        return totalsErrors;
+
+    }
+
+
+
+    /**
+     * write to screen helper
+     *
+     */
+    private writeText(text: string) {
+        ts.sys.write(text);
+    }
+
+
+
+    /**
+     * loops lint failures and return pretty failure string ready to be printed
+     *
+     */
+    private processLintFiles(): string[] {
+
+        const options = this.options;
 
         // loop lint results
         let lintResultsFilesMessages =
             this.lintFileResult.map((fileResult: tslint.LintResult) => {
+                let messages: string[] = [];
                 if (fileResult.failures) {
                     // we have a failure, lets check its failures
-                    let messages = fileResult.failures.map((failure: any) => {
+                    messages = fileResult.failures.map((failure: any) => {
 
                         // simplify it so its more readable later
                         let r = {
@@ -169,11 +314,10 @@ export class Checker {
                         message += ' ' + r.failure;
                         return message;
                     });
-                    // return messages
-                    return messages;
-                } else {
-                    return [];
                 }
+                // return messages
+                return messages;
+
             }).filter((res: string[]) => {
                 // filter our only messages with content
                 return res.length === 0 ? false : true;
@@ -191,10 +335,21 @@ export class Checker {
             console.log(err);
         }
 
+        return lintErrorMessages;
+    }
 
 
-        // loop diagnostics
-        let tsErrorMessages = [];
+
+    /**
+     * loops ts failures and return pretty failure string ready to be printed
+     *
+     */
+    private processTsDiagnostics(): string[] {
+
+        const options = this.options;
+        const END_LINE = this.END_LINE;
+        let tsErrorMessages: string[] = [];
+
         if (this.tsDiagnostics.length > 0) {
             tsErrorMessages = this.tsDiagnostics.map((diag: any) => {
 
@@ -238,119 +393,9 @@ export class Checker {
                 // return message
                 return message;
             });
-
-            // write errors
-            tsErrorMessages.unshift(
-                chalk.underline(`${END_LINE}File errors`) + chalk.white(':') // fix windows
-            );
-            let x = tsErrorMessages.concat(lintErrorMessages);
-            write(x.join('\n'));
-
-        } else {
-
-            // no type errors, lets just print the lint errors if any
-            if (lintErrorMessages.length > 0) {
-                lintErrorMessages.unshift(
-                    chalk.underline(`${END_LINE}File errors`) + chalk.white(':') // fix windows
-                );
-                write(lintErrorMessages.join('\n'));
-            }
         }
 
-        // get errors totals
-        let optionsErrors = tsProgram.getOptionsDiagnostics().length;
-        let globalErrors = tsProgram.getGlobalDiagnostics().length;
-        let syntacticErrors = tsProgram.getSyntacticDiagnostics().length;
-        let semanticErrors = tsProgram.getSemanticDiagnostics().length;
-        let tsLintErrors = lintErrorMessages.length;
-        let totals = optionsErrors + globalErrors + syntacticErrors + semanticErrors + tsLintErrors;
-
-        // write header
-        write(
-            chalk.underline(`${END_LINE}${END_LINE}Errors`) +
-            chalk.white(`:${totals}${END_LINE}`)
-        );
-
-        // if errors, write the numbers
-        if (totals) {
-
-            write(
-                chalk[optionsErrors ? options.yellowOnOptions ? 'yellow' : 'red' : 'white']
-                    (`└── Options: ${optionsErrors}${END_LINE}`)
-            );
-
-            write(
-                chalk[globalErrors ? options.yellowOnGlobal ? 'yellow' : 'red' : 'white']
-                    (`└── Global: ${globalErrors}${END_LINE}`)
-            );
-
-            write(
-                chalk[syntacticErrors ? options.yellowOnSyntactic ? 'yellow' : 'red' : 'white']
-                    (`└── Syntactic: ${syntacticErrors}${END_LINE}`)
-            );
-
-            write(
-                chalk[semanticErrors ? options.yellowOnSemantic ? 'yellow' : 'red' : 'white']
-                    (`└── Semantic: ${semanticErrors}${END_LINE}`)
-            );
-
-            write(
-                chalk[tsLintErrors ? options.yellowOnLint ? 'yellow' : 'red' : 'white']
-                    (`└── TsLint: ${tsLintErrors}${END_LINE}${END_LINE}`)
-            );
-
-        }
-
-        write(
-            chalk.grey(`Typechecking time: ${this.elapsedInspectionTime}ms${END_LINE}`)
-        );
-
-
-        switch (true) {
-
-            // if throwError is set then callback and quit
-            case options.throwOnGlobal && globalErrors > 0:
-            case options.throwOnOptions && optionsErrors > 0:
-            case options.throwOnSemantic && semanticErrors > 0:
-            case options.throwOnTsLint && tsLintErrors > 0:
-            case options.throwOnSyntactic && syntacticErrors > 0:
-                if (process.send) {
-                    process.send('error');
-                } else {
-                    throw new Error('Typechecker throwing error due to throw options set');
-                }
-                process.exit(1);
-                break;
-
-            // if quit is set and its a worker, then post message and callback to main tread and tell its done
-            case options.quit && isWorker:
-                write(chalk.grey(`Quiting typechecker${END_LINE}${END_LINE}`));
-
-                // since Im a worker I need to send back a message;
-                process.send('done');
-
-                break;
-
-            // if quit is set and not worker, then just post messeage
-            case options.quit && !isWorker:
-                write(chalk.grey(`Quiting typechecker${END_LINE}${END_LINE}`));
-                break;
-            default:
-                write(chalk.grey(`Keeping typechecker alive${END_LINE}${END_LINE}`));
-        }
-
-        return totals;
-
-    }
-
-
-
-    /**
-     * write to screen helper
-     *
-     */
-    private writeText(text: string) {
-        ts.sys.write(text);
+        return tsErrorMessages;
     }
 
 

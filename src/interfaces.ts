@@ -28,7 +28,8 @@ export interface TypeCheckerOptions {
     name?: string;
 
     // lint options that can be passed in
-    lintOptions?: LintOptions;
+    // todo: rename to lintOptions, but thats a breaking change, so will do that later
+    lintoptions?: LintOptions;
 }
 
 // lint options,this is the same as tsLint uses all paths will be from basepath
@@ -60,8 +61,9 @@ export enum WorkerCommand {
 
 // checkers run types (when generating cmd print)
 export enum TypecheckerRunType {
-    sync,
-    async,
-    watch,
-    promiseSync
+    sync = 'sync',
+    async = 'async',
+    watch = 'watch',
+    promiseSync = 'promisesync'
 }
+
