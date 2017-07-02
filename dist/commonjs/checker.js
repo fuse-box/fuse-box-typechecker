@@ -5,10 +5,10 @@ var tslint = require("tslint");
 var path = require("path");
 var Checker = (function () {
     function Checker() {
+        this.END_LINE = '\n';
     }
-    Checker.prototype.configure = function (options) {
+    Checker.prototype.inspectCode = function (options) {
         var _this = this;
-        this.tsConfig = options.tsConfigObj;
         this.options = options;
         var parseConfigHost = {
             fileExists: ts.sys.fileExists,
@@ -16,58 +16,116 @@ var Checker = (function () {
             readFile: ts.sys.readFile,
             useCaseSensitiveFileNames: true
         };
-        var start = new Date().getTime();
-        var parsed = ts.parseJsonConfigFileContent(this.tsConfig, parseConfigHost, options.basePath || '.', null);
+        var inspectionTimeStart = new Date().getTime();
+        var parsed = ts.parseJsonConfigFileContent(this.options.tsConfigJsonContent, parseConfigHost, options.basePath || '.', null);
         this.program = ts.createProgram(parsed.fileNames, parsed.options, null, this.program);
-        this.diagnostics = [];
+        this.tsDiagnostics = [];
         var optionsErrors = this.program.getOptionsDiagnostics().map(function (obj) {
             obj._type = 'options';
             return obj;
         });
-        this.diagnostics = this.diagnostics.concat(optionsErrors);
+        this.tsDiagnostics = this.tsDiagnostics.concat(optionsErrors);
         var globalErrors = this.program.getGlobalDiagnostics().map(function (obj) {
             obj._type = 'global';
             return obj;
         });
-        this.diagnostics = this.diagnostics.concat(globalErrors);
+        this.tsDiagnostics = this.tsDiagnostics.concat(globalErrors);
         var syntacticErrors = this.program.getSyntacticDiagnostics().map(function (obj) {
             obj._type = 'syntactic';
             return obj;
         });
-        this.diagnostics = this.diagnostics.concat(syntacticErrors);
+        this.tsDiagnostics = this.tsDiagnostics.concat(syntacticErrors);
         var semanticErrors = this.program.getSemanticDiagnostics().map(function (obj) {
             obj._type = 'semantic';
             return obj;
         });
-        this.diagnostics = this.diagnostics.concat(semanticErrors);
-        this.lintResults = [];
+        this.tsDiagnostics = this.tsDiagnostics.concat(semanticErrors);
+        this.lintFileResult = [];
         if (options.tsLint) {
             var fullPath = path.resolve(this.options.basePath, options.tsLint);
-            this.files = tslint.Linter.getFileNames(this.program);
-            var config_1 = tslint.Configuration.findConfiguration(fullPath, this.options.basePath).results;
-            this.lintResults = this.files.map(function (file) {
-                var fileContents = _this.program.getSourceFile(file).getFullText();
-                var linter = new tslint.Linter(options.lintoptions, _this.program);
-                linter.lint(file, fileContents, config_1);
-                return linter.getResult();
-            }).filter(function (result) {
-                return result.errorCount ? true : false;
-            });
+            var files = tslint.Linter.getFileNames(this.program);
+            var tsLintConfiguration_1 = tslint.Configuration.findConfiguration(fullPath, this.options.basePath).results;
+            this.lintFileResult =
+                files.map(function (file) {
+                    var fileContents = _this.program.getSourceFile(file).getFullText();
+                    var linter = new tslint.Linter(options.lintoptions, _this.program);
+                    linter.lint(file, fileContents, tsLintConfiguration_1);
+                    return linter.getResult();
+                }).filter(function (result) {
+                    return result.errorCount ? true : false;
+                });
         }
-        this.elapsed = new Date().getTime() - start;
+        this.elapsedInspectionTime = new Date().getTime() - inspectionTimeStart;
     };
-    Checker.prototype.typecheck = function () {
-        var write = this.writeText;
-        var diagnostics = this.diagnostics;
+    Checker.prototype.printResult = function (isWorker) {
+        var print = this.writeText;
         var program = this.program;
         var options = this.options;
-        var END_LINE = '\n';
-        write(chalk.bgWhite(chalk.black(END_LINE + "Typechecker plugin(" + options.type + ") " + options.name)) +
+        var END_LINE = this.END_LINE;
+        print(chalk.bgWhite(chalk.black(END_LINE + "Typechecker plugin(" + options.type + ") " + options.name)) +
             chalk.white("." + END_LINE));
-        write(chalk.grey("Time:" + new Date().toString() + " " + END_LINE));
-        var lintResults = this.lintResults.map(function (errors) {
-            if (errors.failures) {
-                var messages_1 = errors.failures.map(function (failure) {
+        print(chalk.grey("Time:" + new Date().toString() + " " + END_LINE));
+        var lintErrorMessages = this.processLintFiles();
+        var tsErrorMessages = this.processTsDiagnostics();
+        var allErrors = tsErrorMessages.concat(lintErrorMessages);
+        if (allErrors.length > 0) {
+            allErrors.unshift(chalk.underline(END_LINE + "File errors") + chalk.white(':'));
+            print(allErrors.join(END_LINE));
+        }
+        var optionsErrors = program.getOptionsDiagnostics().length;
+        var globalErrors = program.getGlobalDiagnostics().length;
+        var syntacticErrors = program.getSyntacticDiagnostics().length;
+        var semanticErrors = program.getSemanticDiagnostics().length;
+        var tsLintErrors = lintErrorMessages.length;
+        var totalsErrors = optionsErrors + globalErrors + syntacticErrors + semanticErrors + tsLintErrors;
+        if (totalsErrors) {
+            print(chalk.underline("" + END_LINE + END_LINE + "Errors") +
+                chalk.white(":" + totalsErrors + END_LINE));
+            print(chalk[optionsErrors ? options.yellowOnOptions ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 Options: " + optionsErrors + END_LINE));
+            print(chalk[globalErrors ? options.yellowOnGlobal ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 Global: " + globalErrors + END_LINE));
+            print(chalk[syntacticErrors ? options.yellowOnSyntactic ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 Syntactic: " + syntacticErrors + END_LINE));
+            print(chalk[semanticErrors ? options.yellowOnSemantic ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 Semantic: " + semanticErrors + END_LINE));
+            print(chalk[tsLintErrors ? options.yellowOnLint ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 TsLint: " + tsLintErrors + END_LINE + END_LINE));
+        }
+        else {
+            print(chalk.grey("All good, no errors :-)" + END_LINE));
+        }
+        print(chalk.grey("Typechecking time: " + this.elapsedInspectionTime + "ms" + END_LINE));
+        switch (true) {
+            case options.throwOnGlobal && globalErrors > 0:
+            case options.throwOnOptions && optionsErrors > 0:
+            case options.throwOnSemantic && semanticErrors > 0:
+            case options.throwOnTsLint && tsLintErrors > 0:
+            case options.throwOnSyntactic && syntacticErrors > 0:
+                if (process.send) {
+                    process.send('error');
+                }
+                else {
+                    throw new Error('Typechecker throwing error due to throw options set');
+                }
+                process.exit(1);
+                break;
+            case options.quit && isWorker:
+                print(chalk.grey("Quiting typechecker" + END_LINE + END_LINE));
+                process.send('done');
+                break;
+            case options.quit && !isWorker:
+                print(chalk.grey("Quiting typechecker" + END_LINE + END_LINE));
+                break;
+            default:
+                print(chalk.grey("Keeping typechecker alive" + END_LINE + END_LINE));
+        }
+        return totalsErrors;
+    };
+    Checker.prototype.writeText = function (text) {
+        ts.sys.write(text);
+    };
+    Checker.prototype.processLintFiles = function () {
+        var options = this.options;
+        var lintResultsFilesMessages = this.lintFileResult.map(function (fileResult) {
+            var messages = [];
+            if (fileResult.failures) {
+                messages = fileResult.failures.map(function (failure) {
                     var r = {
                         fileName: failure.fileName,
                         line: failure.startPosition.lineAndCharacter.line,
@@ -83,12 +141,15 @@ var Checker = (function () {
                     message += ' ' + r.failure;
                     return message;
                 });
-                return messages_1;
             }
+            return messages;
+        }).filter(function (res) {
+            return res.length === 0 ? false : true;
         });
+        var lintErrorMessages = [];
         try {
-            if (lintResults.length) {
-                lintResults = lintResults.reduce(function (a, b) {
+            if (lintResultsFilesMessages.length) {
+                lintErrorMessages = lintResultsFilesMessages.reduce(function (a, b) {
                     return a.concat(b);
                 });
             }
@@ -96,9 +157,14 @@ var Checker = (function () {
         catch (err) {
             console.log(err);
         }
-        var messages = [];
-        if (diagnostics.length > 0) {
-            messages = diagnostics.map(function (diag) {
+        return lintErrorMessages;
+    };
+    Checker.prototype.processTsDiagnostics = function () {
+        var options = this.options;
+        var END_LINE = this.END_LINE;
+        var tsErrorMessages = [];
+        if (this.tsDiagnostics.length > 0) {
+            tsErrorMessages = this.tsDiagnostics.map(function (diag) {
                 var message = chalk.red('└── ');
                 var color;
                 switch (diag._type) {
@@ -126,60 +192,8 @@ var Checker = (function () {
                 message += ' ' + ts.flattenDiagnosticMessageText(diag.messageText, END_LINE);
                 return message;
             });
-            messages.unshift(chalk.underline(END_LINE + "File errors") + chalk.white(':'));
-            var x = messages.concat(lintResults);
-            write(x.join('\n'));
         }
-        else {
-            if (lintResults.length > 0) {
-                lintResults.unshift(chalk.underline(END_LINE + "File errors") + chalk.white(':'));
-                write(lintResults.join('\n'));
-            }
-        }
-        var optionsErrors = program.getOptionsDiagnostics().length;
-        var globalErrors = program.getGlobalDiagnostics().length;
-        var syntacticErrors = program.getSyntacticDiagnostics().length;
-        var semanticErrors = program.getSemanticDiagnostics().length;
-        var tsLintErrors = lintResults.length;
-        var totals = optionsErrors + globalErrors + syntacticErrors + semanticErrors + tsLintErrors;
-        write(chalk.underline("" + END_LINE + END_LINE + "Errors") +
-            chalk.white(":" + totals + END_LINE));
-        if (totals) {
-            write(chalk[optionsErrors ? options.yellowOnOptions ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 Options: " + optionsErrors + END_LINE));
-            write(chalk[globalErrors ? options.yellowOnGlobal ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 Global: " + globalErrors + END_LINE));
-            write(chalk[syntacticErrors ? options.yellowOnSyntactic ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 Syntactic: " + syntacticErrors + END_LINE));
-            write(chalk[semanticErrors ? options.yellowOnSemantic ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 Semantic: " + semanticErrors + END_LINE));
-            write(chalk[tsLintErrors ? options.yellowOnLint ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 TsLint: " + tsLintErrors + END_LINE + END_LINE));
-        }
-        write(chalk.grey("Typechecking time: " + this.elapsed + "ms" + END_LINE));
-        switch (true) {
-            case options.throwOnGlobal && globalErrors > 0:
-            case options.throwOnOptions && optionsErrors > 0:
-            case options.throwOnSemantic && semanticErrors > 0:
-            case options.throwOnTsLint && tsLintErrors > 0:
-            case options.throwOnSyntactic && syntacticErrors > 0:
-                if (process.send) {
-                    process.send('error');
-                }
-                else {
-                    throw new Error('Typechecker throwing error due to throw options set');
-                }
-                process.exit(1);
-                break;
-            case options.quit:
-                write(chalk.grey("Quiting typechecker" + END_LINE + END_LINE));
-                process.send('done');
-                break;
-            case options.finished:
-                write(chalk.grey("Quiting typechecker" + END_LINE + END_LINE));
-                break;
-            default:
-                write(chalk.grey("Keeping typechecker alive" + END_LINE + END_LINE));
-        }
-        return totals;
-    };
-    Checker.prototype.writeText = function (text) {
-        ts.sys.write(text);
+        return tsErrorMessages;
     };
     return Checker;
 }());

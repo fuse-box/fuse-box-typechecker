@@ -1,18 +1,21 @@
-import { OptionsInterface } from './interfaces';
+import { TypeCheckerOptions } from './interfaces';
 export declare class TypeHelperClass {
     private options;
     private worker;
     private checker;
     private monitor;
-    constructor(options: OptionsInterface);
+    private watchTimeout;
+    private isWorkerInspectPreformed;
+    constructor(options: TypeCheckerOptions);
     runAsync(): void;
     runSync(): number;
     runPromise(): Promise<number>;
     runWatch(pathToWatch: string): void;
     killWorker(): void;
-    private configureWorker(options);
-    private runWorker();
+    private inspectCodeWithWorker(options);
+    private printResultWithWorker();
     private createThread();
     private writeText(text);
+    private getPath(usePath);
 }
-export declare const TypeHelper: (options: any) => TypeHelperClass;
+export declare const TypeHelper: (options: TypeCheckerOptions) => TypeHelperClass;

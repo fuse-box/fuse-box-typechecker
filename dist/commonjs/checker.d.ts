@@ -1,13 +1,15 @@
+import { InternalTypeCheckerOptions } from './interfaces';
 export declare class Checker {
     private options;
-    private tsConfig;
     private program;
-    private elapsed;
-    private diagnostics;
-    private files;
-    private lintResults;
+    private elapsedInspectionTime;
+    private tsDiagnostics;
+    private lintFileResult;
+    private END_LINE;
     constructor();
-    configure(options: any): void;
-    typecheck(): any;
+    inspectCode(options: InternalTypeCheckerOptions): void;
+    printResult(isWorker?: boolean): number;
     private writeText(text);
+    private processLintFiles();
+    private processTsDiagnostics();
 }
