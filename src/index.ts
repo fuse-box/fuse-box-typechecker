@@ -2,7 +2,7 @@
 
 import * as child from 'child_process';
 import * as path from 'path';
-import { LintOptions, TypeCheckerOptions } from './interfaces';
+import { LintOptions, TypeCheckerOptions, WorkerCommand, TypecheckerRunType, InternalTypeCheckerOptions } from './interfaces';
 import { Checker } from './checker';
 import * as watch from 'watch';
 import * as ts from 'typescript';
@@ -14,6 +14,8 @@ export class TypeHelperClass {
     private worker: child.ChildProcess;
     private checker: Checker;
     private monitor: any;
+    private watchTimeout: NodeJS.Timer;
+    private isWorkerInspectPreformed: boolean;
 
 
     constructor(options: TypeCheckerOptions) {
@@ -31,21 +33,22 @@ export class TypeHelperClass {
         let lintOp = this.options.lintOptions;
         this.options.lintOptions = lintOp ? lintOp : ({} as LintOptions);
 
+        // fix tslint options so tslint do not complain
         this.options.lintOptions = {
-            fix: this.options.lintOptions.fix || null, // <- this can be useful to have
+            fix: this.options.lintOptions.fix || false, // <- this can be useful to have
             formatter: 'json',
             formattersDirectory: this.options.lintOptions.formattersDirectory || null,
             rulesDirectory: this.options.lintOptions.rulesDirectory || null
         };
 
         // get tsconfig path and options
-        let tsconf = this.options.basePath ? path.resolve(this.options.basePath, options.tsConfig) : path.resolve(process.cwd(), options.tsConfig);
-        this.options.tsConfigObj = require(tsconf);
+        let tsconf = this.getPath(options.tsConfig);
+        (<InternalTypeCheckerOptions>this.options).tsConfigJsonContent = require(tsconf);
         this.writeText(chalk.yellow(`Typechecker tsconfig: ${chalk.white(`${tsconf}${'\n'}`)}`));
 
         // get tslint path and options
         if (options.tsLint) {
-            let tsLint = this.options.basePath ? path.resolve(this.options.basePath, options.tsLint) : path.resolve(process.cwd(), options.tsLint);
+            let tsLint = this.getPath(options.tsLint);
             this.writeText(chalk.yellow(`Typechecker tsLint: ${chalk.white(`${tsLint}${'\n'}`)}`));
         }
     }
@@ -57,10 +60,18 @@ export class TypeHelperClass {
      *
      */
     public runAsync(): void {
-        let options = Object.assign(this.options, { quit: true, type: 'async' });
+
+        // set options, add if it need to quit and run type
+        let options: InternalTypeCheckerOptions = Object.assign(this.options, { quit: true, type: TypecheckerRunType.async });
+
+        // create thread
         this.createThread();
-        this.configureWorker(options);
-        this.runWorker();
+
+        // inspect our code
+        this.inspectCodeWithWorker(options);
+
+        // call worker
+        this.printResultWithWorker();
     }
 
 
@@ -69,9 +80,15 @@ export class TypeHelperClass {
      * Returns total errors
      */
     public runSync(): number {
-        let options = Object.assign(this.options, { finished: true, type: 'sync' });
-        this.checker.configure(options);
-        return this.checker.typecheck();
+
+        // set options, add if it need to quit and run type
+        let options: InternalTypeCheckerOptions = Object.assign(this.options, { quit: true, type: TypecheckerRunType.sync });
+
+        // inspect our code
+        this.checker.inspectCode(options);
+
+        // print result to screen and return total errors
+        return this.checker.printResult();
     }
 
 
@@ -80,11 +97,23 @@ export class TypeHelperClass {
      *
      */
     public runPromise(): Promise<number> {
+
+        // return promise so we can use it wrih then() or async/await
         return new Promise((resolve: Function, reject: Function) => {
+
+            // wrap in try/catch so we can do reject if it fails
             try {
-                let options = Object.assign(this.options, { finished: true, type: 'sync' });
-                this.checker.configure(options);
-                let errors = this.checker.typecheck();
+
+                // set options, add if it need to quit and run type
+                let options: InternalTypeCheckerOptions = Object.assign(this.options, { quit: true, type: TypecheckerRunType.promiseSync });
+
+                // inspect our code
+                this.checker.inspectCode(options);
+
+                // print result to screen and return total errors
+                let errors = this.checker.printResult();
+
+                // return result
                 resolve(errors);
             } catch (err) {
                 reject(err);
@@ -99,38 +128,72 @@ export class TypeHelperClass {
      *
      */
     public runWatch(pathToWatch: string): void {
-        let options = Object.assign(this.options, { quit: false, type: 'watch' });
+
+        // set options, add if it need to quit and run type
+        let options: InternalTypeCheckerOptions = Object.assign(this.options, { quit: false, type: TypecheckerRunType.watch });
+
+        // const
         const write = this.writeText;
         const END_LINE = '\n';
 
+        // create thread and inspect code with worker
         this.createThread();
-        this.configureWorker(options);
-        let basePath = this.options.basePath ? path.resolve(this.options.basePath, pathToWatch) : path.resolve(process.cwd(), pathToWatch);
+        this.inspectCodeWithWorker(options);
+
+        // current basepath to watch
+        let basePath = this.getPath(pathToWatch);
+
         watch.createMonitor(basePath, (monitor: any) => {
 
+            // tell user what path we are watching
             write(chalk.yellow(`Typechecker watching: ${chalk.white(`${basePath}${END_LINE}`)}`));
 
+            // on created file event
             monitor.on('created', (f: any /*, stat: any*/) => {
                 write(END_LINE + chalk.yellow(`File created: ${f}${END_LINE}`));
             });
 
+            // on changed file event
             monitor.on('changed', (f: any /*, curr: any, prev: any*/) => {
+
+                // tell user about event
                 write(END_LINE + chalk.yellow(`File changed: ${chalk.white(`${f}${END_LINE}`)}`));
                 write(chalk.grey(`Calling typechecker${END_LINE}`));
-                this.configureWorker(options);
-                this.runWorker();
+
+                // have inside timeout, so we only run once when multible files are saved
+                clearTimeout(this.watchTimeout);
+                this.watchTimeout = setTimeout(() => {
+
+                    // inspect and print result
+                    this.inspectCodeWithWorker(options);
+                    this.printResultWithWorker();
+                }, 500);
+
             });
 
             monitor.on('removed', (f: any /*, stat: any*/) => {
+
+                // tell user about event
                 write(END_LINE + chalk.yellow(`File removed: ${chalk.white(`${f}${END_LINE}`)}`));
                 write(chalk.grey(`Calling typechecker${END_LINE}`));
-                this.configureWorker(options);
-                this.runWorker();
+
+                // have inside timeout, so we only run once when multible files are saved
+                clearTimeout(this.watchTimeout);
+                this.watchTimeout = setTimeout(() => {
+
+                    // inspect and print result
+                    this.inspectCodeWithWorker(options);
+                    this.printResultWithWorker();
+                }, 500);
+
             });
 
+            // set to class so we can stop it later if error is thrown
             this.monitor = monitor;
         });
-        this.runWorker();
+
+        // print result, since its our first run
+        this.printResultWithWorker();
 
     }
 
@@ -155,8 +218,11 @@ export class TypeHelperClass {
      * Configure worker, internal function
      *
      */
-    private configureWorker(options: TypeCheckerOptions): void {
-        this.worker.send({ type: 'configure', options: options });
+    private inspectCodeWithWorker(options: TypeCheckerOptions): void {
+        this.worker.send({ type: WorkerCommand.inspectCode, options: options });
+
+        // we set this so we can stop worker print from trying to run
+        this.isWorkerInspectPreformed = true;
     }
 
 
@@ -165,8 +231,16 @@ export class TypeHelperClass {
      * Tells worker to do a typecheck
      *
      */
-    private runWorker(): void {
-        this.worker.send({ type: 'run' });
+    private printResultWithWorker(): void {
+
+        // have we inspected code?
+        if (this.isWorkerInspectPreformed) {
+
+            // all well, lets preform printout
+            this.worker.send({ type: WorkerCommand.printResult });
+        } else {
+            this.writeText('You can not run pront before you have inspected code first');
+        }
     }
 
 
@@ -177,13 +251,22 @@ export class TypeHelperClass {
      *
      */
     private createThread(): void {
-        this.worker = child.fork(path.join(__dirname, 'worker.js'), [], this.options);
+
+        // create worker fork
+        this.worker = child.fork(path.join(__dirname, 'worker.js'), []);
+
+        // listen for worker messages
         this.worker.on('message', (err: any) => {
+
             if (err === 'error') {
-                console.log('error typechecker');
+
+                // if error then exit
+                this.writeText('error typechecker');
                 process.exit(1);
             } else {
-                console.log('killing worker');
+
+                // if not error, then just kill worker
+                this.writeText('killing worker');
                 this.killWorker();
             }
         });
@@ -199,11 +282,21 @@ export class TypeHelperClass {
         ts.sys.write(text);
     }
 
+
+
+    /**
+     * gets path based on basepath being set
+     *
+     */
+    private getPath(usePath: string): string {
+        return this.options.basePath ? path.resolve(this.options.basePath, usePath) : path.resolve(process.cwd(), usePath);
+    }
+
+
 }
 
-
-
-export const TypeHelper = (options: any) => {
+// return new typechecker
+export const TypeHelper = (options: TypeCheckerOptions): TypeHelperClass => {
     return new TypeHelperClass(options);
 };
 

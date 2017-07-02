@@ -1,20 +1,22 @@
-
 // typechecker
 import { Checker } from './checker';
-import { CommandType } from './interfaces';
+import { WorkerCommand, IWorkerOptions } from './interfaces';
 
-// create checker
+// create checker instance
 let checker = new Checker();
 
 // listen for messages
-process.on('message', function (msg: any) {
-    const type: CommandType = msg.type;
-    switch (type) {
-        case CommandType.configure:
-            checker.configure(msg.options);
+process.on('message', function (msg: IWorkerOptions) {
+    switch (msg.type) {
+
+        // tell checker to inspect code
+        case WorkerCommand.inspectCode:
+            checker.inspectCode(msg.options);
             break;
-        case CommandType.run:
-            checker.typecheck();
+
+        // tell checker to print result
+        case WorkerCommand.printResult:
+            checker.printResult(true);
             break;
     }
 });

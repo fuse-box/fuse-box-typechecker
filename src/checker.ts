@@ -2,27 +2,32 @@ import * as ts from 'typescript';
 import * as chalk from 'chalk';
 import * as tslint from 'tslint';
 import * as path from 'path';
-
-import { TypeCheckerOptions } from './interfaces';
+import { InternalTypeCheckerOptions } from './interfaces';
 
 
 export class Checker {
 
-    private options: TypeCheckerOptions;
-    private tsConfig: string;
+    // options that will be used when checking and printing results
+    private options: InternalTypeCheckerOptions;
+
+    // typescript program
     private program: ts.Program;
-    private elapsed: number;
-    private diagnostics: ts.Diagnostic[];
-    private files: string[];
-    private lintResults: any;
+
+    // time used to do typecheck/linting
+    private elapsedInspectionTime: number;
+
+    // type diagonstic returned by typescript
+    private tsDiagnostics: ts.Diagnostic[];
+
+    // lint result returned by tsLint
+    private lintFileResult: tslint.LintResult[];
 
     constructor() {
         // nothing atm
     }
 
 
-    public configure(options: any) {
-        this.tsConfig = options.tsConfigObj;
+    public inspectCode(options: InternalTypeCheckerOptions) {
         this.options = options;
 
 
@@ -35,68 +40,94 @@ export class Checker {
         };
 
         // take the time
-        let start = new Date().getTime();
+        let inspectionTimeStart = new Date().getTime();
 
         // get program and get diagnostics and store them diagnostics
-        const parsed = ts.parseJsonConfigFileContent(this.tsConfig, parseConfigHost, options.basePath || '.', null);
+        const parsed = ts.parseJsonConfigFileContent(this.options.tsConfigJsonContent, parseConfigHost, options.basePath || '.', null);
         this.program = ts.createProgram(parsed.fileNames, parsed.options, null, this.program);
 
+
         // get errors and tag them;
-        this.diagnostics = [];
+        this.tsDiagnostics = [];
         let optionsErrors = this.program.getOptionsDiagnostics().map((obj) => {
+            // tag em so we know for later
             (<any>obj)._type = 'options';
             return obj;
         });
-        this.diagnostics = this.diagnostics.concat(optionsErrors);
+        this.tsDiagnostics = this.tsDiagnostics.concat(optionsErrors);
+
+
 
         let globalErrors = this.program.getGlobalDiagnostics().map((obj) => {
             (<any>obj)._type = 'global';
             return obj;
         });
-        this.diagnostics = this.diagnostics.concat(globalErrors);
+        this.tsDiagnostics = this.tsDiagnostics.concat(globalErrors);
+
+
 
         let syntacticErrors = this.program.getSyntacticDiagnostics().map((obj) => {
             (<any>obj)._type = 'syntactic';
             return obj;
         });
-        this.diagnostics = this.diagnostics.concat(syntacticErrors);
+        this.tsDiagnostics = this.tsDiagnostics.concat(syntacticErrors);
+
+
 
         let semanticErrors = this.program.getSemanticDiagnostics().map((obj) => {
             (<any>obj)._type = 'semantic';
             return obj;
         });
-        this.diagnostics = this.diagnostics.concat(semanticErrors);
+        this.tsDiagnostics = this.tsDiagnostics.concat(semanticErrors);
+
 
         // get tslint if json file is supplied
-        this.lintResults = [];
+        this.lintFileResult = [];
         if (options.tsLint) {
 
             // get full path
             let fullPath = path.resolve(this.options.basePath, options.tsLint);
 
             // gets the files, lint every file and store errors in lintResults
-            this.files = tslint.Linter.getFileNames(this.program);
-            const config = tslint.Configuration.findConfiguration(fullPath, this.options.basePath).results;
-            this.lintResults = this.files.map(file => {
-                const fileContents = this.program.getSourceFile(file).getFullText();
-                const linter = new tslint.Linter(options.lintoptions, this.program);
-                linter.lint(file, fileContents, config);
-                return linter.getResult();
-            }).filter((result) => {
-                return result.errorCount ? true : false;
-            });
+            let files = tslint.Linter.getFileNames(this.program);
+
+            // get tslint configuration
+            const tsLintConfiguration = tslint.Configuration.findConfiguration(fullPath, this.options.basePath).results;
+
+            // lint the files
+            this.lintFileResult =
+                files.map(file => {
+                    // get content of file
+                    const fileContents = this.program.getSourceFile(file).getFullText();
+
+                    // create new linter using lint options and tsprogram
+                    const linter = new tslint.Linter((<tslint.ILinterOptions>options.lintOptions), this.program);
+
+                    // lint file using filename, filecontent, and tslint configuration
+                    linter.lint(file, fileContents, tsLintConfiguration);
+
+                    // return result
+                    return linter.getResult();
+                }).filter((result) => {
+                    // only return the one with erros
+                    return result.errorCount ? true : false;
+                });
         }
 
-        this.elapsed = new Date().getTime() - start;
+        // save elapsed check time
+        this.elapsedInspectionTime = new Date().getTime() - inspectionTimeStart;
     }
 
 
 
-    public typecheck() {
+    /**
+     * print result
+     *
+     */
+    public printResult(isWorker?: boolean) {
 
         const write = this.writeText;
-        const diagnostics = this.diagnostics;
-        const program = this.program;
+        const tsProgram = this.program;
         const options = this.options;
         const END_LINE = '\n';
 
@@ -112,34 +143,47 @@ export class Checker {
         );
 
 
-        let lintResults = this.lintResults.map((errors: any) => {
-            if (errors.failures) {
-                let messages = errors.failures.map((failure: any) => {
 
-                    let r = {
-                        fileName: failure.fileName,
-                        line: failure.startPosition.lineAndCharacter.line,
-                        char: failure.startPosition.lineAndCharacter.character,
-                        ruleSeverity: failure.ruleSeverity.charAt(0).toUpperCase() + failure.ruleSeverity.slice(1),
-                        ruleName: failure.ruleName,
-                        failure: failure.failure
-                    };
+        // loop lint results
+        let lintResultsFilesMessages =
+            this.lintFileResult.map((fileResult: tslint.LintResult) => {
+                if (fileResult.failures) {
+                    // we have a failure, lets check its failures
+                    let messages = fileResult.failures.map((failure: any) => {
 
-                    let message = chalk.red('└── ');
-                    message += chalk[options.yellowOnLint ? 'yellow' : 'red'](`${r.fileName} (${r.line + 1},${r.char + 1}) `);
-                    message += chalk.white(`(${r.ruleSeverity}:`);
-                    message += chalk.white(`${r.ruleName})`);
-                    message += ' ' + r.failure;
-                    return message;
-                });
-                return messages;
-            }
-        });
+                        // simplify it so its more readable later
+                        let r = {
+                            fileName: failure.fileName,
+                            line: failure.startPosition.lineAndCharacter.line,
+                            char: failure.startPosition.lineAndCharacter.character,
+                            ruleSeverity: failure.ruleSeverity.charAt(0).toUpperCase() + failure.ruleSeverity.slice(1),
+                            ruleName: failure.ruleName,
+                            failure: failure.failure
+                        };
 
-        // concatenate lint files - > failures
+                        // make error pretty and return it
+                        let message = chalk.red('└── ');
+                        message += chalk[options.yellowOnLint ? 'yellow' : 'red'](`${r.fileName} (${r.line + 1},${r.char + 1}) `);
+                        message += chalk.white(`(${r.ruleSeverity}:`);
+                        message += chalk.white(`${r.ruleName})`);
+                        message += ' ' + r.failure;
+                        return message;
+                    });
+                    // return messages
+                    return messages;
+                } else {
+                    return [];
+                }
+            }).filter((res: string[]) => {
+                // filter our only messages with content
+                return res.length === 0 ? false : true;
+            });
+
+        // flatten/concatenate lint files - > failures
+        let lintErrorMessages: string[] = [];
         try {
-            if (lintResults.length) {
-                lintResults = lintResults.reduce((a: string[], b: string[]) => {
+            if (lintResultsFilesMessages.length) {
+                lintErrorMessages = lintResultsFilesMessages.reduce((a: string[], b: string[]) => {
                     return a.concat(b);
                 });
             }
@@ -147,10 +191,12 @@ export class Checker {
             console.log(err);
         }
 
+
+
         // loop diagnostics
-        let messages = [];
-        if (diagnostics.length > 0) {
-            messages = diagnostics.map((diag: any) => {
+        let tsErrorMessages = [];
+        if (this.tsDiagnostics.length > 0) {
+            tsErrorMessages = this.tsDiagnostics.map((diag: any) => {
 
                 // get message type error, warn, info
                 let message = chalk.red('└── ');
@@ -194,35 +240,38 @@ export class Checker {
             });
 
             // write errors
-            messages.unshift(
+            tsErrorMessages.unshift(
                 chalk.underline(`${END_LINE}File errors`) + chalk.white(':') // fix windows
             );
-            let x = messages.concat(lintResults);
+            let x = tsErrorMessages.concat(lintErrorMessages);
             write(x.join('\n'));
 
         } else {
 
             // no type errors, lets just print the lint errors if any
-            if (lintResults.length > 0) {
-                lintResults.unshift(
+            if (lintErrorMessages.length > 0) {
+                lintErrorMessages.unshift(
                     chalk.underline(`${END_LINE}File errors`) + chalk.white(':') // fix windows
                 );
-                write(lintResults.join('\n'));
+                write(lintErrorMessages.join('\n'));
             }
         }
 
-        let optionsErrors = program.getOptionsDiagnostics().length;
-        let globalErrors = program.getGlobalDiagnostics().length;
-        let syntacticErrors = program.getSyntacticDiagnostics().length;
-        let semanticErrors = program.getSemanticDiagnostics().length;
-        let tsLintErrors = lintResults.length;
+        // get errors totals
+        let optionsErrors = tsProgram.getOptionsDiagnostics().length;
+        let globalErrors = tsProgram.getGlobalDiagnostics().length;
+        let syntacticErrors = tsProgram.getSyntacticDiagnostics().length;
+        let semanticErrors = tsProgram.getSemanticDiagnostics().length;
+        let tsLintErrors = lintErrorMessages.length;
         let totals = optionsErrors + globalErrors + syntacticErrors + semanticErrors + tsLintErrors;
 
+        // write header
         write(
             chalk.underline(`${END_LINE}${END_LINE}Errors`) +
             chalk.white(`:${totals}${END_LINE}`)
         );
 
+        // if errors, write the numbers
         if (totals) {
 
             write(
@@ -253,11 +302,13 @@ export class Checker {
         }
 
         write(
-            chalk.grey(`Typechecking time: ${this.elapsed}ms${END_LINE}`)
+            chalk.grey(`Typechecking time: ${this.elapsedInspectionTime}ms${END_LINE}`)
         );
 
 
         switch (true) {
+
+            // if throwError is set then callback and quit
             case options.throwOnGlobal && globalErrors > 0:
             case options.throwOnOptions && optionsErrors > 0:
             case options.throwOnSemantic && semanticErrors > 0:
@@ -270,11 +321,18 @@ export class Checker {
                 }
                 process.exit(1);
                 break;
-            case options.quit:
+
+            // if quit is set and its a worker, then post message and callback to main tread and tell its done
+            case options.quit && isWorker:
                 write(chalk.grey(`Quiting typechecker${END_LINE}${END_LINE}`));
+
+                // since Im a worker I need to send back a message;
                 process.send('done');
+
                 break;
-            case options.finished:
+
+            // if quit is set and not worker, then just post messeage
+            case options.quit && !isWorker:
                 write(chalk.grey(`Quiting typechecker${END_LINE}${END_LINE}`));
                 break;
             default:
@@ -286,6 +344,11 @@ export class Checker {
     }
 
 
+
+    /**
+     * write to screen helper
+     *
+     */
     private writeText(text: string) {
         ts.sys.write(text);
     }
