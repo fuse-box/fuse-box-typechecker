@@ -1,11 +1,5 @@
-export interface Lintoptions {
-    fix?: boolean;
-    formatter?: string;
-    formattersDirectory?: string;
-    rulesDirectory?: string;
-}
-export interface OptionsInterface {
-    quit?: boolean;
+export interface TypeCheckerOptions {
+    basePath: string;
     tsConfig: string;
     throwOnSyntactic?: boolean;
     throwOnSemantic?: boolean;
@@ -18,14 +12,31 @@ export interface OptionsInterface {
     yellowOnSemantic?: boolean;
     yellowOnSyntactic?: boolean;
     tsLint?: string;
-    tsConfigObj?: any;
-    basePath: string;
     name?: string;
-    type?: string;
-    finished: boolean;
-    lintoptions?: Lintoptions;
+    lintoptions?: LintOptions;
 }
-export interface MsgInterface {
-    type: string;
-    options?: OptionsInterface;
+export interface LintOptions {
+    fix?: boolean;
+    formatter?: string;
+    formattersDirectory?: string;
+    rulesDirectory?: string;
+}
+export interface InternalTypeCheckerOptions extends TypeCheckerOptions {
+    type?: TypecheckerRunType;
+    tsConfigJsonContent?: any;
+    quit?: boolean;
+}
+export interface IWorkerOptions {
+    type: WorkerCommand;
+    options?: InternalTypeCheckerOptions;
+}
+export declare enum WorkerCommand {
+    inspectCode = 0,
+    printResult = 1,
+}
+export declare enum TypecheckerRunType {
+    sync = "sync",
+    async = "async",
+    watch = "watch",
+    promiseSync = "promisesync",
 }

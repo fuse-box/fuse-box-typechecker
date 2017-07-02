@@ -83,20 +83,20 @@ interface OptionsInterface {
     throwOnGlobal?: boolean; // if you want it to throwe error
     throwOnOptions?: boolean; // if you want it to throwe error
     throwOnTsLint?:  boolean; // trhow on lint errors
-    basePath: string; //base path to use
+    basePath: string; // base path to use
     name?: string; // name, will be displayed when it runs, useful when you have more then 1
-    tsLint:string; //config file (compared to basepath './tslint.json')
-    lintoptions? Lintoptions; // se below, optional
-    yellowLint?: boolean; // use yellow color instead of red on TSLint erros
-    yellowOnOptions?: boolean; // use yellow color instead of red on Options erros
-    yellowOnGlobal?: boolean; // use yellow color instead of red on Global erros
-    yellowOnSemantic?: boolean; // use yellow color instead of red on Semantic erros
-    yellowOnSyntactic?: boolean; // use yellow color instead of red on Syntactic erros
+    tsLint: string; // config file (compared to basepath './tslint.json')
+    lintoptions? LintOptions; // see below, optional
+    yellowLint?: boolean; // use yellow color instead of red on TSLint errors
+    yellowOnOptions?: boolean; // use yellow color instead of red on Options errors
+    yellowOnGlobal?: boolean; // use yellow color instead of red on Global errors
+    yellowOnSemantic?: boolean; // use yellow color instead of red on Semantic errors
+    yellowOnSyntactic?: boolean; // use yellow color instead of red on Syntactic errors
 }
 
 
-interface Lintoptions {
-    fix?: boolean; //dedault is false
+interface LintOptions {
+    fix?: boolean; // default is false
     formatter?: string; //JSON, can not be edited
     formattersDirectory?: string; //default is null
     rulesDirectory?: string; //default is null

@@ -1,6 +1,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var child = require("child_process");
 var path = require("path");
+var interfaces_1 = require("./interfaces");
 var checker_1 = require("./checker");
 var watch = require("watch");
 var ts = require("typescript");
@@ -15,37 +16,37 @@ var TypeHelperClass = (function () {
         var lintOp = this.options.lintoptions;
         this.options.lintoptions = lintOp ? lintOp : {};
         this.options.lintoptions = {
-            fix: this.options.lintoptions.fix || null,
+            fix: this.options.lintoptions.fix || false,
             formatter: 'json',
             formattersDirectory: this.options.lintoptions.formattersDirectory || null,
             rulesDirectory: this.options.lintoptions.rulesDirectory || null
         };
-        var tsconf = this.options.basePath ? path.resolve(this.options.basePath, options.tsConfig) : path.resolve(process.cwd(), options.tsConfig);
-        this.options.tsConfigObj = require(tsconf);
+        var tsconf = this.getPath(options.tsConfig);
+        this.options.tsConfigJsonContent = require(tsconf);
         this.writeText(chalk.yellow("Typechecker tsconfig: " + chalk.white("" + tsconf + '\n')));
         if (options.tsLint) {
-            var tsLint = this.options.basePath ? path.resolve(this.options.basePath, options.tsLint) : path.resolve(process.cwd(), options.tsLint);
+            var tsLint = this.getPath(options.tsLint);
             this.writeText(chalk.yellow("Typechecker tsLint: " + chalk.white("" + tsLint + '\n')));
         }
     }
     TypeHelperClass.prototype.runAsync = function () {
-        var options = Object.assign(this.options, { quit: true, type: 'async' });
+        var options = Object.assign(this.options, { quit: true, type: interfaces_1.TypecheckerRunType.async });
         this.createThread();
-        this.configureWorker(options);
-        this.runWorker();
+        this.inspectCodeWithWorker(options);
+        this.printResultWithWorker();
     };
     TypeHelperClass.prototype.runSync = function () {
-        var options = Object.assign(this.options, { finished: true, type: 'sync' });
-        this.checker.configure(options);
-        return this.checker.typecheck();
+        var options = Object.assign(this.options, { quit: true, type: interfaces_1.TypecheckerRunType.sync });
+        this.checker.inspectCode(options);
+        return this.checker.printResult();
     };
     TypeHelperClass.prototype.runPromise = function () {
         var _this = this;
         return new Promise(function (resolve, reject) {
             try {
-                var options = Object.assign(_this.options, { finished: true, type: 'sync' });
-                _this.checker.configure(options);
-                var errors = _this.checker.typecheck();
+                var options = Object.assign(_this.options, { quit: true, type: interfaces_1.TypecheckerRunType.promiseSync });
+                _this.checker.inspectCode(options);
+                var errors = _this.checker.printResult();
                 resolve(errors);
             }
             catch (err) {
@@ -55,12 +56,12 @@ var TypeHelperClass = (function () {
     };
     TypeHelperClass.prototype.runWatch = function (pathToWatch) {
         var _this = this;
-        var options = Object.assign(this.options, { quit: false, type: 'watch' });
+        var options = Object.assign(this.options, { quit: false, type: interfaces_1.TypecheckerRunType.watch });
         var write = this.writeText;
         var END_LINE = '\n';
         this.createThread();
-        this.configureWorker(options);
-        var basePath = this.options.basePath ? path.resolve(this.options.basePath, pathToWatch) : path.resolve(process.cwd(), pathToWatch);
+        this.inspectCodeWithWorker(options);
+        var basePath = this.getPath(pathToWatch);
         watch.createMonitor(basePath, function (monitor) {
             write(chalk.yellow("Typechecker watching: " + chalk.white("" + basePath + END_LINE)));
             monitor.on('created', function (f) {
@@ -69,18 +70,24 @@ var TypeHelperClass = (function () {
             monitor.on('changed', function (f) {
                 write(END_LINE + chalk.yellow("File changed: " + chalk.white("" + f + END_LINE)));
                 write(chalk.grey("Calling typechecker" + END_LINE));
-                _this.configureWorker(options);
-                _this.runWorker();
+                clearTimeout(_this.watchTimeout);
+                _this.watchTimeout = setTimeout(function () {
+                    _this.inspectCodeWithWorker(options);
+                    _this.printResultWithWorker();
+                }, 500);
             });
             monitor.on('removed', function (f) {
                 write(END_LINE + chalk.yellow("File removed: " + chalk.white("" + f + END_LINE)));
                 write(chalk.grey("Calling typechecker" + END_LINE));
-                _this.configureWorker(options);
-                _this.runWorker();
+                clearTimeout(_this.watchTimeout);
+                _this.watchTimeout = setTimeout(function () {
+                    _this.inspectCodeWithWorker(options);
+                    _this.printResultWithWorker();
+                }, 500);
             });
             _this.monitor = monitor;
         });
-        this.runWorker();
+        this.printResultWithWorker();
     };
     TypeHelperClass.prototype.killWorker = function () {
         if (this.worker) {
@@ -90,28 +97,37 @@ var TypeHelperClass = (function () {
             this.monitor.stop();
         }
     };
-    TypeHelperClass.prototype.configureWorker = function (options) {
-        this.worker.send({ type: 'configure', options: options });
+    TypeHelperClass.prototype.inspectCodeWithWorker = function (options) {
+        this.worker.send({ type: interfaces_1.WorkerCommand.inspectCode, options: options });
+        this.isWorkerInspectPreformed = true;
     };
-    TypeHelperClass.prototype.runWorker = function () {
-        this.worker.send({ type: 'run' });
+    TypeHelperClass.prototype.printResultWithWorker = function () {
+        if (this.isWorkerInspectPreformed) {
+            this.worker.send({ type: interfaces_1.WorkerCommand.printResult });
+        }
+        else {
+            this.writeText('You can not run pront before you have inspected code first');
+        }
     };
     TypeHelperClass.prototype.createThread = function () {
         var _this = this;
-        this.worker = child.fork(path.join(__dirname, 'worker.js'), [], this.options);
+        this.worker = child.fork(path.join(__dirname, 'worker.js'), []);
         this.worker.on('message', function (err) {
             if (err === 'error') {
-                console.log('error typechecker');
+                _this.writeText('error typechecker');
                 process.exit(1);
             }
             else {
-                console.log('killing worker');
+                _this.writeText('killing worker');
                 _this.killWorker();
             }
         });
     };
     TypeHelperClass.prototype.writeText = function (text) {
         ts.sys.write(text);
+    };
+    TypeHelperClass.prototype.getPath = function (usePath) {
+        return this.options.basePath ? path.resolve(this.options.basePath, usePath) : path.resolve(process.cwd(), usePath);
     };
     return TypeHelperClass;
 }());

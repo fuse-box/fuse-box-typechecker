@@ -23,4 +23,4 @@ var doTypeCheck = async() => {
 // doTypeCheck();
 // checker.runSync()
 // checker.runAsync()
- checker.runWatch('./src')
+checker.runWatch('./src')

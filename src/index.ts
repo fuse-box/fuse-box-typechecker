@@ -30,15 +30,15 @@ export class TypeHelperClass {
         this.options.name = this.options.name ? ':' + this.options.name : '';
 
         // tslint options
-        let lintOp = this.options.lintOptions;
-        this.options.lintOptions = lintOp ? lintOp : ({} as LintOptions);
+        let lintOp = this.options.lintoptions;
+        this.options.lintoptions = lintOp ? lintOp : ({} as LintOptions);
 
         // fix tslint options so tslint do not complain
-        this.options.lintOptions = {
-            fix: this.options.lintOptions.fix || false, // <- this can be useful to have
+        this.options.lintoptions = {
+            fix: this.options.lintoptions.fix || false, // <- this can be useful to have
             formatter: 'json',
-            formattersDirectory: this.options.lintOptions.formattersDirectory || null,
-            rulesDirectory: this.options.lintOptions.rulesDirectory || null
+            formattersDirectory: this.options.lintoptions.formattersDirectory || null,
+            rulesDirectory: this.options.lintoptions.rulesDirectory || null
         };
 
         // get tsconfig path and options
