@@ -11,7 +11,12 @@ process.on('message', function (msg: IWorkerOptions) {
 
         // tell checker to inspect code
         case WorkerCommand.inspectCode:
-            checker.inspectCode(msg.options);
+            if (msg.options) {
+                checker.inspectCode(msg.options);
+            } else {
+                throw new Error('You tried to inspect code without ts/lint options');
+            }
+
             break;
 
         // tell checker to print result
