@@ -5,10 +5,17 @@ var checker = new checker_1.Checker();
 process.on('message', function (msg) {
     switch (msg.type) {
         case interfaces_1.WorkerCommand.inspectCode:
-            checker.inspectCode(msg.options);
+            if (msg.options) {
+                checker.inspectCode(msg.options);
+            }
+            else {
+                throw new Error('You tried to inspect code without ts/lint options');
+            }
             break;
         case interfaces_1.WorkerCommand.printResult:
             checker.printResult(true);
             break;
     }
 });
+
+//# sourceMappingURL=worker.js.map

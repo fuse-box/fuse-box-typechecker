@@ -10,7 +10,7 @@ var TypeHelperClass = (function () {
     function TypeHelperClass(options) {
         this.checker = new checker_1.Checker();
         this.options = options;
-        this.options.basePath = options.basePath ? path.resolve(process.cwd(), options.basePath) : null;
+        this.options.basePath = options.basePath ? path.resolve(process.cwd(), options.basePath) : process.cwd();
         this.writeText(chalk.yellow('\n' + "Typechecker basepath: " + chalk.white("" + this.options.basePath + '\n')));
         this.options.name = this.options.name ? ':' + this.options.name : '';
         var lintOp = this.options.lintoptions;
@@ -135,3 +135,5 @@ exports.TypeHelperClass = TypeHelperClass;
 exports.TypeHelper = function (options) {
     return new TypeHelperClass(options);
 };
+
+//# sourceMappingURL=index.js.map

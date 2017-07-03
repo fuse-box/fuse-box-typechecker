@@ -3,9 +3,9 @@ var ts = require("typescript");
 var chalk = require("chalk");
 var tslint = require("tslint");
 var path = require("path");
+var interfaces_1 = require("./interfaces");
 var Checker = (function () {
     function Checker() {
-        this.END_LINE = '\n';
     }
     Checker.prototype.inspectCode = function (options) {
         var _this = this;
@@ -17,8 +17,8 @@ var Checker = (function () {
             useCaseSensitiveFileNames: true
         };
         var inspectionTimeStart = new Date().getTime();
-        var parsed = ts.parseJsonConfigFileContent(this.options.tsConfigJsonContent, parseConfigHost, options.basePath || '.', null);
-        this.program = ts.createProgram(parsed.fileNames, parsed.options, null, this.program);
+        var parsed = ts.parseJsonConfigFileContent(this.options.tsConfigJsonContent, parseConfigHost, options.basePath || '.', undefined);
+        this.program = ts.createProgram(parsed.fileNames, parsed.options, undefined, this.program);
         this.tsDiagnostics = [];
         var optionsErrors = this.program.getOptionsDiagnostics().map(function (obj) {
             obj._type = 'options';
@@ -61,16 +61,15 @@ var Checker = (function () {
         var print = this.writeText;
         var program = this.program;
         var options = this.options;
-        var END_LINE = this.END_LINE;
-        print(chalk.bgWhite(chalk.black(END_LINE + "Typechecker plugin(" + options.type + ") " + options.name)) +
-            chalk.white("." + END_LINE));
-        print(chalk.grey("Time:" + new Date().toString() + " " + END_LINE));
+        print(chalk.bgWhite(chalk.black(interfaces_1.END_LINE + "Typechecker plugin(" + options.type + ") " + options.name)) +
+            chalk.white("." + interfaces_1.END_LINE));
+        print(chalk.grey("Time:" + new Date().toString() + " " + interfaces_1.END_LINE));
         var lintErrorMessages = this.processLintFiles();
         var tsErrorMessages = this.processTsDiagnostics();
         var allErrors = tsErrorMessages.concat(lintErrorMessages);
         if (allErrors.length > 0) {
-            allErrors.unshift(chalk.underline(END_LINE + "File errors") + chalk.white(':'));
-            print(allErrors.join(END_LINE));
+            allErrors.unshift(chalk.underline(interfaces_1.END_LINE + "File errors") + chalk.white(':'));
+            print(allErrors.join(interfaces_1.END_LINE));
         }
         var optionsErrors = program.getOptionsDiagnostics().length;
         var globalErrors = program.getGlobalDiagnostics().length;
@@ -79,18 +78,18 @@ var Checker = (function () {
         var tsLintErrors = lintErrorMessages.length;
         var totalsErrors = optionsErrors + globalErrors + syntacticErrors + semanticErrors + tsLintErrors;
         if (totalsErrors) {
-            print(chalk.underline("" + END_LINE + END_LINE + "Errors") +
-                chalk.white(":" + totalsErrors + END_LINE));
-            print(chalk[optionsErrors ? options.yellowOnOptions ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 Options: " + optionsErrors + END_LINE));
-            print(chalk[globalErrors ? options.yellowOnGlobal ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 Global: " + globalErrors + END_LINE));
-            print(chalk[syntacticErrors ? options.yellowOnSyntactic ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 Syntactic: " + syntacticErrors + END_LINE));
-            print(chalk[semanticErrors ? options.yellowOnSemantic ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 Semantic: " + semanticErrors + END_LINE));
-            print(chalk[tsLintErrors ? options.yellowOnLint ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 TsLint: " + tsLintErrors + END_LINE + END_LINE));
+            print(chalk.underline("" + interfaces_1.END_LINE + interfaces_1.END_LINE + "Errors") +
+                chalk.white(":" + totalsErrors + interfaces_1.END_LINE));
+            print(chalk[optionsErrors ? options.yellowOnOptions ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 Options: " + optionsErrors + interfaces_1.END_LINE));
+            print(chalk[globalErrors ? options.yellowOnGlobal ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 Global: " + globalErrors + interfaces_1.END_LINE));
+            print(chalk[syntacticErrors ? options.yellowOnSyntactic ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 Syntactic: " + syntacticErrors + interfaces_1.END_LINE));
+            print(chalk[semanticErrors ? options.yellowOnSemantic ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 Semantic: " + semanticErrors + interfaces_1.END_LINE));
+            print(chalk[tsLintErrors ? options.yellowOnLint ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 TsLint: " + tsLintErrors + interfaces_1.END_LINE + interfaces_1.END_LINE));
         }
         else {
-            print(chalk.grey("All good, no errors :-)" + END_LINE));
+            print(chalk.grey("All good, no errors :-)" + interfaces_1.END_LINE));
         }
-        print(chalk.grey("Typechecking time: " + this.elapsedInspectionTime + "ms" + END_LINE));
+        print(chalk.grey("Typechecking time: " + this.elapsedInspectionTime + "ms" + interfaces_1.END_LINE));
         switch (true) {
             case options.throwOnGlobal && globalErrors > 0:
             case options.throwOnOptions && optionsErrors > 0:
@@ -106,14 +105,14 @@ var Checker = (function () {
                 process.exit(1);
                 break;
             case options.quit && isWorker:
-                print(chalk.grey("Quiting typechecker" + END_LINE + END_LINE));
+                print(chalk.grey("Quiting typechecker" + interfaces_1.END_LINE + interfaces_1.END_LINE));
                 process.send('done');
                 break;
             case options.quit && !isWorker:
-                print(chalk.grey("Quiting typechecker" + END_LINE + END_LINE));
+                print(chalk.grey("Quiting typechecker" + interfaces_1.END_LINE + interfaces_1.END_LINE));
                 break;
             default:
-                print(chalk.grey("Keeping typechecker alive" + END_LINE + END_LINE));
+                print(chalk.grey("Keeping typechecker alive" + interfaces_1.END_LINE + interfaces_1.END_LINE));
         }
         return totalsErrors;
     };
@@ -161,7 +160,6 @@ var Checker = (function () {
     };
     Checker.prototype.processTsDiagnostics = function () {
         var options = this.options;
-        var END_LINE = this.END_LINE;
         var tsErrorMessages = [];
         if (this.tsDiagnostics.length > 0) {
             tsErrorMessages = this.tsDiagnostics.map(function (diag) {
@@ -189,7 +187,7 @@ var Checker = (function () {
                     message += chalk.white("(" + ts.DiagnosticCategory[diag.category] + ":");
                     message += chalk.white("TS" + diag.code + ")");
                 }
-                message += ' ' + ts.flattenDiagnosticMessageText(diag.messageText, END_LINE);
+                message += ' ' + ts.flattenDiagnosticMessageText(diag.messageText, interfaces_1.END_LINE);
                 return message;
             });
         }
@@ -198,3 +196,5 @@ var Checker = (function () {
     return Checker;
 }());
 exports.Checker = Checker;
+
+//# sourceMappingURL=checker.js.map

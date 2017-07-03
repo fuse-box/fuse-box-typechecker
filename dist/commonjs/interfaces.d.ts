@@ -18,11 +18,11 @@ export interface TypeCheckerOptions {
 export interface LintOptions {
     fix?: boolean;
     formatter?: string;
-    formattersDirectory?: string;
-    rulesDirectory?: string;
+    formattersDirectory?: string | null;
+    rulesDirectory?: string | null;
 }
 export interface InternalTypeCheckerOptions extends TypeCheckerOptions {
-    type?: TypecheckerRunType;
+    type: TypecheckerRunType;
     tsConfigJsonContent?: any;
     quit?: boolean;
 }
@@ -35,8 +35,9 @@ export declare enum WorkerCommand {
     printResult = 1,
 }
 export declare enum TypecheckerRunType {
-    sync = "sync",
-    async = "async",
-    watch = "watch",
-    promiseSync = "promisesync",
+    sync,
+    async,
+    watch,
+    promiseSync,
 }
+export declare const END_LINE = "\n";
