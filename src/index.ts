@@ -23,7 +23,7 @@ export class TypeHelperClass {
         this.options = options;
 
         // get/set base path
-        this.options.basePath = options.basePath ? path.resolve(process.cwd(), options.basePath) : null;
+        this.options.basePath = options.basePath ? path.resolve(process.cwd(), options.basePath) : process.cwd();
         this.writeText(chalk.yellow(`${'\n'}Typechecker basepath: ${chalk.white(`${this.options.basePath}${'\n'}`)}`));
 
         // get name

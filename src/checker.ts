@@ -2,7 +2,7 @@ import * as ts from 'typescript';
 import * as chalk from 'chalk';
 import * as tslint from 'tslint';
 import * as path from 'path';
-import { InternalTypeCheckerOptions } from './interfaces';
+import { InternalTypeCheckerOptions, END_LINE } from './interfaces';
 
 
 export class Checker {
@@ -21,9 +21,6 @@ export class Checker {
 
     // lint result returned by tsLint
     private lintFileResult: tslint.LintResult[];
-
-    // const
-    private END_LINE = '\n';
 
 
     constructor() {
@@ -47,8 +44,8 @@ export class Checker {
         let inspectionTimeStart = new Date().getTime();
 
         // get program and get diagnostics and store them diagnostics
-        const parsed = ts.parseJsonConfigFileContent(this.options.tsConfigJsonContent, parseConfigHost, options.basePath || '.', null);
-        this.program = ts.createProgram(parsed.fileNames, parsed.options, null, this.program);
+        const parsed = ts.parseJsonConfigFileContent(this.options.tsConfigJsonContent, parseConfigHost, options.basePath || '.', undefined);
+        this.program = ts.createProgram(parsed.fileNames, parsed.options, undefined, this.program);
 
 
         // get errors and tag them;
@@ -134,7 +131,6 @@ export class Checker {
         const print = this.writeText;
         const program = this.program;
         const options = this.options;
-        const END_LINE = this.END_LINE;
 
         // print header
         print(
@@ -251,7 +247,7 @@ export class Checker {
                 print(chalk.grey(`Quiting typechecker${END_LINE}${END_LINE}`));
 
                 // since Im a worker I need to send back a message;
-                process.send('done');
+                (<any>process).send('done');
                 break;
 
             // if quit is set and not worker, then just post messeage
@@ -347,7 +343,6 @@ export class Checker {
     private processTsDiagnostics(): string[] {
 
         const options = this.options;
-        const END_LINE = this.END_LINE;
         let tsErrorMessages: string[] = [];
 
         if (this.tsDiagnostics.length > 0) {

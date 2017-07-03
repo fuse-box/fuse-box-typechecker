@@ -6,8 +6,11 @@ var WorkerCommand;
 })(WorkerCommand = exports.WorkerCommand || (exports.WorkerCommand = {}));
 var TypecheckerRunType;
 (function (TypecheckerRunType) {
-    TypecheckerRunType["sync"] = "sync";
-    TypecheckerRunType["async"] = "async";
-    TypecheckerRunType["watch"] = "watch";
-    TypecheckerRunType["promiseSync"] = "promisesync";
+    TypecheckerRunType[TypecheckerRunType["sync"] = 'syns'] = "sync";
+    TypecheckerRunType[TypecheckerRunType["async"] = 'async'] = "async";
+    TypecheckerRunType[TypecheckerRunType["watch"] = 'watch'] = "watch";
+    TypecheckerRunType[TypecheckerRunType["promiseSync"] = 'promisesync'] = "promiseSync";
 })(TypecheckerRunType = exports.TypecheckerRunType || (exports.TypecheckerRunType = {}));
+exports.END_LINE = '\n';
+
+//# sourceMappingURL=interfaces.js.map

@@ -4,8 +4,8 @@ var sourcemaps = require('gulp-sourcemaps');
 var plumber = require('gulp-plumber');
 var merge = require('merge2');
 var paths = require('./paths');
+var changed = require('gulp-changed');
 var runSequence = require('run-sequence');
-
 
 
 /**
@@ -29,11 +29,21 @@ var tsProjectCJS = ts.createProject('./tsconfig.json', {
 function build(tsProject, outputPath) {
   var tsResult = gulp.src(paths.dtsSrc.concat(paths.source))
     .pipe(plumber())
+    .pipe(changed(outputPath, {
+      extension: '.ts'
+    }))
+    .pipe(sourcemaps.init({
+      loadMaps: true
+    }))
     .pipe(tsProject());
   return merge([ // Merge the two output streams, so this task is finished when the IO of both operations is done. 
       tsResult.dts.pipe(gulp.dest(outputPath)),
       tsResult.js.pipe(gulp.dest(outputPath))
     ])
+    .pipe(sourcemaps.write('.', {
+      includeContent: true,
+      sourceRoot: paths.root
+    }))
     .pipe(gulp.dest(outputPath))
 }
 
@@ -60,4 +70,3 @@ gulp.task('build', function (callback) {
     callback
   );
 });
-

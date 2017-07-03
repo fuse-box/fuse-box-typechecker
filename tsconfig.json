@@ -13,11 +13,13 @@
     "noUnusedParameters": true,
     "suppressImplicitAnyIndexErrors": true,
     "noFallthroughCasesInSwitch": true,
+    "strictNullChecks": true,
     "noImplicitThis": false,
     "noUnusedLocals": true,
     "allowUnreachableCode":false,
     "removeComments": true,
     "emitDecoratorMetadata": true,
+    "preserveConstEnums":true,
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "lib": ["es2015","es2017", "dom"]

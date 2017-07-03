@@ -9,6 +9,8 @@
             "request": "launch",
             "name": "Launch Program",
             "program": "${workspaceRoot}\\test.js",
+            "smartStep":true,
+            "sourceMaps": true,
             "outFiles": [
                 "${workspaceRoot}/out/**/*.js"
             ]
