@@ -1,6 +1,6 @@
 
 // options they can use to create the typechecker
-export interface TypeCheckerOptions {
+export interface ITypeCheckerOptions {
     // base path
     basePath: string;
 
@@ -29,11 +29,11 @@ export interface TypeCheckerOptions {
 
     // lint options that can be passed in
     // todo: rename to lintOptions, but thats a breaking change, so will do that later
-    lintoptions?: LintOptions;
+    lintoptions?: ILintOptions;
 }
 
 // lint options,this is the same as tsLint uses all paths will be from basepath
-export interface LintOptions {
+export interface ILintOptions {
     fix?: boolean;
     formatter?: string;
     formattersDirectory?: string | null;
@@ -41,7 +41,7 @@ export interface LintOptions {
 }
 
 // extended internal options, needed for some interal usage
-export interface InternalTypeCheckerOptions extends TypeCheckerOptions {
+export interface IInternalTypeCheckerOptions extends ITypeCheckerOptions {
     type: TypecheckerRunType;
     tsConfigJsonContent?: any;
     quit?: boolean;
@@ -50,7 +50,7 @@ export interface InternalTypeCheckerOptions extends TypeCheckerOptions {
 // params used when calling worker to tell it what to do
 export interface IWorkerOptions {
     type: WorkerCommand;
-    options?: InternalTypeCheckerOptions;
+    options?: IInternalTypeCheckerOptions;
 }
 
 // run options for worker

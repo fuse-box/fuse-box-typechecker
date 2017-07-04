@@ -11,9 +11,16 @@
     "member-access": true,
     "member-ordering": [
       true,
-      "public-before-private",
-      "static-before-instance",
-      "variables-before-functions"
+      {
+        "order": [
+          "static-field",
+          "instance-field",
+          "constructor",
+          "public-instance-method",
+          "protected-instance-method",
+          "private-instance-method"
+        ]
+      }
     ],
     "no-arg": true,
     "no-bitwise": true,
@@ -29,7 +36,7 @@
     "no-duplicate-variable": true,
     "no-empty": true,
     "no-eval": true,
-  "no-inferrable-types": [true],
+    "no-inferrable-types": [true],
     "no-shadowed-variable": true,
     "no-string-literal": false,
     "no-switch-case-fall-through": true,
@@ -67,6 +74,7 @@
       "check-operator",
       "check-separator",
       "check-type"
-    ]
+    ],
+    "interface-name": [true, "always-prefix"]
   }
 }

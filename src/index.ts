@@ -2,7 +2,7 @@
 
 import * as child from 'child_process';
 import * as path from 'path';
-import { LintOptions, TypeCheckerOptions, WorkerCommand, TypecheckerRunType, InternalTypeCheckerOptions } from './interfaces';
+import { ILintOptions, ITypeCheckerOptions, WorkerCommand, TypecheckerRunType, IInternalTypeCheckerOptions } from './interfaces';
 import { Checker } from './checker';
 import * as watch from 'watch';
 import * as ts from 'typescript';
@@ -10,7 +10,7 @@ import * as chalk from 'chalk';
 
 
 export class TypeHelperClass {
-    private options: TypeCheckerOptions;
+    private options: ITypeCheckerOptions;
     private worker: child.ChildProcess;
     private checker: Checker;
     private monitor: any;
@@ -18,7 +18,7 @@ export class TypeHelperClass {
     private isWorkerInspectPreformed: boolean;
 
 
-    constructor(options: TypeCheckerOptions) {
+    constructor(options: ITypeCheckerOptions) {
         this.checker = new Checker();
         this.options = options;
 
@@ -31,7 +31,7 @@ export class TypeHelperClass {
 
         // tslint options
         let lintOp = this.options.lintoptions;
-        this.options.lintoptions = lintOp ? lintOp : ({} as LintOptions);
+        this.options.lintoptions = lintOp ? lintOp : ({} as ILintOptions);
 
         // fix tslint options so tslint do not complain
         this.options.lintoptions = {
@@ -43,7 +43,7 @@ export class TypeHelperClass {
 
         // get tsconfig path and options
         let tsconf = this.getPath(options.tsConfig);
-        (<InternalTypeCheckerOptions>this.options).tsConfigJsonContent = require(tsconf);
+        (<IInternalTypeCheckerOptions>this.options).tsConfigJsonContent = require(tsconf);
         this.writeText(chalk.yellow(`Typechecker tsconfig: ${chalk.white(`${tsconf}${'\n'}`)}`));
 
         // get tslint path and options
@@ -62,7 +62,7 @@ export class TypeHelperClass {
     public runAsync(): void {
 
         // set options, add if it need to quit and run type
-        let options: InternalTypeCheckerOptions = Object.assign(this.options, { quit: true, type: TypecheckerRunType.async });
+        let options: IInternalTypeCheckerOptions = Object.assign(this.options, { quit: true, type: TypecheckerRunType.async });
 
         // create thread
         this.createThread();
@@ -82,7 +82,7 @@ export class TypeHelperClass {
     public runSync(): number {
 
         // set options, add if it need to quit and run type
-        let options: InternalTypeCheckerOptions = Object.assign(this.options, { quit: true, type: TypecheckerRunType.sync });
+        let options: IInternalTypeCheckerOptions = Object.assign(this.options, { quit: true, type: TypecheckerRunType.sync });
 
         // inspect our code
         this.checker.inspectCode(options);
@@ -105,7 +105,7 @@ export class TypeHelperClass {
             try {
 
                 // set options, add if it need to quit and run type
-                let options: InternalTypeCheckerOptions = Object.assign(this.options, { quit: true, type: TypecheckerRunType.promiseSync });
+                let options: IInternalTypeCheckerOptions = Object.assign(this.options, { quit: true, type: TypecheckerRunType.promiseSync });
 
                 // inspect our code
                 this.checker.inspectCode(options);
@@ -130,7 +130,7 @@ export class TypeHelperClass {
     public runWatch(pathToWatch: string): void {
 
         // set options, add if it need to quit and run type
-        let options: InternalTypeCheckerOptions = Object.assign(this.options, { quit: false, type: TypecheckerRunType.watch });
+        let options: IInternalTypeCheckerOptions = Object.assign(this.options, { quit: false, type: TypecheckerRunType.watch });
 
         // const
         const write = this.writeText;
@@ -218,7 +218,7 @@ export class TypeHelperClass {
      * Configure worker, internal function
      *
      */
-    private inspectCodeWithWorker(options: TypeCheckerOptions): void {
+    private inspectCodeWithWorker(options: ITypeCheckerOptions): void {
         this.worker.send({ type: WorkerCommand.inspectCode, options: options });
 
         // we set this so we can stop worker print from trying to run
@@ -296,7 +296,7 @@ export class TypeHelperClass {
 }
 
 // return new typechecker
-export const TypeHelper = (options: TypeCheckerOptions): TypeHelperClass => {
+export const TypeHelper = (options: ITypeCheckerOptions): TypeHelperClass => {
     return new TypeHelperClass(options);
 };
 
