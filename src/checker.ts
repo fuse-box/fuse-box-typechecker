@@ -2,13 +2,13 @@ import * as ts from 'typescript';
 import * as chalk from 'chalk';
 import * as tslint from 'tslint';
 import * as path from 'path';
-import { InternalTypeCheckerOptions, END_LINE } from './interfaces';
+import { IInternalTypeCheckerOptions, END_LINE } from './interfaces';
 
 
 export class Checker {
 
     // options that will be used when checking and printing results
-    private options: InternalTypeCheckerOptions;
+    private options: IInternalTypeCheckerOptions;
 
     // typescript program
     private program: ts.Program;
@@ -28,7 +28,7 @@ export class Checker {
     }
 
 
-    public inspectCode(options: InternalTypeCheckerOptions) {
+    public inspectCode(options: IInternalTypeCheckerOptions) {
         this.options = options;
 
 

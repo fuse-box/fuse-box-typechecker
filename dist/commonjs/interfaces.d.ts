@@ -1,4 +1,4 @@
-export interface TypeCheckerOptions {
+export interface ITypeCheckerOptions {
     basePath: string;
     tsConfig: string;
     throwOnSyntactic?: boolean;
@@ -13,22 +13,22 @@ export interface TypeCheckerOptions {
     yellowOnSyntactic?: boolean;
     tsLint?: string;
     name?: string;
-    lintoptions?: LintOptions;
+    lintoptions?: ILintOptions;
 }
-export interface LintOptions {
+export interface ILintOptions {
     fix?: boolean;
     formatter?: string;
     formattersDirectory?: string | null;
     rulesDirectory?: string | null;
 }
-export interface InternalTypeCheckerOptions extends TypeCheckerOptions {
+export interface IInternalTypeCheckerOptions extends ITypeCheckerOptions {
     type: TypecheckerRunType;
     tsConfigJsonContent?: any;
     quit?: boolean;
 }
 export interface IWorkerOptions {
     type: WorkerCommand;
-    options?: InternalTypeCheckerOptions;
+    options?: IInternalTypeCheckerOptions;
 }
 export declare enum WorkerCommand {
     inspectCode = 0,
