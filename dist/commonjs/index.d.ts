@@ -1,4 +1,4 @@
-import { TypeCheckerOptions } from './interfaces';
+import { ITypeCheckerOptions } from './interfaces';
 export declare class TypeHelperClass {
     private options;
     private worker;
@@ -6,7 +6,7 @@ export declare class TypeHelperClass {
     private monitor;
     private watchTimeout;
     private isWorkerInspectPreformed;
-    constructor(options: TypeCheckerOptions);
+    constructor(options: ITypeCheckerOptions);
     runAsync(): void;
     runSync(): number;
     runPromise(): Promise<number>;
@@ -18,4 +18,4 @@ export declare class TypeHelperClass {
     private writeText(text);
     private getPath(usePath);
 }
-export declare const TypeHelper: (options: TypeCheckerOptions) => TypeHelperClass;
+export declare const TypeHelper: (options: ITypeCheckerOptions) => TypeHelperClass;

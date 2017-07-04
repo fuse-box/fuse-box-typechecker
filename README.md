@@ -76,7 +76,7 @@ doTypeCheck();
 
 
 ```typescript
-interface OptionsInterface {
+interface IOptionsInterface {
     tsConfig: string; //config file (compared to basepath './tsconfig.json')
     throwOnSyntactic?: boolean; // if you want it to throwe error
     throwOnSemantic?: boolean; // if you want it to throwe error
@@ -86,7 +86,7 @@ interface OptionsInterface {
     basePath: string; // base path to use
     name?: string; // name, will be displayed when it runs, useful when you have more then 1
     tsLint: string; // config file (compared to basepath './tslint.json')
-    lintoptions? LintOptions; // see below, optional
+    lintoptions? ILintOptions; // see below, optional
     yellowLint?: boolean; // use yellow color instead of red on TSLint errors
     yellowOnOptions?: boolean; // use yellow color instead of red on Options errors
     yellowOnGlobal?: boolean; // use yellow color instead of red on Global errors
@@ -95,7 +95,7 @@ interface OptionsInterface {
 }
 
 
-interface LintOptions {
+interface ILintOptions {
     fix?: boolean; // default is false
     formatter?: string; //JSON, can not be edited
     formattersDirectory?: string; //default is null
