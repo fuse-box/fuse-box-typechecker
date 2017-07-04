@@ -1,3 +1,4 @@
+"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var checker_1 = require("./checker");
 var interfaces_1 = require("./interfaces");

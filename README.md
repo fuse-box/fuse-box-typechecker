@@ -5,6 +5,14 @@ Simple helper to do typechecking
 ```npm install git://github.com/fuse-box/fuse-box-typechecker --save-dev```
 
 
+### Note
+This have been tested with
+ * "tslint": "^5.4.3",
+ * "typescript": "^2.4.1"
+
+So this might not work with earlier version if typescript and tslint (tsLint 3 will fail, been tested).
+
+
 ### How to use
 ```javascript
 
