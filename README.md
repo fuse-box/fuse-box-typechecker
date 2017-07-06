@@ -78,6 +78,82 @@ doTypeCheck();
 
 ```
 
+### How you can add to dev bundle process
+
+```javascript
+
+//load all fusebox stuff, not showing here
+
+// load
+var TypeHelper = require('fuse-box-typechecker').TypeHelper
+
+//create type chacker, it will display paths its using now
+var typeHelper = TypeHelper({
+    tsConfig: './tsconfig.json',
+    basePath:'./',
+    tsLint:'./tslint.json', //you do not haveto do tslint too.. just here to show how.
+    name: 'App typechecker'
+})
+
+
+
+
+// this task will start fusebox
+var buildFuse = (production) => {
+
+    // init fusebox
+    const fuse = FuseBox.init({
+        homeDir: './src',
+        output: './dist/$name.js',
+        log: false,
+        plugins: [
+            autoLoadAureliaLoaders(),
+            CSSPlugin(),
+            HTMLPlugin(),
+            RawPlugin(['.css'])
+        ]
+    });
+
+
+
+    // vendor bundle
+    fuse.bundle("vendor")
+        .cache(true)
+        .target('browser')
+        .instructions(` 
+        + whatwg-fetch
+        + something-else-u-need
+        `)
+
+
+
+    // app bundle
+    let app = fuse.bundle('app')
+        .instructions(`
+            > [main.ts]
+            + [**/*.{ts,html,css}]
+        `)
+        .target('browser')
+
+
+    // is production build    
+    production ? null : app.watch()
+        .cache(false)
+        .sourceMaps(true)
+        .completed(proc => {
+            console.log(`\x1b[36m%s\x1b[0m`, `client bundled`);
+            // run the type checking
+            typeHelper.runSync();
+        });
+
+    // run
+    return fuse.run()
+}
+
+```
+
+
+
 ### Output sample
 ![Output sample](https://github.com/fuse-box/fuse-box-typechecker/raw/master/image/sampleNew2.png "Output sample")
 
