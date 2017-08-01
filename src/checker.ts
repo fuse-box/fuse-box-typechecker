@@ -209,12 +209,10 @@ export class Checker {
 
         // print if any
         if (allErrors.length > 0) {
-
             // insert header
-            // allErrors.unshift(
-            //     chalk.underline(`${END_LINE}File errors`) + chalk.white(':') // fix windows
-            // );
-
+            allErrors.unshift(
+                chalk.underline(`${END_LINE}File errors`) + chalk.white(':') // fix windows
+            );
             print(allErrors.join(END_LINE));
         }
 
@@ -334,7 +332,7 @@ export class Checker {
      *
      */
     private processLintFiles(): ITSLintError[] {
-        const options = this.options;
+      const options = this.options;
 			const erroredLintFiles = this.lintFileResult
 				.filter((fileResult: tslint.LintResult) => fileResult.failures)
 			const errors = erroredLintFiles
@@ -342,47 +340,47 @@ export class Checker {
 					(fileResult: tslint.LintResult) =>
 						fileResult.failures.map((failure: any) => ({
 							fileName: failure.fileName.split(options.basePath).join('.'),
-                            line: failure.startPosition.lineAndCharacter.line,
-                            char: failure.startPosition.lineAndCharacter.character,
-                            ruleSeverity: failure.ruleSeverity.charAt(0).toUpperCase() + failure.ruleSeverity.slice(1),
-                            ruleName: failure.ruleName,
+							line: failure.startPosition.lineAndCharacter.line,
+							char: failure.startPosition.lineAndCharacter.character,
+							ruleSeverity: failure.ruleSeverity.charAt(0).toUpperCase() + failure.ruleSeverity.slice(1),
+							ruleName: failure.ruleName,
 							color: options.yellowOnLint ? 'yellow' : 'red',
-                            failure: failure.failure
+							failure: failure.failure
 						}))).reduce((acc, curr) => acc.concat(curr), [])
 			return errors
-        }
+    }
 
     /**
      * loops ts failures and return pretty failure string ready to be printed
      *
      */
   private processTsDiagnostics(): ITSError[] {
-        const options = this.options;
+    const options = this.options;
     return this.tsDiagnostics
 			.filter((diag: any) => diag.file)
 			.map((diag: any) => {
-                // set color from options
-                let color: string;
-                switch (diag._type) {
-                    case 'options':
-                        color = options.yellowOnOptions ? 'yellow' : 'red';
-                        break;
-                    case 'global':
-                        color = options.yellowOnGlobal ? 'yellow' : 'red';
-                        break;
-                    case 'syntactic':
-                        color = options.yellowOnSyntactic ? 'yellow' : 'red';
-                        break;
-                    case 'semantic':
-                        color = options.yellowOnSemantic ? 'yellow' : 'red';
-                        break;
-                    default:
-                        color = 'red';
-                }
-                    const {
-                        line,
-                        character
-                    } = diag.file.getLineAndCharacterOfPosition(diag.start);
+				// set color from options
+				let color: string;
+				switch (diag._type) {
+					case 'options':
+						color = options.yellowOnOptions ? 'yellow' : 'red';
+						break;
+					case 'global':
+						color = options.yellowOnGlobal ? 'yellow' : 'red';
+						break;
+					case 'syntactic':
+						color = options.yellowOnSyntactic ? 'yellow' : 'red';
+						break;
+					case 'semantic':
+						color = options.yellowOnSemantic ? 'yellow' : 'red';
+						break;
+					default:
+						color = 'red';
+				}
+				const {
+					line,
+					character
+				} = diag.file.getLineAndCharacterOfPosition(diag.start);
 				return {
 					fileName: diag.file.fileName.split(options.basePath).join('.'),
 					line: line + 1, // `(${line + 1},${character + 1})`,
@@ -391,7 +389,7 @@ export class Checker {
 					color: color,
 					category: `${ts.DiagnosticCategory[diag.category]}:`,
 					code: `TS${diag.code}`
-                }
-            });
-        }
+				}
+			});
+	}
 }
