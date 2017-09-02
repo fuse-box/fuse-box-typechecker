@@ -16,6 +16,10 @@ process.on('message', function (msg) {
         case interfaces_1.WorkerCommand.printResult:
             checker.printResult(true);
             break;
+        case interfaces_1.WorkerCommand.pushResult:
+            if (process.send)
+                process.send({ type: 'result', result: checker.printResult(true) });
+            break;
     }
 });
 

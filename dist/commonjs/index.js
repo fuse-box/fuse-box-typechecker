@@ -30,11 +30,16 @@ var TypeHelperClass = (function () {
             this.writeText(chalk.yellow("Typechecker tsLint: " + chalk.white("" + tsLint + '\n')));
         }
     }
-    TypeHelperClass.prototype.runAsync = function () {
+    TypeHelperClass.prototype.runAsync = function (callback) {
         var options = Object.assign(this.options, { quit: true, type: interfaces_1.TypecheckerRunType.async });
-        this.createThread();
+        this.createThread(callback);
         this.inspectCodeWithWorker(options);
-        this.printResultWithWorker();
+        if (callback) {
+            this.pushResultWithWorker();
+        }
+        else {
+            this.printResultWithWorker();
+        }
     };
     TypeHelperClass.prototype.runSync = function () {
         var options = Object.assign(this.options, { quit: true, type: interfaces_1.TypecheckerRunType.sync });
@@ -110,11 +115,22 @@ var TypeHelperClass = (function () {
             this.writeText('You can not run pront before you have inspected code first');
         }
     };
-    TypeHelperClass.prototype.createThread = function () {
+    TypeHelperClass.prototype.pushResultWithWorker = function () {
+        if (this.isWorkerInspectPreformed) {
+            this.worker.send({ type: interfaces_1.WorkerCommand.pushResult });
+        }
+        else {
+            this.writeText('You can not run pront before you have inspected code first');
+        }
+    };
+    TypeHelperClass.prototype.createThread = function (callback) {
         var _this = this;
         this.worker = child.fork(path.join(__dirname, 'worker.js'), []);
-        this.worker.on('message', function (err) {
-            if (err === 'error') {
+        this.worker.on('message', function (msg) {
+            if (callback && msg.type === 'result') {
+                callback(msg.result);
+            }
+            if (msg === 'error') {
                 _this.writeText('error typechecker');
                 process.exit(1);
             }

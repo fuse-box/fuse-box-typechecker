@@ -7,14 +7,15 @@ export declare class TypeHelperClass {
     private watchTimeout;
     private isWorkerInspectPreformed;
     constructor(options: ITypeCheckerOptions);
-    runAsync(): void;
+    runAsync(callback?: (errors: number) => void): void;
     runSync(): number;
     runPromise(): Promise<number>;
     runWatch(pathToWatch: string): void;
     killWorker(): void;
     private inspectCodeWithWorker(options);
     private printResultWithWorker();
-    private createThread();
+    private pushResultWithWorker();
+    private createThread(callback?);
     private writeText(text);
     private getPath(usePath);
 }

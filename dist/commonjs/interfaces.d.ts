@@ -33,6 +33,7 @@ export interface IWorkerOptions {
 export declare enum WorkerCommand {
     inspectCode = 0,
     printResult = 1,
+    pushResult = 2,
 }
 export declare enum TypecheckerRunType {
     sync,
