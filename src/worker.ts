@@ -23,5 +23,10 @@ process.on('message', function (msg: IWorkerOptions) {
         case WorkerCommand.printResult:
             checker.printResult(true);
             break;
+
+        case WorkerCommand.pushResult:
+            if(process.send)
+                process.send({ type: 'result', result: checker.printResult(true) });
+            break;
     }
 });
