@@ -16,9 +16,9 @@ process.on('message', function (msg) {
             }
             break;
         case interfaces_1.WorkerCommand.printResult:
-            checker.printResult(true);
+            var result = checker.printResult(true);
             if (process.send && hasCallback) {
-                process.send({ type: 'result', result: checker.printResult(true) });
+                process.send({ type: 'result', result: result });
             }
             break;
     }
