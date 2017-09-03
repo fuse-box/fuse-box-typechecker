@@ -277,7 +277,7 @@ export class TypeHelperClass {
         // listen for worker messages
         this.worker.on('message', (msg: any) => {
 
-            if(callback && msg.type === 'result') {
+            if(callback && msg && typeof msg === 'object' && msg.type === 'result') {
                 callback(msg.result);
             }
 
