@@ -16,7 +16,7 @@ export class TypeHelperClass {
     private monitor: any;
     private watchTimeout: NodeJS.Timer;
     private isWorkerInspectPreformed: boolean;
-
+    private workerCallback?: (errors: number) => void;
 
     constructor(options: ITypeCheckerOptions) {
         this.checker = new Checker();
@@ -59,10 +59,13 @@ export class TypeHelperClass {
      * Runs in own thread/works and quits
      *
      */
-    public runAsync(): void {
+    public runAsync(callback?: (errors: number) => void): void {
 
         // set options, add if it need to quit and run type
         let options: IInternalTypeCheckerOptions = Object.assign(this.options, { quit: true, type: TypecheckerRunType.async });
+
+        // set the worker callback
+        this.workerCallback = callback;
 
         // create thread
         this.createThread();
@@ -237,14 +240,11 @@ export class TypeHelperClass {
         if (this.isWorkerInspectPreformed) {
 
             // all well, lets preform printout
-            this.worker.send({ type: WorkerCommand.printResult });
+            this.worker.send({ type: WorkerCommand.printResult, hasCallback: this.workerCallback != null });
         } else {
             this.writeText('You can not run pront before you have inspected code first');
         }
     }
-
-
-
 
     /**
      * Creates thread/worker
@@ -256,18 +256,22 @@ export class TypeHelperClass {
         this.worker = child.fork(path.join(__dirname, 'worker.js'), []);
 
         // listen for worker messages
-        this.worker.on('message', (err: any) => {
+        this.worker.on('message', (msg: any) => {
 
-            if (err === 'error') {
+            if (msg === 'error') {
 
                 // if error then exit
                 this.writeText('error typechecker');
                 process.exit(1);
             } else {
 
-                // if not error, then just kill worker
-                this.writeText('killing worker');
-                this.killWorker();
+                if (this.workerCallback && msg && typeof msg === 'object' && msg.type === 'result') {
+                    this.workerCallback(msg.result);
+                } else {
+                    // if not error, then just kill worker
+                    this.writeText('killing worker');
+                    this.killWorker();
+                }
             }
         });
     }

@@ -29,6 +29,7 @@ export interface IInternalTypeCheckerOptions extends ITypeCheckerOptions {
 export interface IWorkerOptions {
     type: WorkerCommand;
     options?: IInternalTypeCheckerOptions;
+    hasCallback?: boolean;
 }
 export declare enum WorkerCommand {
     inspectCode = 0,

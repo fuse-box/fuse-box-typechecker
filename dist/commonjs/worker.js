@@ -3,7 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var checker_1 = require("./checker");
 var interfaces_1 = require("./interfaces");
 var checker = new checker_1.Checker();
+var hasCallback = false;
 process.on('message', function (msg) {
+    hasCallback = msg.hasCallback || false;
     switch (msg.type) {
         case interfaces_1.WorkerCommand.inspectCode:
             if (msg.options) {
@@ -14,7 +16,10 @@ process.on('message', function (msg) {
             }
             break;
         case interfaces_1.WorkerCommand.printResult:
-            checker.printResult(true);
+            var result = checker.printResult(true);
+            if (process.send && hasCallback) {
+                process.send({ type: 'result', result: result });
+            }
             break;
     }
 });

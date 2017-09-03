@@ -6,8 +6,9 @@ export declare class TypeHelperClass {
     private monitor;
     private watchTimeout;
     private isWorkerInspectPreformed;
+    private workerCallback?;
     constructor(options: ITypeCheckerOptions);
-    runAsync(): void;
+    runAsync(callback?: (errors: number) => void): void;
     runSync(): number;
     runPromise(): Promise<number>;
     runWatch(pathToWatch: string): void;

@@ -45,6 +45,12 @@ var testAsync = TypeHelper({
 })
 
 testAsync.runAsync();
+/* or with optional callback
+testAsync.runAsync((errors: number) => {
+    // errors > 0 => notify
+});
+*/ 
+
 
 
 // Watch folder and use worker (uses internal watcher)

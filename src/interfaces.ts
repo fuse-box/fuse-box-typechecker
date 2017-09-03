@@ -51,6 +51,7 @@ export interface IInternalTypeCheckerOptions extends ITypeCheckerOptions {
 export interface IWorkerOptions {
     type: WorkerCommand;
     options?: IInternalTypeCheckerOptions;
+    hasCallback?: boolean;
 }
 
 // run options for worker
