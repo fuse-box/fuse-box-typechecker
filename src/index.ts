@@ -16,7 +16,7 @@ export class TypeHelperClass {
     private monitor: any;
     private watchTimeout: NodeJS.Timer;
     private isWorkerInspectPreformed: boolean;
-
+    private workerCallback?: (errors: number) => void;
 
     constructor(options: ITypeCheckerOptions) {
         this.checker = new Checker();
@@ -64,18 +64,17 @@ export class TypeHelperClass {
         // set options, add if it need to quit and run type
         let options: IInternalTypeCheckerOptions = Object.assign(this.options, { quit: true, type: TypecheckerRunType.async });
 
+        // set the worker callback
+        this.workerCallback = callback;
+
         // create thread
-        this.createThread(callback);
+        this.createThread();
 
         // inspect our code
         this.inspectCodeWithWorker(options);
 
         // call worker
-        if(callback) {
-            this.pushResultWithWorker();
-        }else{
-            this.printResultWithWorker();
-        }
+        this.printResultWithWorker();
     }
 
 
@@ -241,45 +240,23 @@ export class TypeHelperClass {
         if (this.isWorkerInspectPreformed) {
 
             // all well, lets preform printout
-            this.worker.send({ type: WorkerCommand.printResult });
+            this.worker.send({ type: WorkerCommand.printResult, hasCallback: this.workerCallback != null });
         } else {
             this.writeText('You can not run pront before you have inspected code first');
         }
     }
-
-
-    /**
-     * Tells worker to do a typecheck
-     *
-     */
-    private pushResultWithWorker(): void {
-        
-        // have we inspected code?
-        if (this.isWorkerInspectPreformed) {
-
-            // all well, lets preform printout
-            this.worker.send({ type: WorkerCommand.pushResult });
-        } else {
-            this.writeText('You can not run pront before you have inspected code first');
-        }
-    }
-
 
     /**
      * Creates thread/worker
      *
      */
-    private createThread(callback?: (errors: number) => void): void {
+    private createThread(): void {
 
         // create worker fork
         this.worker = child.fork(path.join(__dirname, 'worker.js'), []);
 
         // listen for worker messages
         this.worker.on('message', (msg: any) => {
-
-            if(callback && msg && typeof msg === 'object' && msg.type === 'result') {
-                callback(msg.result);
-            }
 
             if (msg === 'error') {
 
@@ -288,9 +265,13 @@ export class TypeHelperClass {
                 process.exit(1);
             } else {
 
-                // if not error, then just kill worker
-                this.writeText('killing worker');
-                this.killWorker();
+                if (this.workerCallback && msg && typeof msg === 'object' && msg.type === 'result') {
+                    this.workerCallback(msg.result);
+                } else {
+                    // if not error, then just kill worker
+                    this.writeText('killing worker');
+                    this.killWorker();
+                }
             }
         });
     }
