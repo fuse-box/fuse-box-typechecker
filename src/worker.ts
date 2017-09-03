@@ -24,10 +24,10 @@ process.on('message', function (msg: IWorkerOptions) {
 
         // tell checker to print result
         case WorkerCommand.printResult:
-            checker.printResult(true);
+            let result = checker.printResult(true);
 
             if (process.send && hasCallback) {
-                process.send({ type: 'result', result: checker.printResult(true) });
+                process.send({ type: 'result', result: result });
             }
 
             break;
