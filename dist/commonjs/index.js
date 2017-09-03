@@ -127,7 +127,7 @@ var TypeHelperClass = (function () {
         var _this = this;
         this.worker = child.fork(path.join(__dirname, 'worker.js'), []);
         this.worker.on('message', function (msg) {
-            if (callback && msg.type === 'result') {
+            if (callback && msg && typeof msg === 'object' && msg.type === 'result') {
                 callback(msg.result);
             }
             if (msg === 'error') {
