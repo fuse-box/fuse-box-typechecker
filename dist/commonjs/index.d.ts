@@ -6,6 +6,7 @@ export declare class TypeHelperClass {
     private monitor;
     private watchTimeout;
     private isWorkerInspectPreformed;
+    private workerCallback?;
     constructor(options: ITypeCheckerOptions);
     runAsync(callback?: (errors: number) => void): void;
     runSync(): number;
@@ -14,8 +15,7 @@ export declare class TypeHelperClass {
     killWorker(): void;
     private inspectCodeWithWorker(options);
     private printResultWithWorker();
-    private pushResultWithWorker();
-    private createThread(callback?);
+    private createThread();
     private writeText(text);
     private getPath(usePath);
 }

@@ -32,14 +32,10 @@ var TypeHelperClass = (function () {
     }
     TypeHelperClass.prototype.runAsync = function (callback) {
         var options = Object.assign(this.options, { quit: true, type: interfaces_1.TypecheckerRunType.async });
-        this.createThread(callback);
+        this.workerCallback = callback;
+        this.createThread();
         this.inspectCodeWithWorker(options);
-        if (callback) {
-            this.pushResultWithWorker();
-        }
-        else {
-            this.printResultWithWorker();
-        }
+        this.printResultWithWorker();
     };
     TypeHelperClass.prototype.runSync = function () {
         var options = Object.assign(this.options, { quit: true, type: interfaces_1.TypecheckerRunType.sync });
@@ -109,34 +105,28 @@ var TypeHelperClass = (function () {
     };
     TypeHelperClass.prototype.printResultWithWorker = function () {
         if (this.isWorkerInspectPreformed) {
-            this.worker.send({ type: interfaces_1.WorkerCommand.printResult });
+            this.worker.send({ type: interfaces_1.WorkerCommand.printResult, hasCallback: this.workerCallback != null });
         }
         else {
             this.writeText('You can not run pront before you have inspected code first');
         }
     };
-    TypeHelperClass.prototype.pushResultWithWorker = function () {
-        if (this.isWorkerInspectPreformed) {
-            this.worker.send({ type: interfaces_1.WorkerCommand.pushResult });
-        }
-        else {
-            this.writeText('You can not run pront before you have inspected code first');
-        }
-    };
-    TypeHelperClass.prototype.createThread = function (callback) {
+    TypeHelperClass.prototype.createThread = function () {
         var _this = this;
         this.worker = child.fork(path.join(__dirname, 'worker.js'), []);
         this.worker.on('message', function (msg) {
-            if (callback && msg && typeof msg === 'object' && msg.type === 'result') {
-                callback(msg.result);
-            }
             if (msg === 'error') {
                 _this.writeText('error typechecker');
                 process.exit(1);
             }
             else {
-                _this.writeText('killing worker');
-                _this.killWorker();
+                if (_this.workerCallback && msg && typeof msg === 'object' && msg.type === 'result') {
+                    _this.workerCallback(msg.result);
+                }
+                else {
+                    _this.writeText('killing worker');
+                    _this.killWorker();
+                }
             }
         });
     };

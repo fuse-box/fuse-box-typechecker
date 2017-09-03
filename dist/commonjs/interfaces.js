@@ -4,7 +4,6 @@ var WorkerCommand;
 (function (WorkerCommand) {
     WorkerCommand[WorkerCommand["inspectCode"] = 0] = "inspectCode";
     WorkerCommand[WorkerCommand["printResult"] = 1] = "printResult";
-    WorkerCommand[WorkerCommand["pushResult"] = 2] = "pushResult";
 })(WorkerCommand = exports.WorkerCommand || (exports.WorkerCommand = {}));
 var TypecheckerRunType;
 (function (TypecheckerRunType) {
