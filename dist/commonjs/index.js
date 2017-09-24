@@ -11,8 +11,9 @@ var TypeHelperClass = (function () {
     function TypeHelperClass(options) {
         this.checker = new checker_1.Checker();
         this.options = options;
+        this.writeText(chalk.yellow('\n' + "Typechecker name: " + chalk.white("" + this.options.name + '\n')));
         this.options.basePath = options.basePath ? path.resolve(process.cwd(), options.basePath) : process.cwd();
-        this.writeText(chalk.yellow('\n' + "Typechecker basepath: " + chalk.white("" + this.options.basePath + '\n')));
+        this.writeText(chalk.yellow("Typechecker basepath: " + chalk.white("" + this.options.basePath + '\n')));
         this.options.name = this.options.name ? ':' + this.options.name : '';
         var lintOp = this.options.lintoptions;
         this.options.lintoptions = lintOp ? lintOp : {};
@@ -46,10 +47,13 @@ var TypeHelperClass = (function () {
         var _this = this;
         return new Promise(function (resolve, reject) {
             try {
-                var options = Object.assign(_this.options, { quit: true, type: interfaces_1.TypecheckerRunType.promiseSync });
-                _this.checker.inspectCode(options);
-                var errors = _this.checker.printResult();
-                resolve(errors);
+                var options = Object.assign(_this.options, { quit: true, type: interfaces_1.TypecheckerRunType.promiseAsync });
+                _this.workerCallback = function (errors) {
+                    resolve(errors);
+                };
+                _this.createThread();
+                _this.inspectCodeWithWorker(options);
+                _this.printResultWithWorker();
             }
             catch (err) {
                 reject(err);

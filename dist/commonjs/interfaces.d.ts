@@ -39,6 +39,6 @@ export declare enum TypecheckerRunType {
     sync,
     async,
     watch,
-    promiseSync,
+    promiseAsync,
 }
 export declare const END_LINE = "\n";

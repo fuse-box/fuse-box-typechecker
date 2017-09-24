@@ -3,24 +3,67 @@ var path = require('path')
 //get typehelper (use built source)
 var TypeHelper = require('./dist/commonjs/index.js').TypeHelper
 
-var checker = TypeHelper({
-    tsConfig: './tsconfig.json',
-    basePath: './',
-    tsLint: './tslint.json',
-    name: 'Test Sync'
-});
 
-var doTypeCheck = async() => {
 
-    //let totalErrors = checker.runSync();
-    let totalErrors = await checker.runPromise();
-    console.log(totalErrors)
+
+
+
+
+
+
+var test1 = ()=>{
+
+    // sync run
+    let checkerSync = TypeHelper({
+        tsConfig: './tsconfig.json',
+        basePath: './',
+        tsLint: './tslint.json',
+        name: 'checkerSync'
+    });
+    checkerSync.runSync()
+
+
+    // promiose run
+    let checkerPromise = TypeHelper({
+        tsConfig: './tsconfig.json',
+        basePath: './',
+        tsLint: './tslint.json',
+        name: 'checkerPromise'
+    });
+    
+    checkerPromise.runPromise().then((err)=>{
+        console.log('\nErrors promise run:'+ err)
+        
+
+        let checkerAsync = TypeHelper({
+            tsConfig: './tsconfig.json',
+            basePath: './',
+            tsLint: './tslint.json',
+            name: 'checkerAsync'
+        });
+        checkerAsync.runAsync((err)=>{
+            console.log('\nErrors async run:'+ err)
+        }) 
+    
+    });
+
 }
 
 
+var test2 = ()=>{
 
-// options are (need to test all by them self before release)
-// doTypeCheck();
-// checker.runSync()
-// checker.runAsync()
-checker.runWatch('./src')
+    var checkerWatch = TypeHelper({
+        tsConfig: './tsconfig.json',
+        basePath: './',
+        tsLint: './tslint.json',
+        name: 'checkerWatch'
+    });
+
+    checkerWatch.runWatch('./src')
+}
+
+// First test (sync, async, promise)
+// test1();
+
+// Second test (watch)
+ test2()
