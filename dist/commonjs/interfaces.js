@@ -10,7 +10,7 @@ var TypecheckerRunType;
     TypecheckerRunType[TypecheckerRunType["sync"] = 'syns'] = "sync";
     TypecheckerRunType[TypecheckerRunType["async"] = 'async'] = "async";
     TypecheckerRunType[TypecheckerRunType["watch"] = 'watch'] = "watch";
-    TypecheckerRunType[TypecheckerRunType["promiseSync"] = 'promisesync'] = "promiseSync";
+    TypecheckerRunType[TypecheckerRunType["promiseAsync"] = 'promisesync'] = "promiseAsync";
 })(TypecheckerRunType = exports.TypecheckerRunType || (exports.TypecheckerRunType = {}));
 exports.END_LINE = '\n';
 
