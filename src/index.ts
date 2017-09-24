@@ -22,9 +22,12 @@ export class TypeHelperClass {
         this.checker = new Checker();
         this.options = options;
 
+        // configuration name
+        this.writeText(chalk.yellow(`${'\n'}Typechecker name: ${chalk.white(`${this.options.name}${'\n'}`)}`));
+
         // get/set base path
         this.options.basePath = options.basePath ? path.resolve(process.cwd(), options.basePath) : process.cwd();
-        this.writeText(chalk.yellow(`${'\n'}Typechecker basepath: ${chalk.white(`${this.options.basePath}${'\n'}`)}`));
+        this.writeText(chalk.yellow(`Typechecker basepath: ${chalk.white(`${this.options.basePath}${'\n'}`)}`));
 
         // get name
         this.options.name = this.options.name ? ':' + this.options.name : '';
@@ -96,7 +99,7 @@ export class TypeHelperClass {
 
 
     /**
-     * Runs in sync but return promise and callbacks and quits
+     * Runs in async and return promise and callbacks and quits
      *
      */
     public runPromise(): Promise<number> {
@@ -108,16 +111,22 @@ export class TypeHelperClass {
             try {
 
                 // set options, add if it need to quit and run type
-                let options: IInternalTypeCheckerOptions = Object.assign(this.options, { quit: true, type: TypecheckerRunType.promiseSync });
+                let options: IInternalTypeCheckerOptions = Object.assign(this.options, { quit: true, type: TypecheckerRunType.promiseAsync });
+
+                // set the worker callback
+                this.workerCallback = (errors) => {
+                    resolve(errors);
+                };
+
+                // create thread
+                this.createThread();
 
                 // inspect our code
-                this.checker.inspectCode(options);
+                this.inspectCodeWithWorker(options);
 
-                // print result to screen and return total errors
-                let errors = this.checker.printResult();
+                // call worker
+                this.printResultWithWorker();
 
-                // return result
-                resolve(errors);
             } catch (err) {
                 reject(err);
             }

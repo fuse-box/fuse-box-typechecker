@@ -67,7 +67,7 @@ export enum TypecheckerRunType {
     sync = 'syns' as any,
     async = 'async'  as any,
     watch = 'watch'  as any,
-    promiseSync = 'promisesync'  as any
+    promiseAsync = 'promisesync'  as any
 }
 
 export const END_LINE = '\n';

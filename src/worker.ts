@@ -7,6 +7,7 @@ let checker = new Checker();
 let hasCallback  = false;
 // listen for messages
 process.on('message', function (msg: IWorkerOptions) {
+
     // set if callback is awaited
     hasCallback = msg.hasCallback || false;
 
