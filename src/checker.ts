@@ -2,27 +2,7 @@ import * as ts from 'typescript';
 import * as chalk from 'chalk';
 import * as tslint from 'tslint';
 import * as path from 'path';
-import { IInternalTypeCheckerOptions, END_LINE } from './interfaces';
-
-interface ITSLintError {
-	fileName: string;
-	line: number;
-	char: number;
-	failure: string;
-	color: string;
-	ruleSeverity: string;
-	ruleName: string;
-}
-
-interface ITSError {
-	fileName: string;
-	line: number;
-	char: number;
-	message: string;
-	color: string;
-	category: string;
-	code: string;
-}
+import { IInternalTypeCheckerOptions, END_LINE, ITSLintError, ITSError } from './interfaces';
 
 type TypeCheckError = ITSLintError | ITSError;
 function isTSError(error: TypeCheckError) {

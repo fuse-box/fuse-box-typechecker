@@ -69,4 +69,24 @@ export enum TypecheckerRunType {
     promiseSync = 'promisesync'  as any
 }
 
+export interface ITSLintError {
+    fileName: string;
+    line: number;
+    char: number;
+    failure: string;
+    color: string;
+    ruleSeverity: string;
+    ruleName: string;
+}
+
+export interface ITSError {
+    fileName: string;
+    line: number;
+    char: number;
+    message: string;
+    color: string;
+    category: string;
+    code: string;
+}
+
 export const END_LINE = '\n';
