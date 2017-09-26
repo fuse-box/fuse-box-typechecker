@@ -169,8 +169,9 @@ export class Checker {
       });
 
       let allErrors = Object.entries(groupedErrors)
-        .map(([fullFileName, errors]) => {
+        .map(([fileName, errors]) => {
           const short = this.options.shortenFilenames;
+          const fullFileName = path.resolve(fileName);
           const shortFileName = fullFileName.split(options.basePath).join('.');
           return chalk.red(`└── ${shortFileName}`) + END_LINE + errors.map((err: TypeCheckError) => {
             let text = chalk.red('   |');
