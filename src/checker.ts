@@ -169,10 +169,12 @@ export class Checker {
       });
 
       let allErrors = Object.entries(groupedErrors)
-        .map(([fileName, errors]) => {
-            return chalk.red(`└── ${fileName}`) + END_LINE + errors.map((err: TypeCheckError) => {
+        .map(([fullFileName, errors]) => {
+          const short = this.options.shortenFilenames;
+          const shortFileName = fullFileName.split(options.basePath).join('.');
+          return chalk.red(`└── ${shortFileName}`) + END_LINE + errors.map((err: TypeCheckError) => {
             let text = chalk.red('   |');
-            text += chalk[err.color](` (${err.line + 1},${err.char + 1}) `);
+            text += chalk[err.color](` ${short ? shortFileName : fullFileName} (${err.line + 1},${err.char + 1}) `);
             if (isTSError(err)) {
               text += chalk.white(`(${(<ITSError>err).category}:`);
               text += chalk.white(`${(<ITSError>err).code})`);
@@ -319,7 +321,7 @@ export class Checker {
         .map(
           (fileResult: tslint.LintResult) =>
             fileResult.failures.map((failure: any) => ({
-              fileName: failure.fileName.split(options.basePath).join('.'),
+              fileName: failure.fileName,
               line: failure.startPosition.lineAndCharacter.line,
               char: failure.startPosition.lineAndCharacter.character,
               ruleSeverity: failure.ruleSeverity.charAt(0).toUpperCase() + failure.ruleSeverity.slice(1),
@@ -362,7 +364,7 @@ export class Checker {
           character
         } = diag.file.getLineAndCharacterOfPosition(diag.start);
         return {
-          fileName: diag.file.fileName.split(options.basePath).join('.'),
+          fileName: diag.file.fileName,
           line: line + 1, // `(${line + 1},${character + 1})`,
           message: ts.flattenDiagnosticMessageText(diag.messageText, END_LINE),
           char: character + 1,

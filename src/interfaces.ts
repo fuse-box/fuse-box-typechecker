@@ -30,6 +30,9 @@ export interface ITypeCheckerOptions {
     // lint options that can be passed in
     // todo: rename to lintOptions, but thats a breaking change, so will do that later
     lintoptions?: ILintOptions;
+
+    // use shortened filenames in order to make output less cluttered
+    shortenFilenames?: boolean;
 }
 
 // lint options,this is the same as tsLint uses all paths will be from basepath
