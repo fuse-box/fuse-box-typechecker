@@ -173,7 +173,7 @@ export class Checker {
           const short = this.options.shortenFilenames;
           const fullFileName = path.resolve(fileName);
           const shortFileName = fullFileName.split(options.basePath).join('.');
-          return chalk.red(`└── ${shortFileName}`) + END_LINE + errors.map((err: TypeCheckError) => {
+          return chalk.white(`└── ${shortFileName}`) + END_LINE + errors.map((err: TypeCheckError) => {
             let text = chalk.red('   |');
             text += chalk[err.color](` ${short ? shortFileName : fullFileName} (${err.line + 1},${err.char + 1}) `);
             if (isTSError(err)) {
