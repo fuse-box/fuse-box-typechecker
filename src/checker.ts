@@ -175,12 +175,13 @@ export class Checker {
           const shortFileName = fullFileName.split(options.basePath).join('.');
           return chalk.white(`└── ${shortFileName}`) + END_LINE + errors.map((err: TypeCheckError) => {
             let text = chalk.red('   |');
-            text += chalk[err.color](` ${short ? shortFileName : fullFileName} (${err.line + 1},${err.char + 1}) `);
             if (isTSError(err)) {
-              text += chalk.white(`(${(<ITSError>err).category}:`);
+              text += chalk[err.color](` ${short ? shortFileName : fullFileName} (${err.line},${err.char}) `);
+              text += chalk.white(`(${(<ITSError>err).category}`);
               text += chalk.white(`${(<ITSError>err).code})`);
               text += ' ' + (<ITSError>err).message;
             } else {
+              text += chalk[err.color](` ${short ? shortFileName : fullFileName} (${err.line + 1},${err.char + 1}) `);
               text += chalk.white(`(${(<ITSLintError>err).ruleSeverity}:`);
               text += chalk.white(`${(<ITSLintError>err).ruleName})`);
               text += ' ' + (<ITSLintError>err).failure;
