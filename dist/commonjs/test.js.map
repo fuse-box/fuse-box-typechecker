@@ -1,1 +1,1 @@
-{"version":3,"sources":["../src/test.ts"],"names":[],"mappings":";;AAEA,IAAI,CAAC,GAAW,CAAC,CAAC","file":"test.js","sourcesContent":["\r\n// just to get a few errors\r\nlet x: string = 1;\r\n  import * as child from 'child_process';\r\n // import * as path from 'path';\r\n"],"sourceRoot":"src/"}
+{"version":3,"sources":["../src/test.ts"],"names":[],"mappings":";;AAEC,IAAI,CAAC,GAAW,CAAC,CAAA","file":"test.js","sourcesContent":["\r\n// just to get a few errors\r\n let x: string = 1\r\n import * as child from 'child_process';\r\n\r\n"],"sourceRoot":"src/"}

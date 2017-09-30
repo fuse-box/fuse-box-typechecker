@@ -68,9 +68,9 @@ export enum WorkerCommand {
 // checkers run types (when generating cmd print)
 export enum TypecheckerRunType {
     sync = 'syns' as any,
-    async = 'async'  as any,
-    watch = 'watch'  as any,
-    promiseAsync = 'promisesync'  as any
+    async = 'async' as any,
+    watch = 'watch' as any,
+    promiseAsync = 'promisesync' as any
 }
 
 export interface ITSLintError {

@@ -4,7 +4,7 @@ import { WorkerCommand, IWorkerOptions } from './interfaces';
 
 // create checker instance
 let checker = new Checker();
-let hasCallback  = false;
+let hasCallback = false;
 // listen for messages
 process.on('message', function (msg: IWorkerOptions) {
 
