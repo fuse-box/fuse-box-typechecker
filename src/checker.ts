@@ -2,8 +2,12 @@ import * as ts from 'typescript';
 import * as chalk from 'chalk';
 import * as tslint from 'tslint';
 import * as path from 'path';
-import { IInternalTypeCheckerOptions, END_LINE } from './interfaces';
+import { IInternalTypeCheckerOptions, END_LINE, ITSLintError, ITSError } from './interfaces';
 
+type TypeCheckError = ITSLintError | ITSError;
+function isTSError(error: TypeCheckError) {
+  return (<ITSError>error).code !== undefined;
+}
 
 export class Checker {
 
@@ -146,22 +150,52 @@ export class Checker {
         );
 
         // get the lint errors messages
-        let lintErrorMessages = this.processLintFiles();
+      let lintErrorMessages: TypeCheckError[] = this.processLintFiles();
 
         // loop diagnostics and get the errors messages
-        let tsErrorMessages = this.processTsDiagnostics();
+      let tsErrorMessages: TypeCheckError[] = this.processTsDiagnostics();
 
         // combine errors and print if any
-        let allErrors = tsErrorMessages.concat(lintErrorMessages);
+      let combinedErrors: TypeCheckError[] = tsErrorMessages.concat(lintErrorMessages);
+
+      // group by filename
+      let groupedErrors: {[k: string]: TypeCheckError[]} = {};
+      combinedErrors.forEach((error: TypeCheckError) => {
+        if (!groupedErrors[error.fileName]) {
+          groupedErrors[error.fileName] = [] as TypeCheckError[];
+        }
+
+        groupedErrors[error.fileName].push(error);
+      });
+
+      let allErrors = Object.entries(groupedErrors)
+        .map(([fileName, errors]) => {
+          const short = this.options.shortenFilenames;
+          const fullFileName = path.resolve(fileName);
+          const shortFileName = fullFileName.split(options.basePath).join('.');
+          return chalk.white(`└── ${shortFileName}`) + END_LINE + errors.map((err: TypeCheckError) => {
+            let text = chalk.red('   |');
+            text += chalk[err.color](` ${short ? shortFileName : fullFileName} (${err.line + 1},${err.char + 1}) `);
+            if (isTSError(err)) {
+              text += chalk.white(`(${(<ITSError>err).category}:`);
+              text += chalk.white(`${(<ITSError>err).code})`);
+              text += ' ' + (<ITSError>err).message;
+            } else {
+              text += chalk.white(`(${(<ITSLintError>err).ruleSeverity}:`);
+              text += chalk.white(`${(<ITSLintError>err).ruleName})`);
+              text += ' ' + (<ITSLintError>err).failure;
+            }
+
+            return text;
+          }).join(END_LINE);
+        });
 
         // print if any
         if (allErrors.length > 0) {
-
             // insert header
             allErrors.unshift(
                 chalk.underline(`${END_LINE}File errors`) + chalk.white(':') // fix windows
             );
-
             print(allErrors.join(END_LINE));
         }
 
@@ -280,118 +314,65 @@ export class Checker {
      * loops lint failures and return pretty failure string ready to be printed
      *
      */
-    private processLintFiles(): string[] {
-
-        const options = this.options;
-
-        // loop lint results
-        let lintResultsFilesMessages =
-            this.lintFileResult.map((fileResult: tslint.LintResult) => {
-                let messages: string[] = [];
-                if (fileResult.failures) {
-                    // we have a failure, lets check its failures
-                    messages = fileResult.failures.map((failure: any) => {
-
-                        // simplify it so its more readable later
-                        let r = {
-                            fileName: failure.fileName,
-                            line: failure.startPosition.lineAndCharacter.line,
-                            char: failure.startPosition.lineAndCharacter.character,
-                            ruleSeverity: failure.ruleSeverity.charAt(0).toUpperCase() + failure.ruleSeverity.slice(1),
-                            ruleName: failure.ruleName,
-                            failure: failure.failure
-                        };
-
-                        // make error pretty and return it
-                        let message = chalk.red('└── ');
-                        message += chalk[options.yellowOnLint ? 'yellow' : 'red'](`${r.fileName} (${r.line + 1},${r.char + 1}) `);
-                        message += chalk.white(`(${r.ruleSeverity}:`);
-                        message += chalk.white(`${r.ruleName})`);
-                        message += ' ' + r.failure;
-                        return message;
-                    });
-                }
-                // return messages
-                return messages;
-
-            }).filter((res: string[]) => {
-                // filter our only messages with content
-                return res.length === 0 ? false : true;
-            });
-
-        // flatten/concatenate lint files - > failures
-        let lintErrorMessages: string[] = [];
-        try {
-            if (lintResultsFilesMessages.length) {
-                lintErrorMessages = lintResultsFilesMessages.reduce((a: string[], b: string[]) => {
-                    return a.concat(b);
-                });
-            }
-        } catch (err) {
-            console.log(err);
-        }
-
-        return lintErrorMessages;
+    private processLintFiles(): ITSLintError[] {
+      const options = this.options;
+      const erroredLintFiles = this.lintFileResult
+        .filter((fileResult: tslint.LintResult) => fileResult.failures);
+      const errors = erroredLintFiles
+        .map(
+          (fileResult: tslint.LintResult) =>
+            fileResult.failures.map((failure: any) => ({
+              fileName: failure.fileName,
+              line: failure.startPosition.lineAndCharacter.line,
+              char: failure.startPosition.lineAndCharacter.character,
+              ruleSeverity: failure.ruleSeverity.charAt(0).toUpperCase() + failure.ruleSeverity.slice(1),
+              ruleName: failure.ruleName,
+              color: options.yellowOnLint ? 'yellow' : 'red',
+              failure: failure.failure
+            }))).reduce((acc, curr) => acc.concat(curr), []);
+      return errors;
     }
-
-
 
     /**
      * loops ts failures and return pretty failure string ready to be printed
      *
      */
-    private processTsDiagnostics(): string[] {
-
-        const options = this.options;
-        let tsErrorMessages: string[] = [];
-
-        if (this.tsDiagnostics.length > 0) {
-            tsErrorMessages = this.tsDiagnostics.map((diag: any) => {
-
-                // get message type error, warn, info
-                let message = chalk.red('└── ');
-
-                // set color from options
-                let color: string;
-                switch (diag._type) {
-                    case 'options':
-                        color = options.yellowOnOptions ? 'yellow' : 'red';
-                        break;
-                    case 'global':
-                        color = options.yellowOnGlobal ? 'yellow' : 'red';
-                        break;
-                    case 'syntactic':
-                        color = options.yellowOnSyntactic ? 'yellow' : 'red';
-                        break;
-                    case 'semantic':
-                        color = options.yellowOnSemantic ? 'yellow' : 'red';
-                        break;
-                    default:
-                        color = 'red';
-                }
-
-                // if file
-                if (diag.file) {
-                    const {
-                        line,
-                        character
-                    } = diag.file.getLineAndCharacterOfPosition(diag.start);
-
-                    message += chalk[color](`${diag.file.fileName} (${line + 1},${character + 1}) `);
-                    message += chalk.white(`(${ts.DiagnosticCategory[diag.category]}:`);
-                    message += chalk.white(`TS${diag.code})`);
-                }
-
-                // flatten error message
-                message += ' ' + ts.flattenDiagnosticMessageText(diag.messageText, END_LINE);
-
-                // return message
-                return message;
-            });
+  private processTsDiagnostics(): ITSError[] {
+    const options = this.options;
+    return this.tsDiagnostics
+      .filter((diag: any) => diag.file)
+      .map((diag: any) => {
+        // set color from options
+        let color: string;
+        switch (diag._type) {
+          case 'options':
+            color = options.yellowOnOptions ? 'yellow' : 'red';
+            break;
+          case 'global':
+            color = options.yellowOnGlobal ? 'yellow' : 'red';
+            break;
+          case 'syntactic':
+            color = options.yellowOnSyntactic ? 'yellow' : 'red';
+            break;
+          case 'semantic':
+            color = options.yellowOnSemantic ? 'yellow' : 'red';
+            break;
+          default:
+            color = 'red';
         }
-
-        return tsErrorMessages;
+        const {
+          line,
+          character
+        } = diag.file.getLineAndCharacterOfPosition(diag.start);
+        return {
+          fileName: diag.file.fileName,
+          line: line + 1, // `(${line + 1},${character + 1})`,
+          message: ts.flattenDiagnosticMessageText(diag.messageText, END_LINE),
+          char: character + 1,
+          color: color,
+          category: `${ts.DiagnosticCategory[diag.category]}:`,
+          code: `TS${diag.code}`
+        };
+      });
     }
-
-
 }

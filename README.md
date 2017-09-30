@@ -126,7 +126,7 @@ var buildFuse = (production) => {
     fuse.bundle("vendor")
         .cache(true)
         .target('browser')
-        .instructions(` 
+        .instructions(`
         + whatwg-fetch
         + something-else-u-need
         `)
@@ -142,7 +142,7 @@ var buildFuse = (production) => {
         .target('browser')
 
 
-    // is production build    
+    // is production build
     production ? null : app.watch()
         .cache(false)
         .sourceMaps(true)
@@ -166,7 +166,7 @@ var buildFuse = (production) => {
 
 
 ```typescript
-interface IOptionsInterface {
+interface ITypeCheckerOptionsInterface {
     tsConfig: string; //config file (compared to basepath './tsconfig.json')
     throwOnSyntactic?: boolean; // if you want it to throwe error
     throwOnSemantic?: boolean; // if you want it to throwe error
@@ -182,6 +182,7 @@ interface IOptionsInterface {
     yellowOnGlobal?: boolean; // use yellow color instead of red on Global errors
     yellowOnSemantic?: boolean; // use yellow color instead of red on Semantic errors
     yellowOnSyntactic?: boolean; // use yellow color instead of red on Syntactic errors
+    shortenFilenames?: boolean; // use shortened filenames in order to make output less noisy
 }
 
 

@@ -32,6 +32,9 @@ export class TypeHelperClass {
         // get name
         this.options.name = this.options.name ? ':' + this.options.name : '';
 
+        // shorten filenames to de-clutter output?
+        this.options.shortenFilenames = !!this.options.shortenFilenames;
+
         // tslint options
         let lintOp = this.options.lintoptions;
         this.options.lintoptions = lintOp ? lintOp : ({} as ILintOptions);
@@ -312,4 +315,3 @@ export class TypeHelperClass {
 export const TypeHelper = (options: ITypeCheckerOptions): TypeHelperClass => {
     return new TypeHelperClass(options);
 };
-
