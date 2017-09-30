@@ -1,6 +1,6 @@
 {
   "name": "fuse-box-typechecker",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "description": "Fuse-Box type checker plugin",
   "keywords": [
     "fuse-box-bundler",
@@ -29,12 +29,12 @@
     "require-dir": "^0.3.2",
     "run-sequence": "^2.2.0",
     "tslint": "^5.7.0",
-    "typescript": "^2.5.2",
+    "typescript": "^2.5.3",
     "vinyl-paths": "^2.1.0"
   },
   "dependencies": {
     "@types/chalk": "^0.4.31",
-    "@types/node": "^8.0.30",
+    "@types/node": "^8.0.31",
     "@types/watch": "^1.0.0",
     "chalk": "^2.1.0",
     "gulp-changed": "^3.1.0",
