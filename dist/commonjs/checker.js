@@ -5,6 +5,9 @@ var chalk = require("chalk");
 var tslint = require("tslint");
 var path = require("path");
 var interfaces_1 = require("./interfaces");
+function isTSError(error) {
+    return error.code !== undefined;
+}
 var Checker = (function () {
     function Checker() {
     }
@@ -59,6 +62,7 @@ var Checker = (function () {
         this.elapsedInspectionTime = new Date().getTime() - inspectionTimeStart;
     };
     Checker.prototype.printResult = function (isWorker) {
+        var _this = this;
         var print = this.writeText;
         var program = this.program;
         var options = this.options;
@@ -67,7 +71,37 @@ var Checker = (function () {
         print(chalk.grey("Time:" + new Date().toString() + " " + interfaces_1.END_LINE));
         var lintErrorMessages = this.processLintFiles();
         var tsErrorMessages = this.processTsDiagnostics();
-        var allErrors = tsErrorMessages.concat(lintErrorMessages);
+        var combinedErrors = tsErrorMessages.concat(lintErrorMessages);
+        var groupedErrors = {};
+        combinedErrors.forEach(function (error) {
+            if (!groupedErrors[error.fileName]) {
+                groupedErrors[error.fileName] = [];
+            }
+            groupedErrors[error.fileName].push(error);
+        });
+        var allErrors = Object.entries(groupedErrors)
+            .map(function (_a) {
+            var fileName = _a[0], errors = _a[1];
+            var short = _this.options.shortenFilenames;
+            var fullFileName = path.resolve(fileName);
+            var shortFileName = fullFileName.split(options.basePath).join('.');
+            return chalk.white("\u2514\u2500\u2500 " + shortFileName) + interfaces_1.END_LINE + errors.map(function (err) {
+                var text = chalk.red('   |');
+                if (isTSError(err)) {
+                    text += chalk[err.color](" " + (short ? shortFileName : fullFileName) + " (" + err.line + "," + err.char + ") ");
+                    text += chalk.white("(" + err.category);
+                    text += chalk.white(err.code + ")");
+                    text += ' ' + err.message;
+                }
+                else {
+                    text += chalk[err.color](" " + (short ? shortFileName : fullFileName) + " (" + (err.line + 1) + "," + (err.char + 1) + ") ");
+                    text += chalk.white("(" + err.ruleSeverity + ":");
+                    text += chalk.white(err.ruleName + ")");
+                    text += ' ' + err.failure;
+                }
+                return text;
+            }).join(interfaces_1.END_LINE);
+        });
         if (allErrors.length > 0) {
             allErrors.unshift(chalk.underline(interfaces_1.END_LINE + "File errors") + chalk.white(':'));
             print(allErrors.join(interfaces_1.END_LINE));
@@ -122,77 +156,55 @@ var Checker = (function () {
     };
     Checker.prototype.processLintFiles = function () {
         var options = this.options;
-        var lintResultsFilesMessages = this.lintFileResult.map(function (fileResult) {
-            var messages = [];
-            if (fileResult.failures) {
-                messages = fileResult.failures.map(function (failure) {
-                    var r = {
-                        fileName: failure.fileName,
-                        line: failure.startPosition.lineAndCharacter.line,
-                        char: failure.startPosition.lineAndCharacter.character,
-                        ruleSeverity: failure.ruleSeverity.charAt(0).toUpperCase() + failure.ruleSeverity.slice(1),
-                        ruleName: failure.ruleName,
-                        failure: failure.failure
-                    };
-                    var message = chalk.red('└── ');
-                    message += chalk[options.yellowOnLint ? 'yellow' : 'red'](r.fileName + " (" + (r.line + 1) + "," + (r.char + 1) + ") ");
-                    message += chalk.white("(" + r.ruleSeverity + ":");
-                    message += chalk.white(r.ruleName + ")");
-                    message += ' ' + r.failure;
-                    return message;
-                });
-            }
-            return messages;
-        }).filter(function (res) {
-            return res.length === 0 ? false : true;
-        });
-        var lintErrorMessages = [];
-        try {
-            if (lintResultsFilesMessages.length) {
-                lintErrorMessages = lintResultsFilesMessages.reduce(function (a, b) {
-                    return a.concat(b);
-                });
-            }
-        }
-        catch (err) {
-            console.log(err);
-        }
-        return lintErrorMessages;
+        var erroredLintFiles = this.lintFileResult
+            .filter(function (fileResult) { return fileResult.failures; });
+        var errors = erroredLintFiles
+            .map(function (fileResult) {
+            return fileResult.failures.map(function (failure) { return ({
+                fileName: failure.fileName,
+                line: failure.startPosition.lineAndCharacter.line,
+                char: failure.startPosition.lineAndCharacter.character,
+                ruleSeverity: failure.ruleSeverity.charAt(0).toUpperCase() + failure.ruleSeverity.slice(1),
+                ruleName: failure.ruleName,
+                color: options.yellowOnLint ? 'yellow' : 'red',
+                failure: failure.failure
+            }); });
+        }).reduce(function (acc, curr) { return acc.concat(curr); }, []);
+        return errors;
     };
     Checker.prototype.processTsDiagnostics = function () {
         var options = this.options;
-        var tsErrorMessages = [];
-        if (this.tsDiagnostics.length > 0) {
-            tsErrorMessages = this.tsDiagnostics.map(function (diag) {
-                var message = chalk.red('└── ');
-                var color;
-                switch (diag._type) {
-                    case 'options':
-                        color = options.yellowOnOptions ? 'yellow' : 'red';
-                        break;
-                    case 'global':
-                        color = options.yellowOnGlobal ? 'yellow' : 'red';
-                        break;
-                    case 'syntactic':
-                        color = options.yellowOnSyntactic ? 'yellow' : 'red';
-                        break;
-                    case 'semantic':
-                        color = options.yellowOnSemantic ? 'yellow' : 'red';
-                        break;
-                    default:
-                        color = 'red';
-                }
-                if (diag.file) {
-                    var _a = diag.file.getLineAndCharacterOfPosition(diag.start), line = _a.line, character = _a.character;
-                    message += chalk[color](diag.file.fileName + " (" + (line + 1) + "," + (character + 1) + ") ");
-                    message += chalk.white("(" + ts.DiagnosticCategory[diag.category] + ":");
-                    message += chalk.white("TS" + diag.code + ")");
-                }
-                message += ' ' + ts.flattenDiagnosticMessageText(diag.messageText, interfaces_1.END_LINE);
-                return message;
-            });
-        }
-        return tsErrorMessages;
+        return this.tsDiagnostics
+            .filter(function (diag) { return diag.file; })
+            .map(function (diag) {
+            var color;
+            switch (diag._type) {
+                case 'options':
+                    color = options.yellowOnOptions ? 'yellow' : 'red';
+                    break;
+                case 'global':
+                    color = options.yellowOnGlobal ? 'yellow' : 'red';
+                    break;
+                case 'syntactic':
+                    color = options.yellowOnSyntactic ? 'yellow' : 'red';
+                    break;
+                case 'semantic':
+                    color = options.yellowOnSemantic ? 'yellow' : 'red';
+                    break;
+                default:
+                    color = 'red';
+            }
+            var _a = diag.file.getLineAndCharacterOfPosition(diag.start), line = _a.line, character = _a.character;
+            return {
+                fileName: diag.file.fileName,
+                line: line + 1,
+                message: ts.flattenDiagnosticMessageText(diag.messageText, interfaces_1.END_LINE),
+                char: character + 1,
+                color: color,
+                category: ts.DiagnosticCategory[diag.category] + ":",
+                code: "TS" + diag.code
+            };
+        });
     };
     return Checker;
 }());

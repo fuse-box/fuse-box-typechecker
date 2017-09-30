@@ -14,6 +14,7 @@ export interface ITypeCheckerOptions {
     tsLint?: string;
     name?: string;
     lintoptions?: ILintOptions;
+    shortenFilenames?: boolean;
 }
 export interface ILintOptions {
     fix?: boolean;
@@ -40,5 +41,23 @@ export declare enum TypecheckerRunType {
     async,
     watch,
     promiseAsync,
+}
+export interface ITSLintError {
+    fileName: string;
+    line: number;
+    char: number;
+    failure: string;
+    color: string;
+    ruleSeverity: string;
+    ruleName: string;
+}
+export interface ITSError {
+    fileName: string;
+    line: number;
+    char: number;
+    message: string;
+    color: string;
+    category: string;
+    code: string;
 }
 export declare const END_LINE = "\n";

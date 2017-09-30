@@ -15,6 +15,7 @@ var TypeHelperClass = (function () {
         this.options.basePath = options.basePath ? path.resolve(process.cwd(), options.basePath) : process.cwd();
         this.writeText(chalk.yellow("Typechecker basepath: " + chalk.white("" + this.options.basePath + '\n')));
         this.options.name = this.options.name ? ':' + this.options.name : '';
+        this.options.shortenFilenames = !!this.options.shortenFilenames;
         var lintOp = this.options.lintoptions;
         this.options.lintoptions = lintOp ? lintOp : {};
         this.options.lintoptions = {
