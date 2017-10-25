@@ -93,7 +93,7 @@ doTypeCheck();
 // load
 var TypeHelper = require('fuse-box-typechecker').TypeHelper
 
-//create type chacker, it will display paths its using now
+//create type checker, it will display paths its using now
 var typeHelper = TypeHelper({
     tsConfig: './tsconfig.json',
     basePath:'./',
