@@ -75,7 +75,7 @@ var doTypeCheck = async() => {
     })
 
     let totalErrors = await checker.runPromise();
-    Console.log(totalErrors)
+    console.log(totalErrors)
 }
 
 doTypeCheck();
