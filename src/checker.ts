@@ -2,7 +2,15 @@ import * as ts from 'typescript';
 import * as chalk from 'chalk';
 import * as tslint from 'tslint';
 import * as path from 'path';
+
 import { IInternalTypeCheckerOptions, END_LINE, ITSLintError, ITSError } from './interfaces';
+
+const entries: any = require('object.entries');
+
+if (!Object.entries) {
+  entries.shim();
+}
+
 
 type TypeCheckError = ITSLintError | ITSError;
 function isTSError(error: TypeCheckError) {

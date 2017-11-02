@@ -5,6 +5,10 @@ var chalk = require("chalk");
 var tslint = require("tslint");
 var path = require("path");
 var interfaces_1 = require("./interfaces");
+var entries = require('object.entries');
+if (!Object.entries) {
+    entries.shim();
+}
 function isTSError(error) {
     return error.code !== undefined;
 }
