@@ -2,7 +2,7 @@
 Simple helper to do typechecking
 
 ### How to install
-```npm install git://github.com/fuse-box/fuse-box-typechecker --save-dev```
+```npm install fuse-box-typechecker```
 
 
 ### Note
