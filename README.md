@@ -176,7 +176,7 @@ interface ITypeCheckerOptionsInterface {
     basePath: string; // base path to use
     name?: string; // name, will be displayed when it runs, useful when you have more then 1
     tsLint: string; // config file (compared to basepath './tslint.json')
-    lintoptions? ILintOptions; // see below, optional
+    yellowOnLint? ILintOptions; // see below, optional
     yellowLint?: boolean; // use yellow color instead of red on TSLint errors
     yellowOnOptions?: boolean; // use yellow color instead of red on Options errors
     yellowOnGlobal?: boolean; // use yellow color instead of red on Global errors
