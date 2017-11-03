@@ -6,14 +6,14 @@ var interfaces_1 = require("./interfaces");
 var checker_1 = require("./checker");
 var watch = require("watch");
 var ts = require("typescript");
-var chalk = require("chalk");
+var chalk_1 = require("chalk");
 var TypeHelperClass = (function () {
     function TypeHelperClass(options) {
         this.checker = new checker_1.Checker();
         this.options = options;
-        this.writeText(chalk.yellow('\n' + "Typechecker name: " + chalk.white("" + this.options.name + '\n')));
+        this.writeText(chalk_1.default.yellow('\n' + "Typechecker name: " + chalk_1.default.white("" + this.options.name + '\n')));
         this.options.basePath = options.basePath ? path.resolve(process.cwd(), options.basePath) : process.cwd();
-        this.writeText(chalk.yellow("Typechecker basepath: " + chalk.white("" + this.options.basePath + '\n')));
+        this.writeText(chalk_1.default.yellow("Typechecker basepath: " + chalk_1.default.white("" + this.options.basePath + '\n')));
         this.options.name = this.options.name ? ':' + this.options.name : '';
         this.options.shortenFilenames = !!this.options.shortenFilenames;
         var lintOp = this.options.lintoptions;
@@ -26,10 +26,10 @@ var TypeHelperClass = (function () {
         };
         var tsconf = this.getPath(options.tsConfig);
         this.options.tsConfigJsonContent = require(tsconf);
-        this.writeText(chalk.yellow("Typechecker tsconfig: " + chalk.white("" + tsconf + '\n')));
+        this.writeText(chalk_1.default.yellow("Typechecker tsconfig: " + chalk_1.default.white("" + tsconf + '\n')));
         if (options.tsLint) {
             var tsLint = this.getPath(options.tsLint);
-            this.writeText(chalk.yellow("Typechecker tsLint: " + chalk.white("" + tsLint + '\n')));
+            this.writeText(chalk_1.default.yellow("Typechecker tsLint: " + chalk_1.default.white("" + tsLint + '\n')));
         }
     }
     TypeHelperClass.prototype.runAsync = function (callback) {
@@ -70,13 +70,13 @@ var TypeHelperClass = (function () {
         this.inspectCodeWithWorker(options);
         var basePath = this.getPath(pathToWatch);
         watch.createMonitor(basePath, function (monitor) {
-            write(chalk.yellow("Typechecker watching: " + chalk.white("" + basePath + END_LINE)));
+            write(chalk_1.default.yellow("Typechecker watching: " + chalk_1.default.white("" + basePath + END_LINE)));
             monitor.on('created', function (f) {
-                write(END_LINE + chalk.yellow("File created: " + f + END_LINE));
+                write(END_LINE + chalk_1.default.yellow("File created: " + f + END_LINE));
             });
             monitor.on('changed', function (f) {
-                write(END_LINE + chalk.yellow("File changed: " + chalk.white("" + f + END_LINE)));
-                write(chalk.grey("Calling typechecker" + END_LINE));
+                write(END_LINE + chalk_1.default.yellow("File changed: " + chalk_1.default.white("" + f + END_LINE)));
+                write(chalk_1.default.grey("Calling typechecker" + END_LINE));
                 clearTimeout(_this.watchTimeout);
                 _this.watchTimeout = setTimeout(function () {
                     _this.inspectCodeWithWorker(options);
@@ -84,8 +84,8 @@ var TypeHelperClass = (function () {
                 }, 500);
             });
             monitor.on('removed', function (f) {
-                write(END_LINE + chalk.yellow("File removed: " + chalk.white("" + f + END_LINE)));
-                write(chalk.grey("Calling typechecker" + END_LINE));
+                write(END_LINE + chalk_1.default.yellow("File removed: " + chalk_1.default.white("" + f + END_LINE)));
+                write(chalk_1.default.grey("Calling typechecker" + END_LINE));
                 clearTimeout(_this.watchTimeout);
                 _this.watchTimeout = setTimeout(function () {
                     _this.inspectCodeWithWorker(options);

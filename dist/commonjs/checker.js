@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ts = require("typescript");
-var chalk = require("chalk");
+var chalk_1 = require("chalk");
 var tslint = require("tslint");
 var path = require("path");
 var interfaces_1 = require("./interfaces");
@@ -70,9 +70,9 @@ var Checker = (function () {
         var print = this.writeText;
         var program = this.program;
         var options = this.options;
-        print(chalk.bgWhite(chalk.black(interfaces_1.END_LINE + "Typechecker plugin(" + options.type + ") " + options.name)) +
-            chalk.white("." + interfaces_1.END_LINE));
-        print(chalk.grey("Time:" + new Date().toString() + " " + interfaces_1.END_LINE));
+        print(chalk_1.default.bgWhite(chalk_1.default.black(interfaces_1.END_LINE + "Typechecker plugin(" + options.type + ") " + options.name)) +
+            chalk_1.default.white("." + interfaces_1.END_LINE));
+        print(chalk_1.default.grey("Time:" + new Date().toString() + " " + interfaces_1.END_LINE));
         var lintErrorMessages = this.processLintFiles();
         var tsErrorMessages = this.processTsDiagnostics();
         var combinedErrors = tsErrorMessages.concat(lintErrorMessages);
@@ -89,25 +89,25 @@ var Checker = (function () {
             var short = _this.options.shortenFilenames;
             var fullFileName = path.resolve(fileName);
             var shortFileName = fullFileName.split(options.basePath).join('.');
-            return chalk.white("\u2514\u2500\u2500 " + shortFileName) + interfaces_1.END_LINE + errors.map(function (err) {
-                var text = chalk.red('   |');
+            return chalk_1.default.white("\u2514\u2500\u2500 " + shortFileName) + interfaces_1.END_LINE + errors.map(function (err) {
+                var text = chalk_1.default.red('   |');
                 if (isTSError(err)) {
-                    text += chalk[err.color](" " + (short ? shortFileName : fullFileName) + " (" + err.line + "," + err.char + ") ");
-                    text += chalk.white("(" + err.category);
-                    text += chalk.white(err.code + ")");
+                    text += chalk_1.default[err.color](" " + (short ? shortFileName : fullFileName) + " (" + err.line + "," + err.char + ") ");
+                    text += chalk_1.default.white("(" + err.category);
+                    text += chalk_1.default.white(err.code + ")");
                     text += ' ' + err.message;
                 }
                 else {
-                    text += chalk[err.color](" " + (short ? shortFileName : fullFileName) + " (" + (err.line + 1) + "," + (err.char + 1) + ") ");
-                    text += chalk.white("(" + err.ruleSeverity + ":");
-                    text += chalk.white(err.ruleName + ")");
+                    text += chalk_1.default[err.color](" " + (short ? shortFileName : fullFileName) + " (" + (err.line + 1) + "," + (err.char + 1) + ") ");
+                    text += chalk_1.default.white("(" + err.ruleSeverity + ":");
+                    text += chalk_1.default.white(err.ruleName + ")");
                     text += ' ' + err.failure;
                 }
                 return text;
             }).join(interfaces_1.END_LINE);
         });
         if (allErrors.length > 0) {
-            allErrors.unshift(chalk.underline(interfaces_1.END_LINE + "File errors") + chalk.white(':'));
+            allErrors.unshift(chalk_1.default.underline(interfaces_1.END_LINE + "File errors") + chalk_1.default.white(':'));
             print(allErrors.join(interfaces_1.END_LINE));
         }
         var optionsErrors = program.getOptionsDiagnostics().length;
@@ -117,18 +117,18 @@ var Checker = (function () {
         var tsLintErrors = lintErrorMessages.length;
         var totalsErrors = optionsErrors + globalErrors + syntacticErrors + semanticErrors + tsLintErrors;
         if (totalsErrors) {
-            print(chalk.underline("" + interfaces_1.END_LINE + interfaces_1.END_LINE + "Errors") +
-                chalk.white(":" + totalsErrors + interfaces_1.END_LINE));
-            print(chalk[optionsErrors ? options.yellowOnOptions ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 Options: " + optionsErrors + interfaces_1.END_LINE));
-            print(chalk[globalErrors ? options.yellowOnGlobal ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 Global: " + globalErrors + interfaces_1.END_LINE));
-            print(chalk[syntacticErrors ? options.yellowOnSyntactic ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 Syntactic: " + syntacticErrors + interfaces_1.END_LINE));
-            print(chalk[semanticErrors ? options.yellowOnSemantic ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 Semantic: " + semanticErrors + interfaces_1.END_LINE));
-            print(chalk[tsLintErrors ? options.yellowOnLint ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 TsLint: " + tsLintErrors + interfaces_1.END_LINE + interfaces_1.END_LINE));
+            print(chalk_1.default.underline("" + interfaces_1.END_LINE + interfaces_1.END_LINE + "Errors") +
+                chalk_1.default.white(":" + totalsErrors + interfaces_1.END_LINE));
+            print(chalk_1.default[optionsErrors ? options.yellowOnOptions ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 Options: " + optionsErrors + interfaces_1.END_LINE));
+            print(chalk_1.default[globalErrors ? options.yellowOnGlobal ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 Global: " + globalErrors + interfaces_1.END_LINE));
+            print(chalk_1.default[syntacticErrors ? options.yellowOnSyntactic ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 Syntactic: " + syntacticErrors + interfaces_1.END_LINE));
+            print(chalk_1.default[semanticErrors ? options.yellowOnSemantic ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 Semantic: " + semanticErrors + interfaces_1.END_LINE));
+            print(chalk_1.default[tsLintErrors ? options.yellowOnLint ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 TsLint: " + tsLintErrors + interfaces_1.END_LINE + interfaces_1.END_LINE));
         }
         else {
-            print(chalk.grey("All good, no errors :-)" + interfaces_1.END_LINE));
+            print(chalk_1.default.grey("All good, no errors :-)" + interfaces_1.END_LINE));
         }
-        print(chalk.grey("Typechecking time: " + this.elapsedInspectionTime + "ms" + interfaces_1.END_LINE));
+        print(chalk_1.default.grey("Typechecking time: " + this.elapsedInspectionTime + "ms" + interfaces_1.END_LINE));
         switch (true) {
             case options.throwOnGlobal && globalErrors > 0:
             case options.throwOnOptions && optionsErrors > 0:
@@ -144,14 +144,14 @@ var Checker = (function () {
                 process.exit(1);
                 break;
             case options.quit && isWorker:
-                print(chalk.grey("Quiting typechecker" + interfaces_1.END_LINE + interfaces_1.END_LINE));
+                print(chalk_1.default.grey("Quiting typechecker" + interfaces_1.END_LINE + interfaces_1.END_LINE));
                 process.send('done');
                 break;
             case options.quit && !isWorker:
-                print(chalk.grey("Quiting typechecker" + interfaces_1.END_LINE + interfaces_1.END_LINE));
+                print(chalk_1.default.grey("Quiting typechecker" + interfaces_1.END_LINE + interfaces_1.END_LINE));
                 break;
             default:
-                print(chalk.grey("Keeping typechecker alive" + interfaces_1.END_LINE + interfaces_1.END_LINE));
+                print(chalk_1.default.grey("Keeping typechecker alive" + interfaces_1.END_LINE + interfaces_1.END_LINE));
         }
         return totalsErrors;
     };

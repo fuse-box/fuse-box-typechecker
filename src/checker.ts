@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import * as tslint from 'tslint';
 import * as path from 'path';
 

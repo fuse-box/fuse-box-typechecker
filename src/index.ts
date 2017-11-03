@@ -6,7 +6,7 @@ import { ILintOptions, ITypeCheckerOptions, WorkerCommand, TypecheckerRunType, I
 import { Checker } from './checker';
 import * as watch from 'watch';
 import * as ts from 'typescript';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 
 
 export class TypeHelperClass {
