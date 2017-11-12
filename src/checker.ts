@@ -8,7 +8,7 @@ import { IInternalTypeCheckerOptions, END_LINE, ITSLintError, ITSError } from '.
 const entries: any = require('object.entries');
 
 if (!Object.entries) {
-  entries.shim();
+    entries.shim();
 }
 
 
@@ -207,6 +207,43 @@ export class Checker {
             );
             print(allErrors.join(END_LINE));
         }
+
+        // print option errors
+        if (program.getOptionsDiagnostics().length) {
+            print(chalk.underline(`${END_LINE}${END_LINE}Option errors`) + chalk.white(`:${END_LINE}`));
+            let optionErrorsText = Object.entries(program.getOptionsDiagnostics())
+                .map(([no, err]) => {
+                    let text = no + ':';
+                    text = chalk[options.yellowOnOptions ? 'yellow' : 'red']
+                        (`└── tsConfig: `);
+                    text += chalk.white(`(${(<any>err).category}:`);
+                    text += chalk.white(`${(<any>err).code})`);
+                    text += chalk.white(` ${(<any>err).messageText}`);
+                    return text;
+                });
+            print(optionErrorsText.join(END_LINE));
+        }
+
+        // print global errors
+        // todo: this needs testing, how do I create a global error??
+        /* try {
+            if (program.getGlobalDiagnostics().length) {
+                print(chalk.underline(`${END_LINE}${END_LINE}Global errors`) + chalk.white(`:${END_LINE}`));
+                let optionErrorsText = Object.entries(program.getGlobalDiagnostics())
+                    .map(([no, err]) => {
+                        let text = no + ':';
+                        text = chalk[options.yellowOnGlobal ? 'yellow' : 'red']
+                            (`└── tsConfig: `);
+                        text += chalk.white(`(${(<any>err).category}:`);
+                        text += chalk.white(`${(<any>err).code})`);
+                        text += chalk.white(` ${(<any>err).messageText}`);
+                        return text;
+                    });
+                print(optionErrorsText.join(END_LINE));
+            }
+        } catch (err) {
+            console.log(`Global error`);
+        } */
 
         // time for summary >>>>>
 

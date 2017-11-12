@@ -110,6 +110,20 @@ var Checker = (function () {
             allErrors.unshift(chalk_1.default.underline(interfaces_1.END_LINE + "File errors") + chalk_1.default.white(':'));
             print(allErrors.join(interfaces_1.END_LINE));
         }
+        if (program.getOptionsDiagnostics().length) {
+            print(chalk_1.default.underline("" + interfaces_1.END_LINE + interfaces_1.END_LINE + "Option errors") + chalk_1.default.white(":" + interfaces_1.END_LINE));
+            var optionErrorsText = Object.entries(program.getOptionsDiagnostics())
+                .map(function (_a) {
+                var no = _a[0], err = _a[1];
+                var text = no + ':';
+                text = chalk_1.default[options.yellowOnOptions ? 'yellow' : 'red']("\u2514\u2500\u2500 tsConfig: ");
+                text += chalk_1.default.white("(" + err.category + ":");
+                text += chalk_1.default.white(err.code + ")");
+                text += chalk_1.default.white(" " + err.messageText);
+                return text;
+            });
+            print(optionErrorsText.join(interfaces_1.END_LINE));
+        }
         var optionsErrors = program.getOptionsDiagnostics().length;
         var globalErrors = program.getGlobalDiagnostics().length;
         var syntacticErrors = program.getSyntacticDiagnostics().length;
