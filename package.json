@@ -15,6 +15,7 @@
   "license": "MIT",
   "author": "Fusebox Community",
   "main": "dist/commonjs/index.js",
+  "types": "dist/commonjs/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/fuse-box/fuse-box-typechecker"
