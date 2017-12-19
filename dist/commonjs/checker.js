@@ -153,7 +153,7 @@ var Checker = (function () {
                     process.send('error');
                 }
                 else {
-                    throw new Error('Typechecker throwing error due to throw options set');
+                    print(chalk_1.default.grey("error typechecker" + interfaces_1.END_LINE + interfaces_1.END_LINE));
                 }
                 process.exit(1);
                 break;
