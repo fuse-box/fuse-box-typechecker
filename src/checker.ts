@@ -316,7 +316,7 @@ export class Checker {
                 if (process.send) {
                     process.send('error');
                 } else {
-                    throw new Error('Typechecker throwing error due to throw options set');
+                    print(chalk.grey(`error typechecker${END_LINE}${END_LINE}`));
                 }
                 // exit with error
                 process.exit(1);
