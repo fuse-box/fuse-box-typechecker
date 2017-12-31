@@ -2,6 +2,7 @@ import * as ts from 'typescript';
 import chalk from 'chalk';
 import * as tslint from 'tslint';
 import * as path from 'path';
+import * as fs from 'fs';
 
 import { IInternalTypeCheckerOptions, END_LINE, ITSLintError, ITSError } from './interfaces';
 
@@ -291,11 +292,66 @@ export class Checker {
                     (`└── TsLint: ${tsLintErrors}${END_LINE}${END_LINE}`)
             );
 
+            if (options.emit) {
+                print(
+                    chalk.grey(`Skipping emit file${END_LINE}`)
+                );
+            }
+
         } else {
             // if there no errors, then also give some feedback about this, so they know its working
             print(
                 chalk.grey(`All good, no errors :-)${END_LINE}`)
             );
+
+            if (options.emit) {
+                print(
+                    chalk.grey(`Getting ready to emit files${END_LINE}`)
+                );
+                try {
+                    if (options.clearOnEmit) {
+                        let outputFolder: any = program.getCompilerOptions().outDir;
+                        let deleteFolder = function (folder: string) {
+                            folder = path.join(folder);
+                            if (fs.existsSync(folder)) {
+                                fs.readdirSync(folder).forEach(function (file: string) {
+                                    let curPath = folder + '/' + file;
+                                    if (fs.lstatSync(curPath).isDirectory()) { // recurse
+                                        deleteFolder(curPath);
+                                    } else { // delete file
+                                        fs.unlinkSync(curPath);
+                                    }
+                                });
+                                fs.rmdirSync(folder);
+                            }
+                        };
+                        if (!outputFolder) {
+                            console.warn('output filder missing');
+                        } else {
+                            print(
+                                chalk.grey(`clearing output folder${END_LINE}`)
+                            );
+                            deleteFolder(outputFolder);
+                            print(
+                                chalk.grey(`Output folder cleared${END_LINE}`)
+                            );
+                            program.emit();
+                            print(
+                                chalk.grey(`Files emittet${END_LINE}`)
+                            );
+                        }
+                    } else {
+                        program.emit();
+                        print(
+                            chalk.grey(`Files emittet${END_LINE}`)
+                        );
+                    }
+                } catch (error) {
+                    print(
+                        chalk.red(`emitting files failed${END_LINE}`)
+                    );
+                }
+            }
         }
 
         print(

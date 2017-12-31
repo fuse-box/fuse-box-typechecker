@@ -183,6 +183,10 @@ interface ITypeCheckerOptionsInterface {
     yellowOnSemantic?: boolean; // use yellow color instead of red on Semantic errors
     yellowOnSyntactic?: boolean; // use yellow color instead of red on Syntactic errors
     shortenFilenames?: boolean; // use shortened filenames in order to make output less noisy
+    
+    // when not using with fusebox or just typechecking (remember to install typescript and tslint)
+    emit?: boolean;// emit files according to tsconfig file
+    clearOnEmit? : boolean // output folder on emit
 }
 
 

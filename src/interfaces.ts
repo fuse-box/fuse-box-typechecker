@@ -33,6 +33,12 @@ export interface ITypeCheckerOptions {
 
     // use shortened filenames in order to make output less cluttered
     shortenFilenames?: boolean;
+
+    // emit files according to tsconfig file
+    emit?: boolean;
+
+    // output folder on emit
+    clearOnEmit?: boolean;
 }
 
 // lint options,this is the same as tsLint uses all paths will be from basepath
