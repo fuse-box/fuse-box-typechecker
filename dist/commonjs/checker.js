@@ -4,6 +4,7 @@ var ts = require("typescript");
 var chalk_1 = require("chalk");
 var tslint = require("tslint");
 var path = require("path");
+var fs = require("fs");
 var interfaces_1 = require("./interfaces");
 var entries = require('object.entries');
 if (!Object.entries) {
@@ -138,9 +139,52 @@ var Checker = (function () {
             print(chalk_1.default[syntacticErrors ? options.yellowOnSyntactic ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 Syntactic: " + syntacticErrors + interfaces_1.END_LINE));
             print(chalk_1.default[semanticErrors ? options.yellowOnSemantic ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 Semantic: " + semanticErrors + interfaces_1.END_LINE));
             print(chalk_1.default[tsLintErrors ? options.yellowOnLint ? 'yellow' : 'red' : 'white']("\u2514\u2500\u2500 TsLint: " + tsLintErrors + interfaces_1.END_LINE + interfaces_1.END_LINE));
+            if (options.emit) {
+                print(chalk_1.default.grey("Skipping emit file" + interfaces_1.END_LINE));
+            }
         }
         else {
             print(chalk_1.default.grey("All good, no errors :-)" + interfaces_1.END_LINE));
+            if (options.emit) {
+                print(chalk_1.default.grey("Getting ready to emit files" + interfaces_1.END_LINE));
+                try {
+                    if (options.clearOnEmit) {
+                        var outputFolder = program.getCompilerOptions().outDir;
+                        var deleteFolder_1 = function (folder) {
+                            folder = path.join(folder);
+                            if (fs.existsSync(folder)) {
+                                fs.readdirSync(folder).forEach(function (file) {
+                                    var curPath = folder + '/' + file;
+                                    if (fs.lstatSync(curPath).isDirectory()) {
+                                        deleteFolder_1(curPath);
+                                    }
+                                    else {
+                                        fs.unlinkSync(curPath);
+                                    }
+                                });
+                                fs.rmdirSync(folder);
+                            }
+                        };
+                        if (!outputFolder) {
+                            console.warn('output filder missing');
+                        }
+                        else {
+                            print(chalk_1.default.grey("clearing output folder" + interfaces_1.END_LINE));
+                            deleteFolder_1(outputFolder);
+                            print(chalk_1.default.grey("Output folder cleared" + interfaces_1.END_LINE));
+                            program.emit();
+                            print(chalk_1.default.grey("Files emittet" + interfaces_1.END_LINE));
+                        }
+                    }
+                    else {
+                        program.emit();
+                        print(chalk_1.default.grey("Files emittet" + interfaces_1.END_LINE));
+                    }
+                }
+                catch (error) {
+                    print(chalk_1.default.red("emitting files failed" + interfaces_1.END_LINE));
+                }
+            }
         }
         print(chalk_1.default.grey("Typechecking time: " + this.elapsedInspectionTime + "ms" + interfaces_1.END_LINE));
         switch (true) {
