@@ -117,10 +117,14 @@ var Checker = (function () {
                 .map(function (_a) {
                 var no = _a[0], err = _a[1];
                 var text = no + ':';
+                var messageText = err.messageText;
+                if ((typeof messageText === 'object') && (messageText !== null)) {
+                    messageText = JSON.stringify(messageText);
+                }
                 text = chalk_1.default[options.yellowOnOptions ? 'yellow' : 'red']("\u2514\u2500\u2500 tsConfig: ");
                 text += chalk_1.default.white("(" + err.category + ":");
                 text += chalk_1.default.white(err.code + ")");
-                text += chalk_1.default.white(" " + err.messageText);
+                text += chalk_1.default.white(" " + messageText);
                 return text;
             });
             print(optionErrorsText.join(interfaces_1.END_LINE));
