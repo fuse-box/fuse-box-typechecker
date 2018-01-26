@@ -215,11 +215,15 @@ export class Checker {
             let optionErrorsText = Object.entries(program.getOptionsDiagnostics())
                 .map(([no, err]) => {
                     let text = no + ':';
+                    let messageText = (<any>err).messageText;
+                    if ((typeof messageText === 'object') && (messageText !== null)) {
+                        messageText = JSON.stringify(messageText);
+                    }
                     text = chalk[options.yellowOnOptions ? 'yellow' : 'red']
                         (`└── tsConfig: `);
                     text += chalk.white(`(${(<any>err).category}:`);
                     text += chalk.white(`${(<any>err).code})`);
-                    text += chalk.white(` ${(<any>err).messageText}`);
+                    text += chalk.white(` ${messageText}`);
                     return text;
                 });
             print(optionErrorsText.join(END_LINE));
