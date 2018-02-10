@@ -90,11 +90,8 @@ doTypeCheck();
 
 //load all fusebox stuff, not showing here
 
-// load
-
-// load
-const Typechecker = require('fuse-box-typechecker').TypeHelper
-let typechecker = Typechecker({
+// get typechecker 
+const typechecker = require('fuse-box-typechecker').TypeHelper({
     tsConfig: './tsconfig.json',
     name: 'src',
     basePath: './',
@@ -102,6 +99,10 @@ let typechecker = Typechecker({
     yellowOnLint: true,
     shortenFilenames:true
 });
+
+// create thread
+typechecker.createThread();
+
 // create thread we can call later
 typechecker.createThread();
 
