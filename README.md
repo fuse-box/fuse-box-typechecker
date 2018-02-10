@@ -103,9 +103,6 @@ const typechecker = require('fuse-box-typechecker').TypeHelper({
 // create thread
 typechecker.createThread();
 
-// create thread we can call later
-typechecker.createThread();
-
 
 let runTypeChecker = () => {
     // same color..
