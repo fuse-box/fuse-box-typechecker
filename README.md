@@ -91,15 +91,31 @@ doTypeCheck();
 //load all fusebox stuff, not showing here
 
 // load
-var TypeHelper = require('fuse-box-typechecker').TypeHelper
 
-//create type checker, it will display paths its using now
-var typeHelper = TypeHelper({
+// load
+const Typechecker = require('fuse-box-typechecker').TypeHelper
+let typechecker = Typechecker({
     tsConfig: './tsconfig.json',
-    basePath:'./',
-    tsLint:'./tslint.json', //you do not haveto do tslint too.. just here to show how.
-    name: 'App typechecker'
-})
+    name: 'src',
+    basePath: './',
+    tsLint: './tslint.json',
+    yellowOnLint: true,
+    shortenFilenames:true
+});
+// create thread we can call later
+typechecker.createThread();
+
+
+let runTypeChecker = () => {
+    // same color..
+    console.log(`\x1b[36m%s\x1b[0m`, `app bundled- running type check`);
+    
+    //call thread (both are called right away, result comes later)
+    typechecker.inspectCodeWithWorker(Object.assign(typechecker.options, { quit: false, type: 'watch' }));
+    typechecker.printResultWithWorker();
+
+}
+
 
 
 
@@ -149,7 +165,7 @@ var buildFuse = (production) => {
         .completed(proc => {
             console.log(`\x1b[36m%s\x1b[0m`, `client bundled`);
             // run the type checking
-            typeHelper.runSync();
+            runTypeChecker();
         });
 
     // run
