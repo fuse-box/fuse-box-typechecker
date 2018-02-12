@@ -206,11 +206,11 @@ var Checker = (function () {
                 process.exit(1);
                 break;
             case options.quit && isWorker:
-                print(chalk_1.default.grey("Quiting typechecker" + interfaces_1.END_LINE + interfaces_1.END_LINE));
+                print(chalk_1.default.grey("Quitting typechecker" + interfaces_1.END_LINE + interfaces_1.END_LINE));
                 process.send('done');
                 break;
             case options.quit && !isWorker:
-                print(chalk_1.default.grey("Quiting typechecker" + interfaces_1.END_LINE + interfaces_1.END_LINE));
+                print(chalk_1.default.grey("Quitting typechecker" + interfaces_1.END_LINE + interfaces_1.END_LINE));
                 break;
             default:
                 print(chalk_1.default.grey("Keeping typechecker alive" + interfaces_1.END_LINE + interfaces_1.END_LINE));
