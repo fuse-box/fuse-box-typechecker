@@ -2,10 +2,16 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var ts = require("typescript");
 var chalk_1 = require("chalk");
-var tslint = require("tslint");
 var path = require("path");
 var fs = require("fs");
 var interfaces_1 = require("./interfaces");
+var tslint;
+try {
+    tslint = require('tslint');
+}
+catch (_a) {
+    tslint = null;
+}
 var entries = require('object.entries');
 if (!Object.entries) {
     entries.shim();
@@ -51,6 +57,11 @@ var Checker = (function () {
         this.tsDiagnostics = this.tsDiagnostics.concat(semanticErrors);
         this.lintFileResult = [];
         if (options.tsLint) {
+            if (!tslint) {
+                this.writeText(chalk_1.default.red("\nMake sure to have " + chalk_1.default.bgRed("tslint") + " installed if you use the \"tsLint\" option:\n") +
+                    chalk_1.default.redBright('npm install --save-dev tslint\n\n'));
+                throw new Error("tslint not installed");
+            }
             var fullPath = path.resolve(this.options.basePath, options.tsLint);
             var files = tslint.Linter.getFileNames(this.program);
             var tsLintConfiguration_1 = tslint.Configuration.findConfiguration(fullPath, this.options.basePath).results;
@@ -206,11 +217,11 @@ var Checker = (function () {
                 process.exit(1);
                 break;
             case options.quit && isWorker:
-                print(chalk_1.default.grey("Quitting typechecker" + interfaces_1.END_LINE + interfaces_1.END_LINE));
+                print(chalk_1.default.grey("Quiting typechecker" + interfaces_1.END_LINE + interfaces_1.END_LINE));
                 process.send('done');
                 break;
             case options.quit && !isWorker:
-                print(chalk_1.default.grey("Quitting typechecker" + interfaces_1.END_LINE + interfaces_1.END_LINE));
+                print(chalk_1.default.grey("Quiting typechecker" + interfaces_1.END_LINE + interfaces_1.END_LINE));
                 break;
             default:
                 print(chalk_1.default.grey("Keeping typechecker alive" + interfaces_1.END_LINE + interfaces_1.END_LINE));
