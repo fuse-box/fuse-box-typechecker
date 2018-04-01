@@ -58,16 +58,17 @@ var Checker = (function () {
         this.lintFileResult = [];
         if (options.tsLint) {
             if (!tslint) {
-                this.writeText(chalk_1.default.red("\nMake sure to have " + chalk_1.default.bgRed("tslint") + " installed if you use the \"tsLint\" option:\n") +
+                this.writeText(chalk_1.default.red("\nMake sure to have " + chalk_1.default.bgWhiteBright('tslint') + " installed if you use the \"tsLint\" option:\n") +
                     chalk_1.default.redBright('npm install --save-dev tslint\n\n'));
-                throw new Error("tslint not installed");
+                throw new Error('tslint not installed');
             }
             var fullPath = path.resolve(this.options.basePath, options.tsLint);
             var files = tslint.Linter.getFileNames(this.program);
             var tsLintConfiguration_1 = tslint.Configuration.findConfiguration(fullPath, this.options.basePath).results;
             this.lintFileResult =
                 files.map(function (file) {
-                    var fileContents = _this.program.getSourceFile(file).getFullText();
+                    var fileContents = _this.program.getSourceFile(file);
+                    fileContents = fileContents ? fileContents.getFullText() : '';
                     var linter = new tslint.Linter(options.lintoptions, _this.program);
                     linter.lint(file, fileContents, tsLintConfiguration_1);
                     return linter.getResult();
