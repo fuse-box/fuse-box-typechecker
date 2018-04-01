@@ -1,10 +1,17 @@
 import * as ts from 'typescript';
 import chalk from 'chalk';
-import * as tslint from 'tslint';
 import * as path from 'path';
 import * as fs from 'fs';
 
 import { IInternalTypeCheckerOptions, END_LINE, ITSLintError, ITSError } from './interfaces';
+
+import * as TSLintTypes from 'tslint'; // Just use types
+let tslint: typeof TSLintTypes | null;
+try {
+    tslint = require('tslint');
+} catch {
+    tslint = null;
+}
 
 const entries: any = require('object.entries');
 
@@ -33,7 +40,7 @@ export class Checker {
     private tsDiagnostics: ts.Diagnostic[];
 
     // lint result returned by tsLint
-    private lintFileResult: tslint.LintResult[];
+    private lintFileResult: TSLintTypes.LintResult[];
 
 
     constructor() {
@@ -99,6 +106,14 @@ export class Checker {
         this.lintFileResult = [];
         if (options.tsLint) {
 
+            if (!tslint) {
+                this.writeText(
+                    chalk.red(`\nMake sure to have ${chalk.bgWhiteBright('tslint')} installed if you use the "tsLint" option:\n`) +
+                    chalk.redBright('npm install --save-dev tslint\n\n')
+                );
+                throw new Error('tslint not installed');
+            }
+
             // get full path
             let fullPath = path.resolve(this.options.basePath, options.tsLint);
 
@@ -115,7 +130,7 @@ export class Checker {
                     const fileContents = this.program.getSourceFile(file).getFullText();
 
                     // create new linter using lint options and tsprogram
-                    const linter = new tslint.Linter((<tslint.ILinterOptions>options.lintoptions), this.program);
+                    const linter = new tslint!.Linter((<TSLintTypes.ILinterOptions>options.lintoptions), this.program);
 
                     // lint file using filename, filecontent, and tslint configuration
                     linter.lint(file, fileContents, tsLintConfiguration);
@@ -423,10 +438,10 @@ export class Checker {
     private processLintFiles(): ITSLintError[] {
         const options = this.options;
         const erroredLintFiles = this.lintFileResult
-            .filter((fileResult: tslint.LintResult) => fileResult.failures);
+            .filter((fileResult: TSLintTypes.LintResult) => fileResult.failures);
         const errors = erroredLintFiles
             .map(
-            (fileResult: tslint.LintResult) =>
+            (fileResult: TSLintTypes.LintResult) =>
                 fileResult.failures.map((failure: any) => ({
                     fileName: failure.fileName,
                     line: failure.startPosition.lineAndCharacter.line,
