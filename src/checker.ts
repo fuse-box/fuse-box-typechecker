@@ -127,7 +127,8 @@ export class Checker {
             this.lintFileResult =
                 files.map(file => {
                     // get content of file
-                    const fileContents = this.program.getSourceFile(file).getFullText();
+                    let fileContents: any = this.program.getSourceFile(file);
+                    fileContents = fileContents ? fileContents.getFullText() : '';
 
                     // create new linter using lint options and tsprogram
                     const linter = new tslint!.Linter((<TSLintTypes.ILinterOptions>options.lintoptions), this.program);
@@ -441,16 +442,16 @@ export class Checker {
             .filter((fileResult: TSLintTypes.LintResult) => fileResult.failures);
         const errors = erroredLintFiles
             .map(
-            (fileResult: TSLintTypes.LintResult) =>
-                fileResult.failures.map((failure: any) => ({
-                    fileName: failure.fileName,
-                    line: failure.startPosition.lineAndCharacter.line,
-                    char: failure.startPosition.lineAndCharacter.character,
-                    ruleSeverity: failure.ruleSeverity.charAt(0).toUpperCase() + failure.ruleSeverity.slice(1),
-                    ruleName: failure.ruleName,
-                    color: options.yellowOnLint ? 'yellow' : 'red',
-                    failure: failure.failure
-                }))).reduce((acc, curr) => acc.concat(curr), []);
+                (fileResult: TSLintTypes.LintResult) =>
+                    fileResult.failures.map((failure: any) => ({
+                        fileName: failure.fileName,
+                        line: failure.startPosition.lineAndCharacter.line,
+                        char: failure.startPosition.lineAndCharacter.character,
+                        ruleSeverity: failure.ruleSeverity.charAt(0).toUpperCase() + failure.ruleSeverity.slice(1),
+                        ruleName: failure.ruleName,
+                        color: options.yellowOnLint ? 'yellow' : 'red',
+                        failure: failure.failure
+                    }))).reduce((acc, curr) => acc.concat(curr), []);
         return errors;
     }
 
@@ -482,9 +483,9 @@ export class Checker {
                         color = 'red';
                 }
                 const {
-          line,
+                    line,
                     character
-        } = diag.file.getLineAndCharacterOfPosition(diag.start);
+                } = diag.file.getLineAndCharacterOfPosition(diag.start);
                 return {
                     fileName: diag.file.fileName,
                     line: line + 1, // `(${line + 1},${character + 1})`,
