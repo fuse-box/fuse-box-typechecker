@@ -1,30 +1,33 @@
 # fuse-box-typechecker
 Simple helper to do typechecking
+You need to install typescript to use this, I suggest installing tslint also
 
 ### How to install
 ```npm install fuse-box-typechecker```
 
 
-### Note
+## Note
 This have been tested with
  * "tslint": "^5.4.3",
  * "typescript": "^2.4.1"
 
 So this might not work with earlier version if typescript and tslint (tsLint 3 will fail, been tested).
+You do not need fusebox, can be used with any project
 
 
-### How to use
+
+## How to use :
+
+--- 
+### Sync check
 ```javascript
 
 // load
 var TypeHelper = require('fuse-box-typechecker').TypeHelper
-
-
 // it checks entire program every time
 // see interface at bottom at readmefile for all options
 
 
-// Sync check
 var testSync = TypeHelper({
     tsConfig: './tsconfig.json',
     basePath:'./',
@@ -34,10 +37,18 @@ var testSync = TypeHelper({
 
 testSync.runSync();
 
+```
+
+--- 
+### Async check (worker)
+```javascript
+
+// load
+var TypeHelper = require('fuse-box-typechecker').TypeHelper
+// it checks entire program every time
+// see interface at bottom at readme for all options
 
 
-
-// Async check (worker)
 var testAsync = TypeHelper({
     tsConfig: './tsconfig.json',
     basePath:'./',
@@ -45,13 +56,24 @@ var testAsync = TypeHelper({
 })
 
 testAsync.runAsync();
-/* or with optional callback
+
+// or with optional callback
 testAsync.runAsync((errors: number) => {
-    // errors > 0 => notify
+    //  errors > 0 => notify
 });
-*/ 
 
 
+```
+
+---
+### Async check (worker)
+
+```javascript
+
+// load
+var TypeHelper = require('fuse-box-typechecker').TypeHelper
+// it checks entire program every time
+// see interface at bottom at readme for all options
 
 // Watch folder and use worker (uses internal watcher)
 var testWatch = TypeHelper({
@@ -62,9 +84,18 @@ var testWatch = TypeHelper({
 
 testWatch.runWatch('./src');
 
+```
+
+---
+### Promise/async/await
+```javascript
 
 
-// as promise/async/await
+// load
+var TypeHelper = require('fuse-box-typechecker').TypeHelper
+// it checks entire program every time
+// see interface at bottom at readme for all options
+
 
 var doTypeCheck = async() => {
 
@@ -81,10 +112,9 @@ var doTypeCheck = async() => {
 doTypeCheck();
 
 
-
 ```
 
-### How you can add to dev bundle process
+### How you can add to dev bundle process in fusebox
 
 ```javascript
 
@@ -173,19 +203,51 @@ var buildFuse = (production) => {
 ```
 
 
+#### Sample on transpiling (not bundling) a src folder and sparky
+
+I use this in a private project [here](https://github.com/mframejs/mframejs/blob/master/build.js) to generate the dist folder
+
+```javascript
+//get type helper
+var Transpile = require('fuse-box-typechecker').TypeHelper
+const { task, src } = require('fuse-box/sparky');
+
+// configure
+var transpile = Transpile({
+    tsConfig: './tsconfig.build.json',
+    basePath: './',
+    tsLint: './tslint.json',
+    name: 'build',
+    shortenFilenames: true,
+    yellowOnLint: true,
+    emit: true,
+    clearOnEmit: true
+});
+
+// start watch, will only emit when there is no errors
+transpile.runSync();
+
+task('default', () => {
+    src('**/*.*', { base: 'src/mframejs' }).clean('distTS/').dest('distTS/').exec();
+});
+
+```
+
+
 
 ### Output sample
 ![Output sample](https://github.com/fuse-box/fuse-box-typechecker/raw/master/image/sampleNew2.png "Output sample")
 
 
+### Interface
 
 ```typescript
 interface ITypeCheckerOptionsInterface {
     tsConfig: string; //config file (compared to basepath './tsconfig.json')
-    throwOnSyntactic?: boolean; // if you want it to throwe error
-    throwOnSemantic?: boolean; // if you want it to throwe error
-    throwOnGlobal?: boolean; // if you want it to throwe error
-    throwOnOptions?: boolean; // if you want it to throwe error
+    throwOnSyntactic?: boolean; // if you want it to throw error
+    throwOnSemantic?: boolean; // if you want it to throw error
+    throwOnGlobal?: boolean; // if you want it to throw error
+    throwOnOptions?: boolean; // if you want it to throw error
     throwOnTsLint?:  boolean; // trhow on lint errors
     basePath: string; // base path to use
     name?: string; // name, will be displayed when it runs, useful when you have more then 1
@@ -202,6 +264,9 @@ interface ITypeCheckerOptionsInterface {
     emit?: boolean;// emit files according to tsconfig file
     clearOnEmit? : boolean // output folder on emit
 }
+
+// Note
+// - The throwOnError options just exits node process with error 1, not 0 (success), to make something like travis to react.
 
 
 interface ILintOptions {
