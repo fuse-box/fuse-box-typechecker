@@ -287,5 +287,4 @@ var Checker = (function () {
     return Checker;
 }());
 exports.Checker = Checker;
-
 //# sourceMappingURL=checker.js.map

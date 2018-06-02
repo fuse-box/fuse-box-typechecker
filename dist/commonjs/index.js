@@ -174,5 +174,4 @@ exports.TypeHelperClass = TypeHelperClass;
 exports.TypeHelper = function (options) {
     return new TypeHelperClass(options);
 };
-
 //# sourceMappingURL=index.js.map

@@ -23,5 +23,4 @@ process.on('message', function (msg) {
             break;
     }
 });
-
 //# sourceMappingURL=worker.js.map

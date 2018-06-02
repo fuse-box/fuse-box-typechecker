@@ -13,5 +13,4 @@ var TypecheckerRunType;
     TypecheckerRunType[TypecheckerRunType["promiseAsync"] = 'promisesync'] = "promiseAsync";
 })(TypecheckerRunType = exports.TypecheckerRunType || (exports.TypecheckerRunType = {}));
 exports.END_LINE = '\n';
-
 //# sourceMappingURL=interfaces.js.map
