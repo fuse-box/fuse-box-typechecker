@@ -115,6 +115,8 @@ doTypeCheck();
 
 ```
 
+---
+
 ### Manual thread and call update
 
 Sample shows how to do it in fusebox
@@ -209,7 +211,7 @@ var buildFuse = (production) => {
 }
 
 ```
-
+---
 
 #### Transpiling (make dist source for package/node project)
 
@@ -253,12 +255,13 @@ if (!typeAndLintErrors) {
 }
 
 ```
-
+---
 
 
 ### Output sample (image)
 ![Output sample](https://github.com/fuse-box/fuse-box-typechecker/raw/master/image/sampleNew2.png "Output sample")
 
+---
 
 ### Interface
 
