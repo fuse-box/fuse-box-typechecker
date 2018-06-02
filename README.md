@@ -204,31 +204,44 @@ var buildFuse = (production) => {
 
 #### Sample on transpiling (not bundling) a src folder and sparky
 
-I use this in a private project [here](https://github.com/mframejs/mframejs/blob/master/build.js) to generate the dist folder
+* I use this in a private project [here](https://github.com/mframejs/mframejs/blob/master/build.js) to generate the dist folder.
+* Update 2 June 2018: from version 2.10.0 this module will be using its prev. (2.9.0) version for transpiling 
 
 ```javascript
 //get type helper
-var Transpile = require('fuse-box-typechecker').TypeHelper
-const { task, src } = require('fuse-box/sparky');
+const transpiler = require('fuse-box-typechecker').TypeHelper;
 
-// configure
-var transpile = Transpile({
-    tsConfig: './tsconfig.build.json',
+const transpileTo = function (outDir, moduleType) {
+  var transpile = transpiler({
+    tsConfig: './tsconfig.json',
     basePath: './',
     tsLint: './tslint.json',
-    name: 'build',
+    name: `building: ${moduleType}, at: ${outDir}`,
     shortenFilenames: true,
     yellowOnLint: true,
     emit: true,
-    clearOnEmit: true
-});
+    clearOnEmit: true,
+    tsConfigOverride: {
+      compilerOptions: {
+        outDir: outDir,
+        module: moduleType
+      }
+    }
+  });
+  return transpile.runSync();
+};
 
-// start watch, will only emit when there is no errors
-transpile.runSync();
+// It will not emit code if any errors by default
+var typeAndLintErrors = transpileTo('dist/commonjs/', 'commonjs');
 
-task('default', () => {
-    src('**/*.*', { base: 'src/mframejs' }).clean('distTS/').dest('distTS/').exec();
-});
+if (!typeAndLintErrors) {
+
+  // If commonjs had no errors then we do amd/system/es2015
+  transpileTo('dist/amd/', 'amd');
+  transpileTo('dist/system/', 'system');
+  transpileTo('dist/es2015/', 'es2015');
+
+}
 
 ```
 
