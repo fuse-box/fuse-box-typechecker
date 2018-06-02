@@ -131,16 +131,15 @@ const typechecker = require('fuse-box-typechecker').TypeHelper({
 });
 
 // create thread
-typechecker.createThread();
+typechecker.startTreadAndWait();
 
 
 let runTypeChecker = () => {
     // same color..
     console.log(`\x1b[36m%s\x1b[0m`, `app bundled- running type check`);
     
-    //call thread (both are called right away, result comes later)
-    typechecker.inspectCodeWithWorker(Object.assign(typechecker.options, { quit: false, type: 'watch' }));
-    typechecker.printResultWithWorker();
+    //use thread, tell it to typecheck and print result
+    typechecker.useThreadAndTypecheck();
 
 }
 
@@ -244,6 +243,7 @@ task('default', () => {
 ```typescript
 interface ITypeCheckerOptionsInterface {
     tsConfig: string; //config file (compared to basepath './tsconfig.json')
+    tsConfigOverride: Object // override tsconfig settings
     throwOnSyntactic?: boolean; // if you want it to throw error
     throwOnSemantic?: boolean; // if you want it to throw error
     throwOnGlobal?: boolean; // if you want it to throw error

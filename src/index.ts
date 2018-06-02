@@ -52,6 +52,10 @@ export class TypeHelperClass {
         (<IInternalTypeCheckerOptions>this.options).tsConfigJsonContent = require(tsconf);
         this.writeText(chalk.yellow(`Typechecker tsconfig: ${chalk.white(`${tsconf}${'\n'}`)}`));
 
+        if (options.tsConfigOverride) {
+            Object.assign((<IInternalTypeCheckerOptions>this.options).tsConfigJsonContent, options.tsConfigOverride);
+        }
+
         // get tslint path and options
         if (options.tsLint) {
             let tsLint = this.getPath(options.tsLint);
@@ -225,6 +229,28 @@ export class TypeHelperClass {
         if (this.monitor) {
             this.monitor.stop();
         }
+    }
+
+
+
+    /**
+     * Starts thread and wait for request to typecheck
+     *
+     */
+    public startTreadAndWait() {
+        this.createThread();
+    }
+
+
+
+    /**
+     * uses the created thread, typechecks and prints result
+     * does not quit
+     *
+     */
+    public useThreadAndTypecheck() {
+        this.inspectCodeWithWorker(Object.assign(this.options, { quit: false, type: 'watch' }));
+        this.printResultWithWorker();
     }
 
 
