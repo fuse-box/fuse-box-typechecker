@@ -28,7 +28,24 @@ var TypeHelperClass = (function () {
         this.options.tsConfigJsonContent = require(tsconf);
         this.writeText(chalk_1.default.yellow("Typechecker tsconfig: " + chalk_1.default.white("" + tsconf + '\n')));
         if (options.tsConfigOverride) {
-            Object.assign(this.options.tsConfigJsonContent, options.tsConfigOverride);
+            var oldConfig = this.options.tsConfigJsonContent;
+            for (var att in options.tsConfigOverride) {
+                if (att === 'compilerOptions') {
+                    if (oldConfig.compilerOptions) {
+                        for (var attCom in options.tsConfigOverride.compilerOptions) {
+                            if (attCom) {
+                                oldConfig.compilerOptions[attCom] = options.tsConfigOverride.compilerOptions[attCom];
+                            }
+                        }
+                    }
+                    else {
+                        oldConfig.compilerOptions = options.tsConfigOverride.compilerOptions;
+                    }
+                }
+                else {
+                    oldConfig[att] = options.tsConfigOverride[att];
+                }
+            }
         }
         if (options.tsLint) {
             var tsLint = this.getPath(options.tsLint);

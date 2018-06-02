@@ -243,7 +243,7 @@ task('default', () => {
 ```typescript
 interface ITypeCheckerOptionsInterface {
     tsConfig: string; //config file (compared to basepath './tsconfig.json')
-    tsConfigOverride: Object // override tsconfig settings
+    tsConfigOverride: Object // override tsconfig settings, does not override entire compilerOptions object, only parts you set
     throwOnSyntactic?: boolean; // if you want it to throw error
     throwOnSemantic?: boolean; // if you want it to throw error
     throwOnGlobal?: boolean; // if you want it to throw error
