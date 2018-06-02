@@ -27,6 +27,9 @@ var TypeHelperClass = (function () {
         var tsconf = this.getPath(options.tsConfig);
         this.options.tsConfigJsonContent = require(tsconf);
         this.writeText(chalk_1.default.yellow("Typechecker tsconfig: " + chalk_1.default.white("" + tsconf + '\n')));
+        if (options.tsConfigOverride) {
+            Object.assign(this.options.tsConfigJsonContent, options.tsConfigOverride);
+        }
         if (options.tsLint) {
             var tsLint = this.getPath(options.tsLint);
             this.writeText(chalk_1.default.yellow("Typechecker tsLint: " + chalk_1.default.white("" + tsLint + '\n')));
@@ -103,6 +106,13 @@ var TypeHelperClass = (function () {
         if (this.monitor) {
             this.monitor.stop();
         }
+    };
+    TypeHelperClass.prototype.startTreadAndWait = function () {
+        this.createThread();
+    };
+    TypeHelperClass.prototype.useThreadAndTypecheck = function () {
+        this.inspectCodeWithWorker(Object.assign(this.options, { quit: false, type: 'watch' }));
+        this.printResultWithWorker();
     };
     TypeHelperClass.prototype.inspectCodeWithWorker = function (options) {
         this.worker.send({ type: interfaces_1.WorkerCommand.inspectCode, options: options });

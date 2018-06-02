@@ -1,6 +1,7 @@
 export interface ITypeCheckerOptions {
     basePath: string;
     tsConfig: string;
+    tsConfigOverride: Object;
     throwOnSyntactic?: boolean;
     throwOnSemantic?: boolean;
     throwOnTsLint?: boolean;
@@ -36,13 +37,13 @@ export interface IWorkerOptions {
 }
 export declare enum WorkerCommand {
     inspectCode = 0,
-    printResult = 1,
+    printResult = 1
 }
 export declare enum TypecheckerRunType {
     sync,
     async,
     watch,
-    promiseAsync,
+    promiseAsync
 }
 export interface ITSLintError {
     fileName: string;

@@ -8,7 +8,7 @@ export declare class Checker {
     constructor();
     inspectCode(options: IInternalTypeCheckerOptions): void;
     printResult(isWorker?: boolean): number;
-    private writeText(text);
-    private processLintFiles();
-    private processTsDiagnostics();
+    private writeText;
+    private processLintFiles;
+    private processTsDiagnostics;
 }

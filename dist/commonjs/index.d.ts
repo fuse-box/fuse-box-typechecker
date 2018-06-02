@@ -13,10 +13,12 @@ export declare class TypeHelperClass {
     runPromise(): Promise<number>;
     runWatch(pathToWatch: string): void;
     killWorker(): void;
-    private inspectCodeWithWorker(options);
-    private printResultWithWorker();
-    private createThread();
-    private writeText(text);
-    private getPath(usePath);
+    startTreadAndWait(): void;
+    useThreadAndTypecheck(): void;
+    private inspectCodeWithWorker;
+    private printResultWithWorker;
+    private createThread;
+    private writeText;
+    private getPath;
 }
 export declare const TypeHelper: (options: ITypeCheckerOptions) => TypeHelperClass;
