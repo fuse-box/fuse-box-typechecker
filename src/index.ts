@@ -107,7 +107,7 @@ export class TypeHelperClass {
      */
     public runPromise(): Promise<number> {
 
-        // return promise so we can use it wrih then() or async/await
+        // return promise so we can use it with then() or async/await
         return new Promise((resolve: Function, reject: Function) => {
 
             // wrap in try/catch so we can do reject if it fails
@@ -175,7 +175,7 @@ export class TypeHelperClass {
                 write(END_LINE + chalk.yellow(`File changed: ${chalk.white(`${f}${END_LINE}`)}`));
                 write(chalk.grey(`Calling typechecker${END_LINE}`));
 
-                // have inside timeout, so we only run once when multible files are saved
+                // have inside timeout, so we only run once when multiple files are saved
                 clearTimeout(this.watchTimeout);
                 this.watchTimeout = setTimeout(() => {
 
@@ -192,7 +192,7 @@ export class TypeHelperClass {
                 write(END_LINE + chalk.yellow(`File removed: ${chalk.white(`${f}${END_LINE}`)}`));
                 write(chalk.grey(`Calling typechecker${END_LINE}`));
 
-                // have inside timeout, so we only run once when multible files are saved
+                // have inside timeout, so we only run once when multiple files are saved
                 clearTimeout(this.watchTimeout);
                 this.watchTimeout = setTimeout(() => {
 
@@ -254,7 +254,7 @@ export class TypeHelperClass {
             // all well, lets preform printout
             this.worker.send({ type: WorkerCommand.printResult, hasCallback: this.workerCallback != null });
         } else {
-            this.writeText('You can not run pront before you have inspected code first');
+            this.writeText('You can not run print before you have inspected code first');
         }
     }
 

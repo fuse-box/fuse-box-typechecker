@@ -49,7 +49,7 @@ export interface ILintOptions {
     rulesDirectory?: string | null;
 }
 
-// extended internal options, needed for some interal usage
+// extended internal options, needed for some internal usage
 export interface IInternalTypeCheckerOptions extends ITypeCheckerOptions {
     type: TypecheckerRunType;
     tsConfigJsonContent?: any;

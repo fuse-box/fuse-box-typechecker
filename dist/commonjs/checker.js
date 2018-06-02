@@ -182,19 +182,19 @@ var Checker = (function () {
                             }
                         };
                         if (!outputFolder) {
-                            console.warn('output filder missing');
+                            console.warn('output folder missing');
                         }
                         else {
                             print(chalk_1.default.grey("clearing output folder" + interfaces_1.END_LINE));
                             deleteFolder_1(outputFolder);
                             print(chalk_1.default.grey("Output folder cleared" + interfaces_1.END_LINE));
                             program.emit();
-                            print(chalk_1.default.grey("Files emittet" + interfaces_1.END_LINE));
+                            print(chalk_1.default.grey("Files emitted" + interfaces_1.END_LINE));
                         }
                     }
                     else {
                         program.emit();
-                        print(chalk_1.default.grey("Files emittet" + interfaces_1.END_LINE));
+                        print(chalk_1.default.grey("Files emitted" + interfaces_1.END_LINE));
                     }
                 }
                 catch (error) {
@@ -218,11 +218,11 @@ var Checker = (function () {
                 process.exit(1);
                 break;
             case options.quit && isWorker:
-                print(chalk_1.default.grey("Quiting typechecker" + interfaces_1.END_LINE + interfaces_1.END_LINE));
+                print(chalk_1.default.grey("Quitting typechecker" + interfaces_1.END_LINE + interfaces_1.END_LINE));
                 process.send('done');
                 break;
             case options.quit && !isWorker:
-                print(chalk_1.default.grey("Quiting typechecker" + interfaces_1.END_LINE + interfaces_1.END_LINE));
+                print(chalk_1.default.grey("Quitting typechecker" + interfaces_1.END_LINE + interfaces_1.END_LINE));
                 break;
             default:
                 print(chalk_1.default.grey("Keeping typechecker alive" + interfaces_1.END_LINE + interfaces_1.END_LINE));
