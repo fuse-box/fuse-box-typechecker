@@ -53,7 +53,22 @@ export class TypeHelperClass {
         this.writeText(chalk.yellow(`Typechecker tsconfig: ${chalk.white(`${tsconf}${'\n'}`)}`));
 
         if (options.tsConfigOverride) {
-            Object.assign((<IInternalTypeCheckerOptions>this.options).tsConfigJsonContent, options.tsConfigOverride);
+            let oldConfig = (<IInternalTypeCheckerOptions>this.options).tsConfigJsonContent;
+            for (let att in options.tsConfigOverride) {
+                if (att === 'compilerOptions') {
+                    if (oldConfig.compilerOptions) {
+                        for (let attCom in (<any>options.tsConfigOverride).compilerOptions) {
+                            if (attCom) {
+                                oldConfig.compilerOptions[attCom] = (<any>options.tsConfigOverride).compilerOptions[attCom];
+                            }
+                        }
+                    } else {
+                        oldConfig.compilerOptions = (<any>options.tsConfigOverride).compilerOptions;
+                    }
+                } else {
+                    oldConfig[att] = (<any>options.tsConfigOverride)[att];
+                }
+            }
         }
 
         // get tslint path and options
