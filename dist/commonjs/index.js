@@ -113,7 +113,7 @@ var TypeHelperClass = (function () {
             this.worker.send({ type: interfaces_1.WorkerCommand.printResult, hasCallback: this.workerCallback != null });
         }
         else {
-            this.writeText('You can not run pront before you have inspected code first');
+            this.writeText('You can not run print before you have inspected code first');
         }
     };
     TypeHelperClass.prototype.createThread = function () {

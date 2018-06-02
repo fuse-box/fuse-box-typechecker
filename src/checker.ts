@@ -346,7 +346,7 @@ export class Checker {
                             }
                         };
                         if (!outputFolder) {
-                            console.warn('output filder missing');
+                            console.warn('output folder missing');
                         } else {
                             print(
                                 chalk.grey(`clearing output folder${END_LINE}`)
@@ -357,13 +357,13 @@ export class Checker {
                             );
                             program.emit();
                             print(
-                                chalk.grey(`Files emittet${END_LINE}`)
+                                chalk.grey(`Files emitted${END_LINE}`)
                             );
                         }
                     } else {
                         program.emit();
                         print(
-                            chalk.grey(`Files emittet${END_LINE}`)
+                            chalk.grey(`Files emitted${END_LINE}`)
                         );
                     }
                 } catch (error) {
@@ -400,15 +400,15 @@ export class Checker {
 
             // if quit is set and its a worker, then post message and callback to main tread and tell its done
             case options.quit && isWorker:
-                print(chalk.grey(`Quiting typechecker${END_LINE}${END_LINE}`));
+                print(chalk.grey(`Quitting typechecker${END_LINE}${END_LINE}`));
 
                 // since Im a worker I need to send back a message;
                 (<any>process).send('done');
                 break;
 
-            // if quit is set and not worker, then just post messeage
+            // if quit is set and not worker, then just post message
             case options.quit && !isWorker:
-                print(chalk.grey(`Quiting typechecker${END_LINE}${END_LINE}`));
+                print(chalk.grey(`Quitting typechecker${END_LINE}${END_LINE}`));
                 break;
 
             // default action
