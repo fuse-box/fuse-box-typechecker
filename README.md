@@ -19,7 +19,7 @@ You do not need fusebox, can be used with any project
 ## How to use :
 
 --- 
-### Sync check
+### Sync check (and quit)
 ```javascript
 
 // load
@@ -40,7 +40,7 @@ testSync.runSync();
 ```
 
 --- 
-### Async check (worker)
+### Async check (and quit)
 ```javascript
 
 // load
@@ -66,7 +66,7 @@ testAsync.runAsync((errors: number) => {
 ```
 
 ---
-### Async check (worker)
+### Watch (stays alive)
 
 ```javascript
 
@@ -82,12 +82,13 @@ var testWatch = TypeHelper({
     name: 'Watch Async'
 })
 
+// add folder to watch
 testWatch.runWatch('./src');
 
 ```
 
 ---
-### Promise/async/await
+### Promise/async/await (and quit)
 ```javascript
 
 
@@ -114,7 +115,15 @@ doTypeCheck();
 
 ```
 
-### How you can add to dev bundle process in fusebox
+### Manual thread and call update
+
+Sample shows how to do it in fusebox
+
+But main functions here is:
+* `startTreadAndWait()`
+* `useThreadAndTypecheck();`
+
+
 
 ```javascript
 
@@ -202,7 +211,7 @@ var buildFuse = (production) => {
 ```
 
 
-#### Sample on transpiling (not bundling) a src folder and sparky
+#### Transpiling (make dist source for package/node project)
 
 * I use this in a private project [here](https://github.com/mframejs/mframejs/blob/master/build.js) to generate the dist folder.
 * Update 2 June 2018: from version 2.10.0 this module will be using its prev. (2.9.0) version for transpiling 
@@ -247,7 +256,7 @@ if (!typeAndLintErrors) {
 
 
 
-### Output sample
+### Output sample (image)
 ![Output sample](https://github.com/fuse-box/fuse-box-typechecker/raw/master/image/sampleNew2.png "Output sample")
 
 
