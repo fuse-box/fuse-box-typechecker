@@ -76,6 +76,13 @@ var Checker = (function () {
                     return result.errorCount ? true : false;
                 });
         }
+        this.lastResults = {
+            lint: this.lintFileResult,
+            optionsErrors: optionsErrors,
+            globalErrors: globalErrors,
+            syntacticErrors: syntacticErrors,
+            semanticErrors: semanticErrors
+        };
         this.elapsedInspectionTime = new Date().getTime() - inspectionTimeStart;
     };
     Checker.prototype.printResult = function (isWorker) {

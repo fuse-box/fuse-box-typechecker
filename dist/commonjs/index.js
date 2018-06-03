@@ -64,6 +64,11 @@ var TypeHelperClass = (function () {
         this.checker.inspectCode(options);
         return this.checker.printResult();
     };
+    TypeHelperClass.prototype.checkSyncReturnObj = function () {
+        var options = Object.assign(this.options, { quit: true, type: interfaces_1.TypecheckerRunType.sync });
+        this.checker.inspectCode(options);
+        return this.checker.lastResults;
+    };
     TypeHelperClass.prototype.runPromise = function () {
         var _this = this;
         return new Promise(function (resolve, reject) {

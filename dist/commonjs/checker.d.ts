@@ -5,6 +5,7 @@ export declare class Checker {
     private elapsedInspectionTime;
     private tsDiagnostics;
     private lintFileResult;
+    lastResults: any;
     constructor();
     inspectCode(options: IInternalTypeCheckerOptions): void;
     printResult(isWorker?: boolean): number;
