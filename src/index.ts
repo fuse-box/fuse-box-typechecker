@@ -137,6 +137,42 @@ export class TypeHelperClass {
     }
 
 
+        /**
+     * Runs in async and return promise and callbacks and quits
+     *
+     */
+    public checkSyncReturnObjPromise(): Promise<number> {
+
+        // return promise so we can use it with then() or async/await
+        return new Promise((resolve: Function, reject: Function) => {
+
+            // wrap in try/catch so we can do reject if it fails
+            try {
+
+                // set options, add if it need to quit and run type
+                let options: IInternalTypeCheckerOptions = Object.assign(this.options, { quit: true, type: TypecheckerRunType.promiseAsync });
+
+                // set the worker callback
+                this.workerCallback = (errors) => {
+                    resolve(errors);
+                };
+
+                // create thread
+                this.createThread();
+
+                // inspect our code
+                this.inspectCodeWithWorker(options);
+
+                // call worker
+                this.getResultObjFromWorker();
+
+            } catch (err) {
+                reject(err);
+            }
+        });
+    }
+
+
     /**
      * Runs in async and return promise and callbacks and quits
      *
@@ -301,7 +337,7 @@ export class TypeHelperClass {
 
 
     /**
-     * Tells worker to do a typecheck
+     * Tells worker to print results to console
      *
      */
     private printResultWithWorker(): void {
@@ -311,6 +347,24 @@ export class TypeHelperClass {
 
             // all well, lets preform printout
             this.worker.send({ type: WorkerCommand.printResult, hasCallback: this.workerCallback != null });
+        } else {
+            this.writeText('You can not run print before you have inspected code first');
+        }
+    }
+
+
+
+        /**
+     * Tells worker to print results to console
+     *
+     */
+    private getResultObjFromWorker(): void {
+
+        // have we inspected code?
+        if (this.isWorkerInspectPreformed) {
+
+            // all well, lets preform printout
+            this.worker.send({ type: WorkerCommand.getResultObj, hasCallback: this.workerCallback != null });
         } else {
             this.writeText('You can not run print before you have inspected code first');
         }
@@ -371,5 +425,9 @@ export class TypeHelperClass {
 
 // return new typechecker
 export const TypeHelper = (options: ITypeCheckerOptions): TypeHelperClass => {
+    return new TypeHelperClass(options);
+};
+
+export const TypeChecker = (options: ITypeCheckerOptions): TypeHelperClass => {
     return new TypeHelperClass(options);
 };

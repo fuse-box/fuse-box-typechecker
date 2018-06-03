@@ -69,7 +69,8 @@ export interface IWorkerOptions {
 // run options for worker
 export enum WorkerCommand {
     inspectCode,
-    printResult
+    printResult,
+    getResultObj
 }
 
 

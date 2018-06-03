@@ -32,5 +32,16 @@ process.on('message', function (msg: IWorkerOptions) {
             }
 
             break;
+
+        // tell checker to return result obj
+        case WorkerCommand.getResultObj:
+            let resultObj = checker.lastResults;
+            // TODO, need to trim down results, so it can be transfered, the will break if any errors
+            if (process.send && hasCallback) {
+                process.send({ type: 'result', result: resultObj });
+                (<any>process).send('done');
+            }
+
+            break;
     }
 });
