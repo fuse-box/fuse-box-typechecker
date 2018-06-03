@@ -120,6 +120,23 @@ export class TypeHelperClass {
     }
 
 
+        /**
+     * Runs in sync and quits
+     * Returns result obj
+     */
+    public checkSyncReturnObj(): number {
+
+        // set options, add if it need to quit and run type
+        let options: IInternalTypeCheckerOptions = Object.assign(this.options, { quit: true, type: TypecheckerRunType.sync });
+
+        // inspect our code
+        this.checker.inspectCode(options);
+
+        // print result to screen and return total errors
+        return this.checker.lastResults;
+    }
+
+
     /**
      * Runs in async and return promise and callbacks and quits
      *

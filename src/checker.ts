@@ -42,6 +42,8 @@ export class Checker {
     // lint result returned by tsLint
     private lintFileResult: TSLintTypes.LintResult[];
 
+    // will have last result *undefined if no check have been preformed
+    public lastResults: any;
 
     constructor() {
         // nothing atm
@@ -143,6 +145,15 @@ export class Checker {
                     return result.errorCount ? true : false;
                 });
         }
+
+        // save results, so we can use them other places
+        this.lastResults = {
+            lint: this.lintFileResult,
+            optionsErrors: optionsErrors,
+            globalErrors: globalErrors,
+            syntacticErrors: syntacticErrors,
+            semanticErrors: semanticErrors
+        };
 
         // save elapsed check time
         this.elapsedInspectionTime = new Date().getTime() - inspectionTimeStart;
