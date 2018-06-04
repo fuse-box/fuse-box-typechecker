@@ -1,4 +1,4 @@
-import { IInternalTypeCheckerOptions } from './interfaces';
+import { IInternalTypeCheckerOptions, IResults } from './interfaces';
 export declare class Checker {
     private options;
     private program;
@@ -8,6 +8,7 @@ export declare class Checker {
     lastResults: any;
     constructor();
     inspectCode(options: IInternalTypeCheckerOptions): void;
+    getResultObj(): IResults;
     printResult(isWorker?: boolean): number;
     private writeText;
     private processLintFiles;

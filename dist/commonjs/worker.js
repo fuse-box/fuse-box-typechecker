@@ -21,6 +21,12 @@ process.on('message', function (msg) {
                 process.send({ type: 'result', result: result });
             }
             break;
+        case interfaces_1.WorkerCommand.getResultObj:
+            if (process.send && hasCallback) {
+                process.send({ type: 'result', result: checker.getResultObj() });
+                process.send('done');
+            }
+            break;
     }
 });
 //# sourceMappingURL=worker.js.map

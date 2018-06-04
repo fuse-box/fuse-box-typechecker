@@ -1,4 +1,4 @@
-import { ITypeCheckerOptions } from './interfaces';
+import { ITypeCheckerOptions, IResults } from './interfaces';
 export declare class TypeHelperClass {
     private options;
     private worker;
@@ -10,7 +10,8 @@ export declare class TypeHelperClass {
     constructor(options: ITypeCheckerOptions);
     runAsync(callback?: (errors: number) => void): void;
     runSync(): number;
-    checkSyncReturnObj(): number;
+    checkSyncReturnObj(): IResults;
+    checkSyncReturnObjPromise(): Promise<number>;
     runPromise(): Promise<number>;
     runWatch(pathToWatch: string): void;
     killWorker(): void;
@@ -18,8 +19,10 @@ export declare class TypeHelperClass {
     useThreadAndTypecheck(): void;
     private inspectCodeWithWorker;
     private printResultWithWorker;
+    private getResultObjFromWorker;
     private createThread;
     private writeText;
     private getPath;
 }
 export declare const TypeHelper: (options: ITypeCheckerOptions) => TypeHelperClass;
+export declare const TypeChecker: (options: ITypeCheckerOptions) => TypeHelperClass;

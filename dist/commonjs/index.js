@@ -67,7 +67,24 @@ var TypeHelperClass = (function () {
     TypeHelperClass.prototype.checkSyncReturnObj = function () {
         var options = Object.assign(this.options, { quit: true, type: interfaces_1.TypecheckerRunType.sync });
         this.checker.inspectCode(options);
-        return this.checker.lastResults;
+        return this.checker.getResultObj();
+    };
+    TypeHelperClass.prototype.checkSyncReturnObjPromise = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            try {
+                var options = Object.assign(_this.options, { quit: true, type: interfaces_1.TypecheckerRunType.promiseAsync });
+                _this.workerCallback = function (errors) {
+                    resolve(errors);
+                };
+                _this.createThread();
+                _this.inspectCodeWithWorker(options);
+                _this.getResultObjFromWorker();
+            }
+            catch (err) {
+                reject(err);
+            }
+        });
     };
     TypeHelperClass.prototype.runPromise = function () {
         var _this = this;
@@ -148,6 +165,14 @@ var TypeHelperClass = (function () {
             this.writeText('You can not run print before you have inspected code first');
         }
     };
+    TypeHelperClass.prototype.getResultObjFromWorker = function () {
+        if (this.isWorkerInspectPreformed) {
+            this.worker.send({ type: interfaces_1.WorkerCommand.getResultObj, hasCallback: this.workerCallback != null });
+        }
+        else {
+            this.writeText('You can not run print before you have inspected code first');
+        }
+    };
     TypeHelperClass.prototype.createThread = function () {
         var _this = this;
         this.worker = child.fork(path.join(__dirname, 'worker.js'), []);
@@ -177,6 +202,9 @@ var TypeHelperClass = (function () {
 }());
 exports.TypeHelperClass = TypeHelperClass;
 exports.TypeHelper = function (options) {
+    return new TypeHelperClass(options);
+};
+exports.TypeChecker = function (options) {
     return new TypeHelperClass(options);
 };
 //# sourceMappingURL=index.js.map

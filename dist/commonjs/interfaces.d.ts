@@ -1,7 +1,7 @@
 export interface ITypeCheckerOptions {
     basePath: string;
     tsConfig: string;
-    tsConfigOverride: Object;
+    tsConfigOverride?: Object;
     throwOnSyntactic?: boolean;
     throwOnSemantic?: boolean;
     throwOnTsLint?: boolean;
@@ -37,7 +37,8 @@ export interface IWorkerOptions {
 }
 export declare enum WorkerCommand {
     inspectCode = 0,
-    printResult = 1
+    printResult = 1,
+    getResultObj = 2
 }
 export declare enum TypecheckerRunType {
     sync,
@@ -62,5 +63,12 @@ export interface ITSError {
     color: string;
     category: string;
     code: string;
+}
+export interface IResults {
+    lintErrors: ITSLintError[];
+    optionsErrors: ITSError[];
+    globalErrors: ITSError[];
+    syntacticErrors: ITSError[];
+    semanticErrors: ITSError[];
 }
 export declare const END_LINE = "\n";

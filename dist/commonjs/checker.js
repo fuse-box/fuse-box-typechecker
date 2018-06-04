@@ -77,13 +77,22 @@ var Checker = (function () {
                 });
         }
         this.lastResults = {
-            lint: this.lintFileResult,
+            lintErrors: this.lintFileResult || [],
             optionsErrors: optionsErrors,
             globalErrors: globalErrors,
             syntacticErrors: syntacticErrors,
             semanticErrors: semanticErrors
         };
         this.elapsedInspectionTime = new Date().getTime() - inspectionTimeStart;
+    };
+    Checker.prototype.getResultObj = function () {
+        return {
+            lintErrors: this.processLintFiles(this.lastResults.lintErrors),
+            optionsErrors: this.processTsDiagnostics(this.lastResults.optionsErrors),
+            globalErrors: this.processTsDiagnostics(this.lastResults.globalErrors),
+            syntacticErrors: this.processTsDiagnostics(this.lastResults.syntacticErrors),
+            semanticErrors: this.processTsDiagnostics(this.lastResults.semanticErrors)
+        };
     };
     Checker.prototype.printResult = function (isWorker) {
         var _this = this;
@@ -93,8 +102,8 @@ var Checker = (function () {
         print(chalk_1.default.bgWhite(chalk_1.default.black(interfaces_1.END_LINE + "Typechecker plugin(" + options.type + ") " + options.name)) +
             chalk_1.default.white("." + interfaces_1.END_LINE));
         print(chalk_1.default.grey("Time:" + new Date().toString() + " " + interfaces_1.END_LINE));
-        var lintErrorMessages = this.processLintFiles();
-        var tsErrorMessages = this.processTsDiagnostics();
+        var lintErrorMessages = this.processLintFiles(this.lintFileResult);
+        var tsErrorMessages = this.processTsDiagnostics(this.tsDiagnostics);
         var combinedErrors = tsErrorMessages.concat(lintErrorMessages);
         var groupedErrors = {};
         combinedErrors.forEach(function (error) {
@@ -239,9 +248,9 @@ var Checker = (function () {
     Checker.prototype.writeText = function (text) {
         ts.sys.write(text);
     };
-    Checker.prototype.processLintFiles = function () {
+    Checker.prototype.processLintFiles = function (lintResults) {
         var options = this.options;
-        var erroredLintFiles = this.lintFileResult
+        var erroredLintFiles = lintResults
             .filter(function (fileResult) { return fileResult.failures; });
         var errors = erroredLintFiles
             .map(function (fileResult) {
@@ -257,9 +266,9 @@ var Checker = (function () {
         }).reduce(function (acc, curr) { return acc.concat(curr); }, []);
         return errors;
     };
-    Checker.prototype.processTsDiagnostics = function () {
+    Checker.prototype.processTsDiagnostics = function (toProcess) {
         var options = this.options;
-        return this.tsDiagnostics
+        return toProcess
             .filter(function (diag) { return diag.file; })
             .map(function (diag) {
             var color;
