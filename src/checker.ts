@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import * as path from 'path';
 import * as fs from 'fs';
 
-import { IInternalTypeCheckerOptions, END_LINE, ITSLintError, ITSError } from './interfaces';
+import { IInternalTypeCheckerOptions, END_LINE, ITSLintError, ITSError, IResults } from './interfaces';
 
 import * as TSLintTypes from 'tslint'; // Just use types
 let tslint: typeof TSLintTypes | null;
@@ -148,7 +148,7 @@ export class Checker {
 
         // save results, so we can use them other places
         this.lastResults = {
-            lint: this.lintFileResult,
+            lintErrors: this.lintFileResult || [],
             optionsErrors: optionsErrors,
             globalErrors: globalErrors,
             syntacticErrors: syntacticErrors,
@@ -157,6 +157,22 @@ export class Checker {
 
         // save elapsed check time
         this.elapsedInspectionTime = new Date().getTime() - inspectionTimeStart;
+    }
+
+
+
+    /**
+     * get result Obj
+     *
+     */
+    public getResultObj(): IResults {
+        return {
+            lintErrors: this.processLintFiles(this.lastResults.lintErrors),
+            optionsErrors: this.processTsDiagnostics(this.lastResults.optionsErrors),
+            globalErrors: this.processTsDiagnostics(this.lastResults.globalErrors),
+            syntacticErrors: this.processTsDiagnostics(this.lastResults.syntacticErrors),
+            semanticErrors: this.processTsDiagnostics(this.lastResults.semanticErrors)
+        };
     }
 
 
@@ -186,10 +202,10 @@ export class Checker {
         );
 
         // get the lint errors messages
-        let lintErrorMessages: TypeCheckError[] = this.processLintFiles();
+        let lintErrorMessages: TypeCheckError[] = this.processLintFiles(this.lintFileResult);
 
         // loop diagnostics and get the errors messages
-        let tsErrorMessages: TypeCheckError[] = this.processTsDiagnostics();
+        let tsErrorMessages: TypeCheckError[] = this.processTsDiagnostics(this.tsDiagnostics);
 
         // combine errors and print if any
         let combinedErrors: TypeCheckError[] = tsErrorMessages.concat(lintErrorMessages);
@@ -447,9 +463,9 @@ export class Checker {
      * loops lint failures and return pretty failure string ready to be printed
      *
      */
-    private processLintFiles(): ITSLintError[] {
+    private processLintFiles(lintResults: TSLintTypes.LintResult[]): ITSLintError[] {
         const options = this.options;
-        const erroredLintFiles = this.lintFileResult
+        const erroredLintFiles = lintResults
             .filter((fileResult: TSLintTypes.LintResult) => fileResult.failures);
         const errors = erroredLintFiles
             .map(
@@ -470,9 +486,9 @@ export class Checker {
      * loops ts failures and return pretty failure string ready to be printed
      *
      */
-    private processTsDiagnostics(): ITSError[] {
+    private processTsDiagnostics(toProcess: ts.Diagnostic[]): ITSError[] {
         const options = this.options;
-        return this.tsDiagnostics
+        return toProcess
             .filter((diag: any) => diag.file)
             .map((diag: any) => {
                 // set color from options

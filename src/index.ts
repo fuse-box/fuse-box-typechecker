@@ -2,7 +2,7 @@
 
 import * as child from 'child_process';
 import * as path from 'path';
-import { ILintOptions, ITypeCheckerOptions, WorkerCommand, TypecheckerRunType, IInternalTypeCheckerOptions } from './interfaces';
+import { ILintOptions, ITypeCheckerOptions, WorkerCommand, TypecheckerRunType, IInternalTypeCheckerOptions, IResults } from './interfaces';
 import { Checker } from './checker';
 import * as watch from 'watch';
 import * as ts from 'typescript';
@@ -124,7 +124,7 @@ export class TypeHelperClass {
      * Runs in sync and quits
      * Returns result obj
      */
-    public checkSyncReturnObj(): number {
+    public checkSyncReturnObj(): IResults {
 
         // set options, add if it need to quit and run type
         let options: IInternalTypeCheckerOptions = Object.assign(this.options, { quit: true, type: TypecheckerRunType.sync });
@@ -133,7 +133,7 @@ export class TypeHelperClass {
         this.checker.inspectCode(options);
 
         // print result to screen and return total errors
-        return this.checker.lastResults;
+        return this.checker.getResultObj();
     }
 
 

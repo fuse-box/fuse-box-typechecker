@@ -103,4 +103,12 @@ export interface ITSError {
     code: string;
 }
 
+export interface IResults {
+    lintErrors: ITSLintError[];
+    optionsErrors: ITSError[];
+    globalErrors: ITSError[];
+    syntacticErrors: ITSError[];
+    semanticErrors: ITSError[];
+}
+
 export const END_LINE = '\n';

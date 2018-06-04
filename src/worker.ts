@@ -2,6 +2,7 @@
 import { Checker } from './checker';
 import { WorkerCommand, IWorkerOptions } from './interfaces';
 
+
 // create checker instance
 let checker = new Checker();
 let hasCallback = false;
@@ -35,10 +36,8 @@ process.on('message', function (msg: IWorkerOptions) {
 
         // tell checker to return result obj
         case WorkerCommand.getResultObj:
-            let resultObj = checker.lastResults;
-            // TODO, need to trim down results, so it can be transfered, the will break if any errors
             if (process.send && hasCallback) {
-                process.send({ type: 'result', result: resultObj });
+                process.send({ type: 'result', result: checker.getResultObj() });
                 (<any>process).send('done');
             }
 
