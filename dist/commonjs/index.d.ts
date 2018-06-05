@@ -10,8 +10,8 @@ export declare class TypeHelperClass {
     constructor(options: ITypeCheckerOptions);
     runAsync(callback?: (errors: number) => void): void;
     runSync(): number;
-    checkSyncReturnObj(): IResults;
-    checkSyncReturnObjPromise(): Promise<number>;
+    runSilentSync(): IResults;
+    runSilentPromise(): Promise<IResults>;
     runPromise(): Promise<number>;
     runWatch(pathToWatch: string): void;
     killWorker(): void;
