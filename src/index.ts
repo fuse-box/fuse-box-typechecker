@@ -124,7 +124,7 @@ export class TypeHelperClass {
      * Runs in sync and quits
      * Returns result obj
      */
-    public checkSyncReturnObj(): IResults {
+    public runSilentSync(): IResults {
 
         // set options, add if it need to quit and run type
         let options: IInternalTypeCheckerOptions = Object.assign(this.options, { quit: true, type: TypecheckerRunType.sync });
@@ -141,7 +141,7 @@ export class TypeHelperClass {
      * Runs in async and return promise and callbacks and quits
      *
      */
-    public checkSyncReturnObjPromise(): Promise<number> {
+    public runSilentPromise(): Promise<IResults> {
 
         // return promise so we can use it with then() or async/await
         return new Promise((resolve: Function, reject: Function) => {
