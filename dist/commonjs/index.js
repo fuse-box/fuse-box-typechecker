@@ -108,18 +108,14 @@ var TypeHelperClass = (function () {
         var options = Object.assign(this.options, { quit: false, type: interfaces_1.TypecheckerRunType.watch });
         var write = this.writeText;
         var END_LINE = '\n';
+        this.workerCallback = function (errors) {
+            if (callback) {
+                callback('updated', errors);
+            }
+        };
         this.createThread();
         this.inspectCodeWithWorker(options);
         var basePath = this.getPath(pathToWatch);
-        var timer = null;
-        var callCallback = function () {
-            clearTimeout(timer);
-            timer = setTimeout(function () {
-                if (callback) {
-                    callback('updated');
-                }
-            }, 500);
-        };
         watch.createMonitor(basePath, function (monitor) {
             write(chalk_1.default.yellow("Typechecker watching: " + chalk_1.default.white("" + basePath + END_LINE)));
             monitor.on('created', function (f) {
@@ -133,7 +129,6 @@ var TypeHelperClass = (function () {
                 write(chalk_1.default.grey("Calling typechecker" + END_LINE));
                 clearTimeout(_this.watchTimeout);
                 _this.watchTimeout = setTimeout(function () {
-                    callCallback();
                     _this.inspectCodeWithWorker(options);
                     _this.printResultWithWorker();
                 }, 500);
@@ -143,7 +138,6 @@ var TypeHelperClass = (function () {
                 write(chalk_1.default.grey("Calling typechecker" + END_LINE));
                 clearTimeout(_this.watchTimeout);
                 _this.watchTimeout = setTimeout(function () {
-                    callCallback();
                     _this.inspectCodeWithWorker(options);
                     _this.printResultWithWorker();
                 }, 500);
