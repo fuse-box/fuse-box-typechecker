@@ -103,7 +103,7 @@ var TypeHelperClass = (function () {
             }
         });
     };
-    TypeHelperClass.prototype.runWatch = function (pathToWatch) {
+    TypeHelperClass.prototype.runWatch = function (pathToWatch, callback) {
         var _this = this;
         var options = Object.assign(this.options, { quit: false, type: interfaces_1.TypecheckerRunType.watch });
         var write = this.writeText;
@@ -111,16 +111,29 @@ var TypeHelperClass = (function () {
         this.createThread();
         this.inspectCodeWithWorker(options);
         var basePath = this.getPath(pathToWatch);
+        var timer = null;
+        var callCallback = function () {
+            clearTimeout(timer);
+            timer = setTimeout(function () {
+                if (callback) {
+                    callback('updated');
+                }
+            }, 500);
+        };
         watch.createMonitor(basePath, function (monitor) {
             write(chalk_1.default.yellow("Typechecker watching: " + chalk_1.default.white("" + basePath + END_LINE)));
             monitor.on('created', function (f) {
                 write(END_LINE + chalk_1.default.yellow("File created: " + f + END_LINE));
             });
             monitor.on('changed', function (f) {
+                if (callback) {
+                    callback('edit');
+                }
                 write(END_LINE + chalk_1.default.yellow("File changed: " + chalk_1.default.white("" + f + END_LINE)));
                 write(chalk_1.default.grey("Calling typechecker" + END_LINE));
                 clearTimeout(_this.watchTimeout);
                 _this.watchTimeout = setTimeout(function () {
+                    callCallback();
                     _this.inspectCodeWithWorker(options);
                     _this.printResultWithWorker();
                 }, 500);
@@ -130,6 +143,7 @@ var TypeHelperClass = (function () {
                 write(chalk_1.default.grey("Calling typechecker" + END_LINE));
                 clearTimeout(_this.watchTimeout);
                 _this.watchTimeout = setTimeout(function () {
+                    callCallback();
                     _this.inspectCodeWithWorker(options);
                     _this.printResultWithWorker();
                 }, 500);

@@ -13,7 +13,7 @@ export declare class TypeHelperClass {
     runSilentSync(): IResults;
     runSilentPromise(): Promise<IResults>;
     runPromise(): Promise<number>;
-    runWatch(pathToWatch: string): void;
+    runWatch(pathToWatch: string, callback?: Function): void;
     killWorker(): void;
     startTreadAndWait(): void;
     useThreadAndTypecheck(): void;
