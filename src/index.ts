@@ -223,23 +223,19 @@ export class TypeHelperClass {
         const write = this.writeText;
         const END_LINE = '\n';
 
+        // set the worker callback
+        this.workerCallback = (errors) => {
+            if (callback) {
+                callback('updated', errors);
+            }
+        };
+
         // create thread and inspect code with worker
         this.createThread();
         this.inspectCodeWithWorker(options);
 
         // current basepath to watch
         let basePath = this.getPath(pathToWatch);
-
-        let timer: any = null;
-
-        const callCallback = function () {
-            clearTimeout(timer);
-            timer = setTimeout(function () {
-                if (callback) {
-                    callback('updated');
-                }
-            }, 500);
-        };
 
         watch.createMonitor(basePath, (monitor: any) => {
 
@@ -265,8 +261,7 @@ export class TypeHelperClass {
                 clearTimeout(this.watchTimeout);
                 this.watchTimeout = setTimeout(() => {
 
-                    callCallback();
-                    // inspect and print result
+                     // inspect and print result
                     this.inspectCodeWithWorker(options);
                     this.printResultWithWorker();
                 }, 500);
@@ -283,7 +278,6 @@ export class TypeHelperClass {
                 clearTimeout(this.watchTimeout);
                 this.watchTimeout = setTimeout(() => {
 
-                    callCallback();
                     // inspect and print result
                     this.inspectCodeWithWorker(options);
                     this.printResultWithWorker();
