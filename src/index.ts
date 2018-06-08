@@ -120,10 +120,10 @@ export class TypeHelperClass {
     }
 
 
-        /**
-     * Runs in sync and quits
-     * Returns result obj
-     */
+    /**
+ * Runs in sync and quits
+ * Returns result obj
+ */
     public runSilentSync(): IResults {
 
         // set options, add if it need to quit and run type
@@ -137,10 +137,10 @@ export class TypeHelperClass {
     }
 
 
-        /**
-     * Runs in async and return promise and callbacks and quits
-     *
-     */
+    /**
+ * Runs in async and return promise and callbacks and quits
+ *
+ */
     public runSilentPromise(): Promise<IResults> {
 
         // return promise so we can use it with then() or async/await
@@ -214,7 +214,7 @@ export class TypeHelperClass {
      * Creates thread/worker, starts watch on path and runs
      *
      */
-    public runWatch(pathToWatch: string): void {
+    public runWatch(pathToWatch: string, callback?: Function): void {
 
         // set options, add if it need to quit and run type
         let options: IInternalTypeCheckerOptions = Object.assign(this.options, { quit: false, type: TypecheckerRunType.watch });
@@ -230,6 +230,17 @@ export class TypeHelperClass {
         // current basepath to watch
         let basePath = this.getPath(pathToWatch);
 
+        let timer: any = null;
+
+        const callCallback = function () {
+            clearTimeout(timer);
+            timer = setTimeout(function () {
+                if (callback) {
+                    callback('updated');
+                }
+            }, 500);
+        };
+
         watch.createMonitor(basePath, (monitor: any) => {
 
             // tell user what path we are watching
@@ -243,6 +254,9 @@ export class TypeHelperClass {
             // on changed file event
             monitor.on('changed', (f: any /*, curr: any, prev: any*/) => {
 
+                if (callback) {
+                    callback('edit');
+                }
                 // tell user about event
                 write(END_LINE + chalk.yellow(`File changed: ${chalk.white(`${f}${END_LINE}`)}`));
                 write(chalk.grey(`Calling typechecker${END_LINE}`));
@@ -251,6 +265,7 @@ export class TypeHelperClass {
                 clearTimeout(this.watchTimeout);
                 this.watchTimeout = setTimeout(() => {
 
+                    callCallback();
                     // inspect and print result
                     this.inspectCodeWithWorker(options);
                     this.printResultWithWorker();
@@ -268,6 +283,7 @@ export class TypeHelperClass {
                 clearTimeout(this.watchTimeout);
                 this.watchTimeout = setTimeout(() => {
 
+                    callCallback();
                     // inspect and print result
                     this.inspectCodeWithWorker(options);
                     this.printResultWithWorker();
@@ -354,10 +370,10 @@ export class TypeHelperClass {
 
 
 
-        /**
-     * Tells worker to print results to console
-     *
-     */
+    /**
+ * Tells worker to print results to console
+ *
+ */
     private getResultObjFromWorker(): void {
 
         // have we inspected code?
