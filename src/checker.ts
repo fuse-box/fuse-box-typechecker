@@ -45,6 +45,11 @@ export class Checker {
     // will have last result *undefined if no check have been preformed
     public lastResults: any;
 
+    private getOptionsDiagnostics() {
+        // filter 5055 errors as they are related to the staging of files, not the checking of code integrity.
+        return this.program.getOptionsDiagnostics().filter(option => option.code != 5055)
+    }
+
     constructor() {
         // nothing atm
     }
@@ -72,7 +77,7 @@ export class Checker {
 
         // get errors and tag them;
         this.tsDiagnostics = [];
-        let optionsErrors = this.program.getOptionsDiagnostics().map((obj) => {
+        let optionsErrors = this.getOptionsDiagnostics().map((obj) => {
             // tag em so we know for later
             (<any>obj)._type = 'options';
             return obj;
@@ -253,9 +258,9 @@ export class Checker {
         }
 
         // print option errors
-        if (program.getOptionsDiagnostics().length) {
+        if (this.getOptionsDiagnostics().length) {
             print(chalk.underline(`${END_LINE}${END_LINE}Option errors`) + chalk.white(`:${END_LINE}`));
-            let optionErrorsText = Object.entries(program.getOptionsDiagnostics())
+            let optionErrorsText = Object.entries(this.getOptionsDiagnostics())
                 .map(([no, err]) => {
                     let text = no + ':';
                     let messageText = (<any>err).messageText;
@@ -296,7 +301,7 @@ export class Checker {
         // time for summary >>>>>
 
         // get errors totals
-        let optionsErrors = program.getOptionsDiagnostics().length;
+        let optionsErrors = this.getOptionsDiagnostics().length;
         let globalErrors = program.getGlobalDiagnostics().length;
         let syntacticErrors = program.getSyntacticDiagnostics().length;
         let semanticErrors = program.getSemanticDiagnostics().length;
