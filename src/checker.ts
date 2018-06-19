@@ -45,6 +45,7 @@ export class Checker {
     // will have last result *undefined if no check have been preformed
     public lastResults: any;
 
+
     constructor() {
         // nothing atm
     }
@@ -72,7 +73,7 @@ export class Checker {
 
         // get errors and tag them;
         this.tsDiagnostics = [];
-        let optionsErrors = this.program.getOptionsDiagnostics().map((obj) => {
+        let optionsErrors = this.getOptionsDiagnostics().map((obj) => {
             // tag em so we know for later
             (<any>obj)._type = 'options';
             return obj;
@@ -81,7 +82,7 @@ export class Checker {
 
 
 
-        let globalErrors = this.program.getGlobalDiagnostics().map((obj) => {
+        let globalErrors = this.getGlobalDiagnostics().map((obj) => {
             (<any>obj)._type = 'global';
             return obj;
         });
@@ -89,7 +90,7 @@ export class Checker {
 
 
 
-        let syntacticErrors = this.program.getSyntacticDiagnostics().map((obj) => {
+        let syntacticErrors = this.getSyntacticDiagnostics().map((obj) => {
             (<any>obj)._type = 'syntactic';
             return obj;
         });
@@ -97,7 +98,7 @@ export class Checker {
 
 
 
-        let semanticErrors = this.program.getSemanticDiagnostics().map((obj) => {
+        let semanticErrors = this.getSemanticDiagnostics().map((obj) => {
             (<any>obj)._type = 'semantic';
             return obj;
         });
@@ -253,9 +254,9 @@ export class Checker {
         }
 
         // print option errors
-        if (program.getOptionsDiagnostics().length) {
+        if (this.getOptionsDiagnostics().length) {
             print(chalk.underline(`${END_LINE}${END_LINE}Option errors`) + chalk.white(`:${END_LINE}`));
-            let optionErrorsText = Object.entries(program.getOptionsDiagnostics())
+            let optionErrorsText = Object.entries(this.getOptionsDiagnostics())
                 .map(([no, err]) => {
                     let text = no + ':';
                     let messageText = (<any>err).messageText;
@@ -275,9 +276,9 @@ export class Checker {
         // print global errors
         // todo: this needs testing, how do I create a global error??
         /* try {
-            if (program.getGlobalDiagnostics().length) {
+            if (this.getGlobalDiagnostics().length) {
                 print(chalk.underline(`${END_LINE}${END_LINE}Global errors`) + chalk.white(`:${END_LINE}`));
-                let optionErrorsText = Object.entries(program.getGlobalDiagnostics())
+                let optionErrorsText = Object.entries(this.getGlobalDiagnostics())
                     .map(([no, err]) => {
                         let text = no + ':';
                         text = chalk[options.yellowOnGlobal ? 'yellow' : 'red']
@@ -296,10 +297,10 @@ export class Checker {
         // time for summary >>>>>
 
         // get errors totals
-        let optionsErrors = program.getOptionsDiagnostics().length;
-        let globalErrors = program.getGlobalDiagnostics().length;
-        let syntacticErrors = program.getSyntacticDiagnostics().length;
-        let semanticErrors = program.getSemanticDiagnostics().length;
+        let optionsErrors = this.getOptionsDiagnostics().length;
+        let globalErrors = this.getGlobalDiagnostics().length;
+        let syntacticErrors = this.getSyntacticDiagnostics().length;
+        let semanticErrors = this.getSemanticDiagnostics().length;
         let tsLintErrors = lintErrorMessages.length;
         let totalsErrors = optionsErrors + globalErrors + syntacticErrors + semanticErrors + tsLintErrors;
 
@@ -523,5 +524,66 @@ export class Checker {
                     code: `TS${diag.code}`
                 };
             });
+    }
+
+
+
+    /**
+     * get diagnostics, filter out of skip errors options is used
+     *
+     */
+    private getOptionsDiagnostics() {
+
+        const skipTsErrors = (this.options.skipTsErrors !== undefined && this.options.skipTsErrors !== null) ? this.options.skipTsErrors : [];
+        // filter error codes in options
+        return this.program.getOptionsDiagnostics().filter((option) => {
+            if (skipTsErrors.indexOf(option.code) !== -1) {
+                return false;
+            } else {
+                return true;
+            }
+        });
+    }
+
+
+    private getGlobalDiagnostics() {
+
+        const skipTsErrors = (this.options.skipTsErrors !== undefined && this.options.skipTsErrors !== null) ? this.options.skipTsErrors : [];
+        // filter error codes in options
+        return this.program.getGlobalDiagnostics().filter((option) => {
+            if (skipTsErrors.indexOf(option.code) !== -1) {
+                return false;
+            } else {
+                return true;
+            }
+        });
+    }
+
+
+    private getSyntacticDiagnostics() {
+
+        const skipTsErrors = (this.options.skipTsErrors !== undefined && this.options.skipTsErrors !== null) ? this.options.skipTsErrors : [];
+        // filter error codes in options
+        return this.program.getSyntacticDiagnostics().filter((option) => {
+            if (skipTsErrors.indexOf(option.code) !== -1) {
+                return false;
+            } else {
+                return true;
+            }
+        });
+    }
+
+
+    private getSemanticDiagnostics() {
+
+        const skipTsErrors = (this.options.skipTsErrors !== undefined && this.options.skipTsErrors !== null) ? this.options.skipTsErrors : [];
+        // filter error codes in options
+        return this.program.getSemanticDiagnostics().filter((option) => {
+            if (skipTsErrors.indexOf(option.code) !== -1) {
+                return false;
+            } else {
+                return true;
+            }
+        });
     }
 }

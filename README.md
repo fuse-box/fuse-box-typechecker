@@ -287,7 +287,8 @@ interface ITypeCheckerOptionsInterface {
     
     // when not using with fusebox or just typechecking (remember to install typescript and tslint)
     emit?: boolean;// emit files according to tsconfig file
-    clearOnEmit? : boolean // output folder on emit
+    clearOnEmit? : boolean; // output folder on emit
+    skipTsErrors?: number[];// skip ts errors
 }
 
 // Note

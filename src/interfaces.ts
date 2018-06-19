@@ -42,6 +42,9 @@ export interface ITypeCheckerOptions {
 
     // output folder on emit
     clearOnEmit?: boolean;
+
+    // skip ts errors
+    skipTsErrors?: number[];
 }
 
 // lint options,this is the same as tsLint uses all paths will be from basepath
