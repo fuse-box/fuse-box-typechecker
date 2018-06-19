@@ -35,22 +35,22 @@ var Checker = (function () {
         var parsed = ts.parseJsonConfigFileContent(this.options.tsConfigJsonContent, parseConfigHost, options.basePath || '.', undefined);
         this.program = ts.createProgram(parsed.fileNames, parsed.options, undefined, this.program);
         this.tsDiagnostics = [];
-        var optionsErrors = this.program.getOptionsDiagnostics().map(function (obj) {
+        var optionsErrors = this.getOptionsDiagnostics().map(function (obj) {
             obj._type = 'options';
             return obj;
         });
         this.tsDiagnostics = this.tsDiagnostics.concat(optionsErrors);
-        var globalErrors = this.program.getGlobalDiagnostics().map(function (obj) {
+        var globalErrors = this.getGlobalDiagnostics().map(function (obj) {
             obj._type = 'global';
             return obj;
         });
         this.tsDiagnostics = this.tsDiagnostics.concat(globalErrors);
-        var syntacticErrors = this.program.getSyntacticDiagnostics().map(function (obj) {
+        var syntacticErrors = this.getSyntacticDiagnostics().map(function (obj) {
             obj._type = 'syntactic';
             return obj;
         });
         this.tsDiagnostics = this.tsDiagnostics.concat(syntacticErrors);
-        var semanticErrors = this.program.getSemanticDiagnostics().map(function (obj) {
+        var semanticErrors = this.getSemanticDiagnostics().map(function (obj) {
             obj._type = 'semantic';
             return obj;
         });
@@ -139,9 +139,9 @@ var Checker = (function () {
             allErrors.unshift(chalk_1.default.underline(interfaces_1.END_LINE + "File errors") + chalk_1.default.white(':'));
             print(allErrors.join(interfaces_1.END_LINE));
         }
-        if (program.getOptionsDiagnostics().length) {
+        if (this.getOptionsDiagnostics().length) {
             print(chalk_1.default.underline("" + interfaces_1.END_LINE + interfaces_1.END_LINE + "Option errors") + chalk_1.default.white(":" + interfaces_1.END_LINE));
-            var optionErrorsText = Object.entries(program.getOptionsDiagnostics())
+            var optionErrorsText = Object.entries(this.getOptionsDiagnostics())
                 .map(function (_a) {
                 var no = _a[0], err = _a[1];
                 var text = no + ':';
@@ -157,10 +157,10 @@ var Checker = (function () {
             });
             print(optionErrorsText.join(interfaces_1.END_LINE));
         }
-        var optionsErrors = program.getOptionsDiagnostics().length;
-        var globalErrors = program.getGlobalDiagnostics().length;
-        var syntacticErrors = program.getSyntacticDiagnostics().length;
-        var semanticErrors = program.getSemanticDiagnostics().length;
+        var optionsErrors = this.getOptionsDiagnostics().length;
+        var globalErrors = this.getGlobalDiagnostics().length;
+        var syntacticErrors = this.getSyntacticDiagnostics().length;
+        var semanticErrors = this.getSemanticDiagnostics().length;
         var tsLintErrors = lintErrorMessages.length;
         var totalsErrors = optionsErrors + globalErrors + syntacticErrors + semanticErrors + tsLintErrors;
         if (totalsErrors) {
@@ -298,6 +298,50 @@ var Checker = (function () {
                 category: ts.DiagnosticCategory[diag.category] + ":",
                 code: "TS" + diag.code
             };
+        });
+    };
+    Checker.prototype.getOptionsDiagnostics = function () {
+        var skipTsErrors = (this.options.skipTsErrors !== undefined && this.options.skipTsErrors !== null) ? this.options.skipTsErrors : [];
+        return this.program.getOptionsDiagnostics().filter(function (option) {
+            if (skipTsErrors.indexOf(option.code) !== -1) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+    };
+    Checker.prototype.getGlobalDiagnostics = function () {
+        var skipTsErrors = (this.options.skipTsErrors !== undefined && this.options.skipTsErrors !== null) ? this.options.skipTsErrors : [];
+        return this.program.getGlobalDiagnostics().filter(function (option) {
+            if (skipTsErrors.indexOf(option.code) !== -1) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+    };
+    Checker.prototype.getSyntacticDiagnostics = function () {
+        var skipTsErrors = (this.options.skipTsErrors !== undefined && this.options.skipTsErrors !== null) ? this.options.skipTsErrors : [];
+        return this.program.getSyntacticDiagnostics().filter(function (option) {
+            if (skipTsErrors.indexOf(option.code) !== -1) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+    };
+    Checker.prototype.getSemanticDiagnostics = function () {
+        var skipTsErrors = (this.options.skipTsErrors !== undefined && this.options.skipTsErrors !== null) ? this.options.skipTsErrors : [];
+        return this.program.getSemanticDiagnostics().filter(function (option) {
+            if (skipTsErrors.indexOf(option.code) !== -1) {
+                return false;
+            }
+            else {
+                return true;
+            }
         });
     };
     return Checker;

@@ -13,4 +13,8 @@ export declare class Checker {
     private writeText;
     private processLintFiles;
     private processTsDiagnostics;
+    private getOptionsDiagnostics;
+    private getGlobalDiagnostics;
+    private getSyntacticDiagnostics;
+    private getSemanticDiagnostics;
 }

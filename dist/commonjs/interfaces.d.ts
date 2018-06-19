@@ -18,6 +18,7 @@ export interface ITypeCheckerOptions {
     shortenFilenames?: boolean;
     emit?: boolean;
     clearOnEmit?: boolean;
+    skipTsErrors?: number[];
 }
 export interface ILintOptions {
     fix?: boolean;
