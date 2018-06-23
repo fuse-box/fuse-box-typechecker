@@ -1,7 +1,7 @@
 var path = require('path')
 
 //get typehelper (use built source)
-var TypeHelper = require('./dist/commonjs/index.js').TypeHelper
+const { TypeChecker } = require('./dist/commonjs/index.js')
 
 
 
@@ -11,10 +11,10 @@ var TypeHelper = require('./dist/commonjs/index.js').TypeHelper
 
 
 
-var test1 = ()=>{
+var test1 = () => {
 
     // sync run
-    let checkerSync = TypeHelper({
+    let checkerSync = TypeChecker({
         tsConfig: './tsconfig.json',
         basePath: './',
         tsLint: './tslint.json',
@@ -24,35 +24,35 @@ var test1 = ()=>{
 
 
     // promiose run
-    let checkerPromise = TypeHelper({
+    let checkerPromise = TypeChecker({
         tsConfig: './tsconfig.json',
         basePath: './',
         tsLint: './tslint.json',
         name: 'checkerPromise'
     });
-    
-    checkerPromise.runPromise().then((err)=>{
-        console.log('\nErrors promise run:'+ err)
-        
 
-        let checkerAsync = TypeHelper({
+    checkerPromise.runPromise().then((err) => {
+        console.log('\nErrors promise run:' + err)
+
+
+        let checkerAsync = TypeChecker({
             tsConfig: './tsconfig.json',
             basePath: './',
             tsLint: './tslint.json',
             name: 'checkerAsync'
         });
-        checkerAsync.runAsync((err)=>{
-            console.log('\nErrors async run:'+ err)
-        }) 
-    
+        checkerAsync.runAsync((err) => {
+            console.log('\nErrors async run:' + err)
+        })
+
     });
 
 }
 
 
-var test2 = ()=>{
+var test2 = () => {
 
-    var checkerWatch = TypeHelper({
+    var checkerWatch = TypeChecker({
         tsConfig: './tsconfig.json',
         basePath: './',
         tsLint: './tslint.json',
@@ -66,4 +66,4 @@ var test2 = ()=>{
 // test1();
 
 // Second test (watch)
- test2()
+test2()
