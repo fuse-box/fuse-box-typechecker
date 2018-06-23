@@ -15,20 +15,150 @@ So this might not work with earlier version if typescript and tslint (tsLint 3 w
 You do not need fusebox, can be used with any project
 
 
+### Output sample (image)
+![Output sample](https://github.com/fuse-box/fuse-box-typechecker/raw/master/image/sampleNew2.png "Output sample")
 
-## How to use :
 
---- 
+---
+
+## How to load and configure
+```js
+// get typechecker
+const { TypeChecker } = require('./dist/commonjs/index.js');
+
+const testSync = TypeChecker({
+    tsConfig: './tsconfig.json',
+    basePath:'./',
+    tsLint:'./tslint.json', //optional
+    name: 'Test Sync'
+    // for more option, see ITypeCheckerOptionsInterface in bottom on readme
+})
+
+// call function
+testSync.XXXXXXXX() //see public functions
+
+```
+
+### Public functions
+```ts
+
+/**
+ * Runs in sync and quits
+ * Returns total errors
+ */
+public runSync(): number
+
+
+/**
+ * Runs in own thread/works and quits
+ *
+ */
+public runAsync(callback?: (errors: number) => void): void
+
+
+/**
+ * Runs in sync and quits
+ * Returns result obj
+ */
+public runSilentSync(): IResults
+
+
+/**
+ * Runs in async and return promise and callbacks and quits
+ *
+ */
+public runSilentPromise(): Promise<IResults>
+
+
+/**
+ * Runs in async and return promise and callbacks and quits
+ *
+ */
+public runPromise(): Promise<number>
+
+
+/**
+ * Creates thread/worker, starts watch on path and runs
+ *
+ */
+public runWatch(pathToWatch: string, callback?: Function): void
+
+
+/**
+ * Starts thread and wait for request to typecheck
+ *
+ */
+public startTreadAndWait(): void
+
+
+/**
+ * Uses the created thread, typechecks and prints result
+ * Does not quit after, needs to be killed manually
+ *
+ */
+public useThreadAndTypecheck(): void
+
+
+/**
+ * Kills worker and watch if started (startTreadAndWait or watch..)
+ *
+ */
+public killWorker(): void
+```
+
+### Interface
+
+```typescript
+interface ITypeCheckerOptionsInterface {
+    tsConfig: string; //config file (compared to basepath './tsconfig.json')
+    tsConfigOverride: Object // override tsconfig settings, does not override entire compilerOptions object, only parts you set
+    throwOnSyntactic?: boolean; // if you want it to throw error
+    throwOnSemantic?: boolean; // if you want it to throw error
+    throwOnGlobal?: boolean; // if you want it to throw error
+    throwOnOptions?: boolean; // if you want it to throw error
+    throwOnTsLint?:  boolean; // trhow on lint errors
+    basePath: string; // base path to use
+    name?: string; // name, will be displayed when it runs, useful when you have more then 1
+    tsLint: string; // config file (compared to basepath './tslint.json')
+    lintoptions? ILintOptions; // see below, optional
+    yellowOnLint?: boolean; // use yellow color instead of red on TSLint errors
+    yellowOnOptions?: boolean; // use yellow color instead of red on Options errors
+    yellowOnGlobal?: boolean; // use yellow color instead of red on Global errors
+    yellowOnSemantic?: boolean; // use yellow color instead of red on Semantic errors
+    yellowOnSyntactic?: boolean; // use yellow color instead of red on Syntactic errors
+    shortenFilenames?: boolean; // use shortened filenames in order to make output less noisy
+    
+    // when not using with fusebox or just typechecking (remember to install typescript and tslint)
+    emit?: boolean;// emit files according to tsconfig file
+    clearOnEmit? : boolean; // output folder on emit
+    skipTsErrors?: number[];// skip ts errors
+}
+
+// Note
+// - The throwOnError options just exits node process with error 1, not 0 (success), to make something like travis to react.
+
+
+interface ILintOptions {
+    fix?: boolean; // default is false
+    formatter?: string; //JSON, can not be edited
+    formattersDirectory?: string; //default is null
+    rulesDirectory?: string; //default is null
+}
+```
+
+
+# Samples
+
 ### Sync check (and quit)
 ```javascript
 
 // load
-var TypeHelper = require('fuse-box-typechecker').TypeHelper
+const { TypeChecker } = require('./dist/commonjs/index.js');
 // it checks entire program every time
 // see interface at bottom at readmefile for all options
 
 
-var testSync = TypeHelper({
+const testSync = TypeChecker({
     tsConfig: './tsconfig.json',
     basePath:'./',
     tsLint:'./tslint.json', //you do not haveto do tslint too.. just here to show how.
@@ -44,12 +174,12 @@ testSync.runSync();
 ```javascript
 
 // load
-var TypeHelper = require('fuse-box-typechecker').TypeHelper
+const { TypeChecker } = require('./dist/commonjs/index.js');
 // it checks entire program every time
 // see interface at bottom at readme for all options
 
 
-var testAsync = TypeHelper({
+const testAsync = TypeChecker({
     tsConfig: './tsconfig.json',
     basePath:'./',
     name: 'Test async'
@@ -71,12 +201,12 @@ testAsync.runAsync((errors: number) => {
 ```javascript
 
 // load
-var TypeHelper = require('fuse-box-typechecker').TypeHelper
+const { TypeChecker } = require('./dist/commonjs/index.js');
 // it checks entire program every time
 // see interface at bottom at readme for all options
 
 // Watch folder and use worker (uses internal watcher)
-var testWatch = TypeHelper({
+const testWatch = TypeChecker({
     tsConfig: './tsconfig.json',
     basePath:'./',
     name: 'Watch Async'
@@ -93,14 +223,14 @@ testWatch.runWatch('./src');
 
 
 // load
-var TypeHelper = require('fuse-box-typechecker').TypeHelper
+const { TypeChecker } = require('./dist/commonjs/index.js');
 // it checks entire program every time
 // see interface at bottom at readme for all options
 
 
-var doTypeCheck = async() => {
+const doTypeCheck = async() => {
 
-    var checker = TypeHelper({
+    const checker = TypeChecker({
         tsConfig: './tsconfig.json',
         basePath: './',
         name: 'Test Sync'
@@ -130,9 +260,9 @@ But main functions here is:
 ```javascript
 
 //load all fusebox stuff, not showing here
-
+const { TypeChecker } = require('./dist/commonjs/index.js');
 // get typechecker 
-const typechecker = require('fuse-box-typechecker').TypeHelper({
+const typechecker = TypeChecker({
     tsConfig: './tsconfig.json',
     name: 'src',
     basePath: './',
@@ -220,10 +350,10 @@ var buildFuse = (production) => {
 
 ```javascript
 //get type helper
-const transpiler = require('fuse-box-typechecker').TypeHelper;
+const { TypeChecker } = require('./dist/commonjs/index.js');
 
 const transpileTo = function (outDir, moduleType) {
-  var transpile = transpiler({
+  var transpile = TypeChecker({
     tsConfig: './tsconfig.json',
     basePath: './',
     tsLint: './tslint.json',
@@ -257,48 +387,66 @@ if (!typeAndLintErrors) {
 ```
 ---
 
+### watch with emit code on node app
 
-### Output sample (image)
-![Output sample](https://github.com/fuse-box/fuse-box-typechecker/raw/master/image/sampleNew2.png "Output sample")
+```js
+//set process to current folder
+process.chdir(__dirname);
 
----
+//get typehelper
+const { TypeChecker } = require('./dist/commonjs/index.js');
+const spawn = require("child_process").spawn;
+const path = require('path');
+const npm = process.platform === "win32" ? "node.exe" : "node";
 
-### Interface
+// configure
+const transpiler = TypeChecker({
+    tsConfig: './tsconfig.json',
+    basePath: './',
+    tsLint: './tslint.json',
+    name: 'watch',
+    shortenFilenames: true,
+    yellowOnLint: true,
+    emit: true,
+    clearOnEmit: true
+});
+var childSpawn
 
-```typescript
-interface ITypeCheckerOptionsInterface {
-    tsConfig: string; //config file (compared to basepath './tsconfig.json')
-    tsConfigOverride: Object // override tsconfig settings, does not override entire compilerOptions object, only parts you set
-    throwOnSyntactic?: boolean; // if you want it to throw error
-    throwOnSemantic?: boolean; // if you want it to throw error
-    throwOnGlobal?: boolean; // if you want it to throw error
-    throwOnOptions?: boolean; // if you want it to throw error
-    throwOnTsLint?:  boolean; // trhow on lint errors
-    basePath: string; // base path to use
-    name?: string; // name, will be displayed when it runs, useful when you have more then 1
-    tsLint: string; // config file (compared to basepath './tslint.json')
-    lintoptions? ILintOptions; // see below, optional
-    yellowOnLint?: boolean; // use yellow color instead of red on TSLint errors
-    yellowOnOptions?: boolean; // use yellow color instead of red on Options errors
-    yellowOnGlobal?: boolean; // use yellow color instead of red on Global errors
-    yellowOnSemantic?: boolean; // use yellow color instead of red on Semantic errors
-    yellowOnSyntactic?: boolean; // use yellow color instead of red on Syntactic errors
-    shortenFilenames?: boolean; // use shortened filenames in order to make output less noisy
-    
-    // when not using with fusebox or just typechecking (remember to install typescript and tslint)
-    emit?: boolean;// emit files according to tsconfig file
-    clearOnEmit? : boolean; // output folder on emit
-    skipTsErrors?: number[];// skip ts errors
+// helper funtion
+// will use callback to start and quit node app
+// needed so node dont lock files for next emit/transpile
+function run(type, errors) {
+    const mode = "inherit";
+
+    if (type === 'edit' || errors > 0) {
+        if (childSpawn) {
+            console.log('closing app')
+            childSpawn.kill();
+            childSpawn = null;
+        }
+    } else {
+        function spawner(cmd, args, dirname) {
+            childSpawn = spawn(cmd, args, {
+                stdio: mode,
+                cwd: dirname
+            });
+            childSpawn.on("exit", function(code) {
+                if (code) {
+                    console.log("\nNode app failed: " + code + '\n');
+                } else {
+                    console.log("\nNode app closed\n");
+                }
+            });
+        }
+        let mainPath = path.resolve(process.cwd(), './dev');
+        spawner(npm, ["index"], mainPath);
+    }
 }
 
-// Note
-// - The throwOnError options just exits node process with error 1, not 0 (success), to make something like travis to react.
 
+// start watch, will only emit when there is no errors
+transpiler.runWatch('./src', run);
 
-interface ILintOptions {
-    fix?: boolean; // default is false
-    formatter?: string; //JSON, can not be edited
-    formattersDirectory?: string; //default is null
-    rulesDirectory?: string; //default is null
-}
 ```
+
+
