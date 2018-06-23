@@ -110,28 +110,87 @@ public killWorker(): void
 
 ```typescript
 interface ITypeCheckerOptionsInterface {
-    tsConfig: string; //config file (compared to basepath './tsconfig.json')
-    tsConfigOverride: Object // override tsconfig settings, does not override entire compilerOptions object, only parts you set
-    throwOnSyntactic?: boolean; // if you want it to throw error
-    throwOnSemantic?: boolean; // if you want it to throw error
-    throwOnGlobal?: boolean; // if you want it to throw error
-    throwOnOptions?: boolean; // if you want it to throw error
-    throwOnTsLint?:  boolean; // trhow on lint errors
-    basePath: string; // base path to use
-    name?: string; // name, will be displayed when it runs, useful when you have more then 1
-    tsLint: string; // config file (compared to basepath './tslint.json')
-    lintoptions? ILintOptions; // see below, optional
-    yellowOnLint?: boolean; // use yellow color instead of red on TSLint errors
-    yellowOnOptions?: boolean; // use yellow color instead of red on Options errors
-    yellowOnGlobal?: boolean; // use yellow color instead of red on Global errors
-    yellowOnSemantic?: boolean; // use yellow color instead of red on Semantic errors
-    yellowOnSyntactic?: boolean; // use yellow color instead of red on Syntactic errors
-    shortenFilenames?: boolean; // use shortened filenames in order to make output less noisy
+    //config file (compared to basepath './tsconfig.json')
+    tsConfig: string; 
+    
+    
+    
+    // override tsconfig settings, does not override entire compilerOptions object, only parts you set
+    tsConfigOverride: Object 
+    
+    
+    // if you want it to throw errot
+    throwOnSyntactic?: boolean;
+
+
+    // if you want it to throw error
+    throwOnSemantic?: boolean; 
+    
+
+    // if you want it to throw error
+    throwOnGlobal?: boolean; 
+    
+    
+    // if you want it to throw error
+    throwOnOptions?: boolean; 
+    
+    
+    // throw on lint errors
+    throwOnTsLint?:  boolean; 
+    
+    
+    // base path to use
+    basePath: string; 
+    
+    
+    // name, will be displayed when it runs, useful when you have more then 1 checker
+    name?: string; 
+    
+    
+    // config file (compared to basepath './tslint.json')
+    tsLint: string; 
+    
+    
+    // see below, optional
+    lintoptions? ILintOptions; 
+    
+    
+    // use yellow color instead of red on TSLint errors
+    yellowOnLint?: boolean; 
+    
+    
+    // use yellow color instead of red on Options errors
+    yellowOnOptions?: boolean; 
+    
+    
+    // use yellow color instead of red on Global errors
+    yellowOnGlobal?: boolean; 
+    
+    
+    // use yellow color instead of red on Semantic errors
+    yellowOnSemantic?: boolean; 
+    
+    
+    // use yellow color instead of red on Syntactic errors
+    yellowOnSyntactic?: boolean; 
+    
+    
+    // use shortened filenames in order to make output less noisy
+    shortenFilenames?: boolean; 
+    
+    // skip ts errors
+    skipTsErrors?: number[];
+    
     
     // when not using with fusebox or just typechecking (remember to install typescript and tslint)
-    emit?: boolean;// emit files according to tsconfig file
-    clearOnEmit? : boolean; // output folder on emit
-    skipTsErrors?: number[];// skip ts errors
+    
+    // emit files according to tsconfig file
+    // PS! it will not emit if any ts or tslint errors
+    emit?: boolean;
+    
+    // output folder on emit
+    clearOnEmit? : boolean; 
+    
 }
 
 // Note
