@@ -24,7 +24,7 @@ You do not need fusebox, can be used with any project
 ## How to load and configure
 ```js
 // get typechecker
-const { TypeChecker } = require('./dist/commonjs/index.js');
+const { TypeChecker } = require('fuse-box-typechecker');
 
 const testSync = TypeChecker({
     tsConfig: './tsconfig.json',
@@ -153,7 +153,7 @@ interface ILintOptions {
 ```javascript
 
 // load
-const { TypeChecker } = require('./dist/commonjs/index.js');
+const { TypeChecker } = require('fuse-box-typechecker');
 // it checks entire program every time
 // see interface at bottom at readmefile for all options
 
@@ -174,7 +174,7 @@ testSync.runSync();
 ```javascript
 
 // load
-const { TypeChecker } = require('./dist/commonjs/index.js');
+const { TypeChecker } = require('fuse-box-typechecker');
 // it checks entire program every time
 // see interface at bottom at readme for all options
 
@@ -201,7 +201,7 @@ testAsync.runAsync((errors: number) => {
 ```javascript
 
 // load
-const { TypeChecker } = require('./dist/commonjs/index.js');
+const { TypeChecker } = require('fuse-box-typechecker');
 // it checks entire program every time
 // see interface at bottom at readme for all options
 
@@ -223,7 +223,7 @@ testWatch.runWatch('./src');
 
 
 // load
-const { TypeChecker } = require('./dist/commonjs/index.js');
+const { TypeChecker } = require('fuse-box-typechecker');
 // it checks entire program every time
 // see interface at bottom at readme for all options
 
@@ -260,7 +260,7 @@ But main functions here is:
 ```javascript
 
 //load all fusebox stuff, not showing here
-const { TypeChecker } = require('./dist/commonjs/index.js');
+const { TypeChecker } = require('fuse-box-typechecker');
 // get typechecker 
 const typechecker = TypeChecker({
     tsConfig: './tsconfig.json',
@@ -350,7 +350,7 @@ var buildFuse = (production) => {
 
 ```javascript
 //get type helper
-const { TypeChecker } = require('./dist/commonjs/index.js');
+const { TypeChecker } = require('fuse-box-typechecker');
 
 const transpileTo = function (outDir, moduleType) {
   var transpile = TypeChecker({
@@ -394,7 +394,7 @@ if (!typeAndLintErrors) {
 process.chdir(__dirname);
 
 //get typehelper
-const { TypeChecker } = require('./dist/commonjs/index.js');
+const { TypeChecker } = require('fuse-box-typechecker');
 const spawn = require("child_process").spawn;
 const path = require('path');
 const npm = process.platform === "win32" ? "node.exe" : "node";
