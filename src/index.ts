@@ -121,9 +121,9 @@ export class TypeHelperClass {
 
 
     /**
- * Runs in sync and quits
- * Returns result obj
- */
+     * Runs in sync and quits
+     * Returns result obj
+     */
     public runSilentSync(): IResults {
 
         // set options, add if it need to quit and run type
@@ -138,9 +138,9 @@ export class TypeHelperClass {
 
 
     /**
- * Runs in async and return promise and callbacks and quits
- *
- */
+     * Runs in async and return promise and callbacks and quits
+     *
+     */
     public runSilentPromise(): Promise<IResults> {
 
         // return promise so we can use it with then() or async/await
@@ -261,7 +261,7 @@ export class TypeHelperClass {
                 clearTimeout(this.watchTimeout);
                 this.watchTimeout = setTimeout(() => {
 
-                     // inspect and print result
+                    // inspect and print result
                     this.inspectCodeWithWorker(options);
                     this.printResultWithWorker();
                 }, 500);
@@ -315,7 +315,7 @@ export class TypeHelperClass {
      * Starts thread and wait for request to typecheck
      *
      */
-    public startTreadAndWait() {
+    public startTreadAndWait(): void {
         this.createThread();
     }
 
@@ -326,7 +326,7 @@ export class TypeHelperClass {
      * does not quit
      *
      */
-    public useThreadAndTypecheck() {
+    public useThreadAndTypecheck(): void {
         this.inspectCodeWithWorker(Object.assign(this.options, { quit: false, type: 'watch' }));
         this.printResultWithWorker();
     }
