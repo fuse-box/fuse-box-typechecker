@@ -33,7 +33,19 @@ var Checker = (function () {
         };
         var inspectionTimeStart = new Date().getTime();
         var parsed = ts.parseJsonConfigFileContent(this.options.tsConfigJsonContent, parseConfigHost, options.basePath || '.', undefined);
-        this.program = ts.createProgram(parsed.fileNames, parsed.options, undefined, this.program);
+        if (parsed.projectReferences) {
+            console.log(parsed.projectReferences);
+            this.program = ts.createProgram({
+                rootNames: parsed.fileNames,
+                options: parsed.options,
+                projectReferences: parsed.projectReferences,
+                host: undefined,
+                oldProgram: this.program
+            });
+        }
+        else {
+            this.program = ts.createProgram(parsed.fileNames, parsed.options, undefined, this.program);
+        }
         this.tsDiagnostics = [];
         var optionsErrors = this.getOptionsDiagnostics().map(function (obj) {
             obj._type = 'options';

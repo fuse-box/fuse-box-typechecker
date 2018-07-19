@@ -68,7 +68,20 @@ export class Checker {
 
         // get program and get diagnostics and store them diagnostics
         const parsed = ts.parseJsonConfigFileContent(this.options.tsConfigJsonContent, parseConfigHost, options.basePath || '.', undefined);
-        this.program = ts.createProgram(parsed.fileNames, parsed.options, undefined, this.program);
+
+        if (parsed.projectReferences) {
+            console.log(parsed.projectReferences);
+            this.program = ts.createProgram({
+                rootNames: parsed.fileNames,
+                options: parsed.options,
+                projectReferences: parsed.projectReferences,
+                host: undefined,
+                oldProgram: this.program
+            });
+        } else {
+            this.program = ts.createProgram(parsed.fileNames, parsed.options, undefined, this.program);
+        }
+
 
 
         // get errors and tag them;

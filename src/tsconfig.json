@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "composite": true,
+        "declaration": true,
+        "outDir": "../lib/forreal",
+        "strict": true,
+        "module": "commonjs",
+        "moduleResolution": "node",
+    },
+    "references": [
+        {
+            "path": "./test"
+        }
+    ]
+}
