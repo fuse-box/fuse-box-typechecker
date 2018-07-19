@@ -66,11 +66,39 @@ export class Checker {
         // take the time
         let inspectionTimeStart = new Date().getTime();
 
+        // debug print
+        if (options.debug_tsConfigJsonContent) {
+            this.writeText(
+                chalk.yellow(`debug print, ts config content`));
+            console.log(this.options.tsConfigJsonContent);
+        }
+
         // get program and get diagnostics and store them diagnostics
         const parsed = ts.parseJsonConfigFileContent(this.options.tsConfigJsonContent, parseConfigHost, options.basePath || '.', undefined);
 
         if (parsed.projectReferences) {
-            console.log(parsed.projectReferences);
+
+            // debug print
+            if (options.debug_projectReferences) {
+                this.writeText(
+                    chalk.yellow(`debug print, project refrences`));
+                console.log(parsed.projectReferences);
+            }
+
+            // debug print
+            if (options.debug_parsedFileNames) {
+                this.writeText(
+                    chalk.yellow(`debug print, project filenames`));
+                console.log(parsed.fileNames);
+            }
+
+            // debug print
+            if (options.debug_parsedOptions) {
+                this.writeText(
+                    chalk.yellow(`debug print, project options`));
+                console.log(parsed.fileNames);
+            }
+
             this.program = ts.createProgram({
                 rootNames: parsed.fileNames,
                 options: parsed.options,

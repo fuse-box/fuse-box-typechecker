@@ -45,6 +45,13 @@ export interface ITypeCheckerOptions {
 
     // skip ts errors
     skipTsErrors?: number[];
+
+    // debug helpers for when it fails
+    // this will help users supply better issues
+    debug_projectReferences?: boolean;
+    debug_parsedFileNames?: boolean;
+    debug_parsedOptions?: boolean;
+    debug_tsConfigJsonContent?: boolean;
 }
 
 // lint options,this is the same as tsLint uses all paths will be from basepath

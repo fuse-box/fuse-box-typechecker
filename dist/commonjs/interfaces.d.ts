@@ -19,6 +19,10 @@ export interface ITypeCheckerOptions {
     emit?: boolean;
     clearOnEmit?: boolean;
     skipTsErrors?: number[];
+    debug_projectReferences?: boolean;
+    debug_parsedFileNames?: boolean;
+    debug_parsedOptions?: boolean;
+    debug_tsConfigJsonContent?: boolean;
 }
 export interface ILintOptions {
     fix?: boolean;

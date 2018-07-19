@@ -32,9 +32,24 @@ var Checker = (function () {
             useCaseSensitiveFileNames: true
         };
         var inspectionTimeStart = new Date().getTime();
+        if (options.debug_tsConfigJsonContent) {
+            this.writeText(chalk_1.default.yellow("debug print, ts config content"));
+            console.log(this.options.tsConfigJsonContent);
+        }
         var parsed = ts.parseJsonConfigFileContent(this.options.tsConfigJsonContent, parseConfigHost, options.basePath || '.', undefined);
         if (parsed.projectReferences) {
-            console.log(parsed.projectReferences);
+            if (options.debug_projectReferences) {
+                this.writeText(chalk_1.default.yellow("debug print, project refrences"));
+                console.log(parsed.projectReferences);
+            }
+            if (options.debug_parsedFileNames) {
+                this.writeText(chalk_1.default.yellow("debug print, project filenames"));
+                console.log(parsed.fileNames);
+            }
+            if (options.debug_parsedOptions) {
+                this.writeText(chalk_1.default.yellow("debug print, project options"));
+                console.log(parsed.fileNames);
+            }
             this.program = ts.createProgram({
                 rootNames: parsed.fileNames,
                 options: parsed.options,
