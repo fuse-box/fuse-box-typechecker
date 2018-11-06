@@ -190,6 +190,15 @@ interface ITypeCheckerOptionsInterface {
     
     // output folder on emit
     clearOnEmit? : boolean; 
+
+
+    // debug helpers for when it fails
+    // this will help users supply better issues
+    // also maybe see if the settings are wrong
+    debug_projectReferences?: boolean;
+    debug_parsedFileNames?: boolean;
+    debug_parsedOptions?: boolean;
+    debug_tsConfigJsonContent?: boolean;
     
 }
 
