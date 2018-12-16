@@ -48,9 +48,14 @@ export class TypeHelperClass {
         };
 
         // get tsconfig path and options
-        let tsconf = this.getPath(options.tsConfig);
-        (<IInternalTypeCheckerOptions>this.options).tsConfigJsonContent = require(tsconf);
-        this.writeText(chalk.yellow(`Typechecker tsconfig: ${chalk.white(`${tsconf}${'\n'}`)}`));
+        if (options.tsConfig) {
+            let tsconf = this.getPath(options.tsConfig);
+            (<IInternalTypeCheckerOptions>this.options).tsConfigJsonContent = require(tsconf);
+            this.writeText(chalk.yellow(`Typechecker tsconfig: ${chalk.white(`${tsconf}${'\n'}`)}`));
+        } else {
+            (<IInternalTypeCheckerOptions>this.options).tsConfigJsonContent = { compilerOptions: {} };
+            this.writeText(chalk.yellow(`Typechecker tsconfig: ${chalk.white(`undefined, using ts defaults${'\n'}`)}`));
+        }
 
         if (options.tsConfigOverride) {
             let oldConfig = (<IInternalTypeCheckerOptions>this.options).tsConfigJsonContent;
