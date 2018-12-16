@@ -24,9 +24,15 @@ var TypeHelperClass = (function () {
             formattersDirectory: this.options.lintoptions.formattersDirectory || null,
             rulesDirectory: this.options.lintoptions.rulesDirectory || null
         };
-        var tsconf = this.getPath(options.tsConfig);
-        this.options.tsConfigJsonContent = require(tsconf);
-        this.writeText(chalk_1.default.yellow("Typechecker tsconfig: " + chalk_1.default.white("" + tsconf + '\n')));
+        if (options.tsConfig) {
+            var tsconf = this.getPath(options.tsConfig);
+            this.options.tsConfigJsonContent = require(tsconf);
+            this.writeText(chalk_1.default.yellow("Typechecker tsconfig: " + chalk_1.default.white("" + tsconf + '\n')));
+        }
+        else {
+            this.options.tsConfigJsonContent = { compilerOptions: {} };
+            this.writeText(chalk_1.default.yellow("Typechecker tsconfig: " + chalk_1.default.white("undefined, using ts defaults" + '\n')));
+        }
         if (options.tsConfigOverride) {
             var oldConfig = this.options.tsConfigJsonContent;
             for (var att in options.tsConfigOverride) {
