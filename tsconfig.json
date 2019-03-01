@@ -33,9 +33,11 @@
   ],
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
   ],
+  /* Adding some comments and trailing commas for testing */
   "atom": {
-    "rewriteTsconfig": false
-  }
+    // Note trailing commas
+    "rewriteTsconfig": false,
+  },
 }

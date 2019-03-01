@@ -7,7 +7,8 @@ import { Checker } from './checker';
 import * as watch from 'watch';
 import * as ts from 'typescript';
 import chalk from 'chalk';
-
+// Allows us to read valid (with comments) tsconfig and tslint files.
+import './register.json5';
 
 export class TypeHelperClass {
     private options: ITypeCheckerOptions;
