@@ -1,4 +1,5 @@
 import { ITypeCheckerOptions, IResults } from './interfaces';
+import './register.json5';
 export declare class TypeHelperClass {
     private options;
     private worker;

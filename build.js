@@ -1,3 +1,26 @@
+//
+// Sorry, this is a hack because this library uses an older version of itself
+// to build. So since I added comments to the config files, they will break
+// this build, so shimming it with this register.
+// 
+const fs = require('fs');
+const JSON5 = require('json5');
+// JSON5 has a register for the .json5 extension
+// however, it does not overide .json.
+// This will just override our require for *.json files and use
+// JSON5 to parse.
+require.extensions['.json'] = function (module, filename) {
+  const content = fs.readFileSync(filename, 'utf8');
+  try {
+      module.exports = JSON5.parse(content);
+  } catch (err) {
+      err.message = filename + ': ' + err.message;
+      throw err;
+  }
+};
+
+
+
 const transpiler = require('fuse-box-typechecker').TypeHelper;
 
 const transpileTo = function (outDir, moduleType) {

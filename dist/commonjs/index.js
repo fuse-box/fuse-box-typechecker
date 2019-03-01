@@ -7,6 +7,7 @@ var checker_1 = require("./checker");
 var watch = require("watch");
 var ts = require("typescript");
 var chalk_1 = require("chalk");
+require("./register.json5");
 var TypeHelperClass = (function () {
     function TypeHelperClass(options) {
         this.checker = new checker_1.Checker();

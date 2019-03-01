@@ -21,6 +21,7 @@
     "url": "https://github.com/fuse-box/fuse-box-typechecker"
   },
   "devDependencies": {
+    "@types/json5": "0.0.30",
     "fuse-box-typechecker": "2.11.0",
     "tslint": "^5.11.0",
     "typescript": "^3.2.2"
@@ -30,6 +31,7 @@
     "@types/watch": "^1.0.0",
     "chalk": "2.4.1",
     "gulp-changed": "^3.2.0",
+    "json5": "^2.1.0",
     "object.entries": "^1.0.4",
     "watch": "^1.0.2"
   }
