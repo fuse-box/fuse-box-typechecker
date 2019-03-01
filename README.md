@@ -27,7 +27,7 @@ You do not need fusebox, can be used with any project
 const { TypeChecker } = require('fuse-box-typechecker');
 
 const testSync = TypeChecker({
-    tsConfig: './tsconfig.json',
+    tsConfig: './tsconfig.json', // optional
     basePath:'./',
     tsLint:'./tslint.json', //optional
     name: 'Test Sync'
