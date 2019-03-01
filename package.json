@@ -23,16 +23,16 @@
   "devDependencies": {
     "@types/json5": "0.0.30",
     "fuse-box-typechecker": "2.11.0",
-    "tslint": "^5.11.0",
-    "typescript": "^3.2.2"
+    "tslint": "^5.13.1",
+    "typescript": "^3.3.3333"
   },
   "dependencies": {
-    "@types/node": "^10.12.15",
+    "@types/node": "^11.9.6",
     "@types/watch": "^1.0.0",
-    "chalk": "2.4.1",
+    "chalk": "2.4.2",
     "gulp-changed": "^3.2.0",
     "json5": "^2.1.0",
-    "object.entries": "^1.0.4",
+    "object.entries": "^1.1.0",
     "watch": "^1.0.2"
   }
 }
