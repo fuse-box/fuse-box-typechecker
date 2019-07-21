@@ -1,6 +1,6 @@
 {
   "name": "fuse-box-typechecker",
-  "version": "3.0.0-next.1",
+  "version": "3.0.0-next.2",
   "description": "Fuse-Box type checker plugin",
   "keywords": [
     "fuse-box-bundler",

@@ -61,9 +61,6 @@ var Checker = (function () {
             }
             this.program = ts.createEmitAndSemanticDiagnosticsBuilderProgram(parsed.fileNames, parsed.options, this.host, this.program);
         }
-        this.program.isSourceFileFromExternalLibrary = function (x) {
-            return parsed.fileNames.indexOf(x.fileName) === -1;
-        };
         this.tsDiagnostics = [];
         var optionsErrors = this.getOptionsDiagnostics().map(function (obj) {
             obj._type = 'options';
@@ -93,13 +90,13 @@ var Checker = (function () {
                 throw new Error('tslint not installed');
             }
             var fullPath = path.resolve(this.options.basePath, options.tsLint);
-            var files = tslint.Linter.getFileNames(this.program);
+            var files = tslint.Linter.getFileNames(this.program.getProgram());
             var tsLintConfiguration_1 = tslint.Configuration.findConfiguration(fullPath, this.options.basePath).results;
             this.lintFileResult =
                 files.map(function (file) {
                     var fileContents = _this.program.getSourceFile(file);
                     fileContents = fileContents ? fileContents.getFullText() : '';
-                    var linter = new tslint.Linter(options.lintoptions, _this.program);
+                    var linter = new tslint.Linter(options.lintoptions, _this.program.getProgram());
                     linter.lint(file, fileContents, tsLintConfiguration_1);
                     return linter.getResult();
                 }).filter(function (result) {
