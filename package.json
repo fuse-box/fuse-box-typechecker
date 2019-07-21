@@ -1,6 +1,6 @@
 {
   "name": "fuse-box-typechecker",
-  "version": "2.12.0",
+  "version": "3.0.0-next.1",
   "description": "Fuse-Box type checker plugin",
   "keywords": [
     "fuse-box-bundler",
@@ -13,6 +13,9 @@
     "url": "https://github.com/fuse-box/fuse-box-typechecker/issues"
   },
   "license": "MIT",
+  "scripts": {
+    "start":"node test.js"
+  },
   "author": "Fusebox Community",
   "main": "dist/commonjs/index.js",
   "types": "dist/commonjs/index.d.ts",
@@ -22,15 +25,15 @@
   },
   "devDependencies": {
     "@types/json5": "0.0.30",
-    "fuse-box-typechecker": "2.11.0",
-    "tslint": "^5.13.1",
-    "typescript": "^3.3.3333"
+    "fuse-box-typechecker": "2.12.0",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.3"
   },
   "dependencies": {
-    "@types/node": "^11.9.6",
-    "@types/watch": "^1.0.0",
+    "@types/node": "^12.6.8",
+    "@types/watch": "^1.0.1",
     "chalk": "2.4.2",
-    "gulp-changed": "^3.2.0",
+    "gulp-changed": "^4.0.0",
     "json5": "^2.1.0",
     "object.entries": "^1.1.0",
     "watch": "^1.0.2"
