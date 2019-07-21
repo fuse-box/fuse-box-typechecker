@@ -6,6 +6,7 @@ export declare class Checker {
     private tsDiagnostics;
     private lintFileResult;
     lastResults: any;
+    host: any;
     constructor();
     inspectCode(options: IInternalTypeCheckerOptions): void;
     getResultObj(): IResults;

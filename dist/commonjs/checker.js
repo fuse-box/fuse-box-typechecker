@@ -50,17 +50,20 @@ var Checker = (function () {
                 this.writeText(chalk_1.default.yellow("debug print, project options"));
                 console.log(parsed.fileNames);
             }
-            this.program = ts.createProgram({
-                rootNames: parsed.fileNames,
-                options: parsed.options,
-                projectReferences: parsed.projectReferences,
-                host: undefined,
-                oldProgram: this.program
-            });
+            if (!this.host) {
+                this.host = ts.createIncrementalCompilerHost(parsed.options);
+            }
+            this.program = ts.createEmitAndSemanticDiagnosticsBuilderProgram(parsed.fileNames, parsed.options, this.host, this.program, undefined, parsed.projectReferences);
         }
         else {
-            this.program = ts.createProgram(parsed.fileNames, parsed.options, undefined, this.program);
+            if (!this.host) {
+                this.host = ts.createIncrementalCompilerHost(parsed.options);
+            }
+            this.program = ts.createEmitAndSemanticDiagnosticsBuilderProgram(parsed.fileNames, parsed.options, this.host, this.program);
         }
+        this.program.isSourceFileFromExternalLibrary = function (x) {
+            return parsed.fileNames.indexOf(x.fileName) === -1;
+        };
         this.tsDiagnostics = [];
         var optionsErrors = this.getOptionsDiagnostics().map(function (obj) {
             obj._type = 'options';
