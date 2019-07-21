@@ -110,14 +110,8 @@ export class Checker {
             if (!this.host) {
                 this.host = (<any>ts).createIncrementalCompilerHost(parsed.options);
             }
-            this.program = ts.createEmitAndSemanticDiagnosticsBuilderProgram(parsed.fileNames, parsed.options, this.host, this.program);
-        }
-
-        // needed for tslint TODO replace ts lint with lint when its ready
-        (<any>this).program.isSourceFileFromExternalLibrary = (x: any) => {
-            return parsed.fileNames.indexOf(x.fileName) === -1;
-        };
-
+            this.program = ts.createEmitAndSemanticDiagnosticsBuilderProgram(parsed.fileNames, parsed.options, this.host, this.program );
+       }
 
 
 
@@ -171,7 +165,7 @@ export class Checker {
             let fullPath = path.resolve(this.options.basePath, options.tsLint);
 
             // gets the files, lint every file and store errors in lintResults
-            let files = tslint.Linter.getFileNames(<any>this.program);
+            let files = tslint.Linter.getFileNames(this.program.getProgram());
 
             // get tslint configuration
             const tsLintConfiguration = tslint.Configuration.findConfiguration(fullPath, this.options.basePath).results;
@@ -184,7 +178,7 @@ export class Checker {
                     fileContents = fileContents ? fileContents.getFullText() : '';
 
                     // create new linter using lint options and tsprogram
-                    const linter = new tslint!.Linter((<TSLintTypes.ILinterOptions>options.lintoptions), <any>this.program);
+                    const linter = new tslint!.Linter((<TSLintTypes.ILinterOptions>options.lintoptions), this.program.getProgram());
 
                     // lint file using filename, filecontent, and tslint configuration
                     linter.lint(file, fileContents, tsLintConfiguration);
