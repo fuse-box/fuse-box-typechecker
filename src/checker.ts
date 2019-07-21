@@ -31,7 +31,7 @@ export class Checker {
     private options: IInternalTypeCheckerOptions;
 
     // typescript program
-    private program: ts.Program;
+    private program: ts.EmitAndSemanticDiagnosticsBuilderProgram;
 
     // time used to do typecheck/linting
     private elapsedInspectionTime: number;
@@ -44,6 +44,7 @@ export class Checker {
 
     // will have last result *undefined if no check have been preformed
     public lastResults: any;
+    public host: any;
 
 
     constructor() {
@@ -98,17 +99,25 @@ export class Checker {
                     chalk.yellow(`debug print, project options`));
                 console.log(parsed.fileNames);
             }
+            if (!this.host) {
+                this.host = (<any>ts).createIncrementalCompilerHost(parsed.options);
+            }
 
-            this.program = ts.createProgram({
-                rootNames: parsed.fileNames,
-                options: parsed.options,
-                projectReferences: parsed.projectReferences,
-                host: undefined,
-                oldProgram: this.program
-            });
+            this.program = ts.createEmitAndSemanticDiagnosticsBuilderProgram(
+                    parsed.fileNames, parsed.options, this.host, this.program, undefined, parsed.projectReferences);
+
         } else {
-            this.program = ts.createProgram(parsed.fileNames, parsed.options, undefined, this.program);
+            if (!this.host) {
+                this.host = (<any>ts).createIncrementalCompilerHost(parsed.options);
+            }
+            this.program = ts.createEmitAndSemanticDiagnosticsBuilderProgram(parsed.fileNames, parsed.options, this.host, this.program);
         }
+
+        // needed for tslint TODO replace ts lint with lint when its ready
+        (<any>this).program.isSourceFileFromExternalLibrary = (x: any) => {
+            return parsed.fileNames.indexOf(x.fileName) === -1;
+        };
+
 
 
 
@@ -162,7 +171,7 @@ export class Checker {
             let fullPath = path.resolve(this.options.basePath, options.tsLint);
 
             // gets the files, lint every file and store errors in lintResults
-            let files = tslint.Linter.getFileNames(this.program);
+            let files = tslint.Linter.getFileNames(<any>this.program);
 
             // get tslint configuration
             const tsLintConfiguration = tslint.Configuration.findConfiguration(fullPath, this.options.basePath).results;
@@ -175,7 +184,7 @@ export class Checker {
                     fileContents = fileContents ? fileContents.getFullText() : '';
 
                     // create new linter using lint options and tsprogram
-                    const linter = new tslint!.Linter((<TSLintTypes.ILinterOptions>options.lintoptions), this.program);
+                    const linter = new tslint!.Linter((<TSLintTypes.ILinterOptions>options.lintoptions), <any>this.program);
 
                     // lint file using filename, filecontent, and tslint configuration
                     linter.lint(file, fileContents, tsLintConfiguration);
