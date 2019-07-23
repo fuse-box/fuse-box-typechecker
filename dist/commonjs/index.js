@@ -97,11 +97,9 @@ var TypeHelperClass = (function () {
     };
     TypeHelperClass.prototype.worker_inspectAndPrint = function () {
         if (!this.worker) {
-            printResult_1.print('Need to inspect code before printing first');
+            this.startWorker();
         }
-        else {
-            this.worker.send({ type: interfaces_1.WorkerCommand.printResult, options: this.options });
-        }
+        this.worker.send({ type: interfaces_1.WorkerCommand.inspectCodeAndPrint, options: this.options });
     };
     TypeHelperClass.prototype.startWorker = function () {
         var _this = this;
