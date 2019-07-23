@@ -3,16 +3,18 @@ import { inspectCode } from './inspectCode';
 import { printResult } from './printResult';
 import { watchSrc } from './watchSrc';
 import { printSettings } from './printSettings';
+import { debugPrint } from './debugPrint';
 
 let lastResult: IResults;
 let printErrorTotal: number;
 
 // listen for messages
 process.on('message', function(msg: IWorkerOptions) {
-
+    debugPrint(`worker message recived ${msg.type}`);
     switch (msg.type) {
         // tell checker to inspect code
         case WorkerCommand.inspectCode:
+            debugPrint('worker inspectCode');
             if (msg.options) {
                 lastResult = inspectCode(msg.options, lastResult && lastResult.oldProgram);
             } else {
@@ -22,6 +24,7 @@ process.on('message', function(msg: IWorkerOptions) {
 
         // tell checker to inspect code
         case WorkerCommand.inspectCodeAndPrint:
+            debugPrint('worker inspectCodeAndPrint');
             if (msg.options) {
                 lastResult = inspectCode(msg.options, lastResult && lastResult.oldProgram);
                 printErrorTotal = printResult(msg.options, lastResult);
@@ -31,8 +34,8 @@ process.on('message', function(msg: IWorkerOptions) {
             }
             break;
 
-
         case WorkerCommand.printResult:
+            debugPrint('worker printResult');
             if (msg.options && lastResult) {
                 printErrorTotal = printResult(msg.options, lastResult);
             } else {
@@ -42,17 +45,19 @@ process.on('message', function(msg: IWorkerOptions) {
             }
             break;
 
-            case WorkerCommand.printSettings:
-                    if (msg.options) {
-                        printSettings(msg.options);
-                    } else {
-                        throw new Error(
-                            'You tried to print settings without ts/lint options or without having inspected code'
-                        );
-                    }
-                    break;
+        case WorkerCommand.printSettings:
+            debugPrint('worker printSettings');
+            if (msg.options) {
+                printSettings(msg.options);
+            } else {
+                throw new Error(
+                    'You tried to print settings without ts/lint options or without having inspected code'
+                );
+            }
+            break;
 
         case WorkerCommand.watch:
+            debugPrint('worker watch');
             if (msg.options) {
                 watchSrc(msg.watchSrc, msg.options, () => {
                     lastResult = inspectCode(msg.options, lastResult && lastResult.oldProgram);
@@ -66,3 +71,5 @@ process.on('message', function(msg: IWorkerOptions) {
             break;
     }
 });
+
+debugPrint('worker started');

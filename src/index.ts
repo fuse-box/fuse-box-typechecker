@@ -15,6 +15,7 @@ import { inspectCode } from './inspectCode';
 import { printResult, print } from './printResult';
 import { printSettings } from './printSettings';
 
+
 export class TypeHelperClass {
     private options: ITypeCheckerOptions;
     private worker: child.ChildProcess;
@@ -82,7 +83,6 @@ export class TypeHelperClass {
         printSettings(this.options);
     }
 
-
     public inspectAndPrint(): number {
         const lastResult = inspectCode(this.options);
         return printResult(this.options, lastResult);
@@ -116,6 +116,7 @@ export class TypeHelperClass {
         if (!this.worker) {
             this.startWorker();
         }
+
         this.worker.send({ type: WorkerCommand.inspectCode, options: this.options });
     }
 
@@ -129,10 +130,9 @@ export class TypeHelperClass {
 
     public worker_inspectAndPrint(): void {
         if (!this.worker) {
-            print('Need to inspect code before printing first');
-        } else {
-            this.worker.send({ type: WorkerCommand.printResult, options: this.options });
+            this.startWorker();
         }
+        this.worker.send({ type: WorkerCommand.inspectCodeAndPrint, options: this.options });
     }
 
     private startWorker(): void {
