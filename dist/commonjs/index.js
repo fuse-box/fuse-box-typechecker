@@ -3,11 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var child = require("child_process");
 var path = require("path");
 var interfaces_1 = require("./interfaces");
-var chalk_1 = require("chalk");
 require("./register.json5");
 var getPath_1 = require("./getPath");
 var inspectCode_1 = require("./inspectCode");
 var printResult_1 = require("./printResult");
+var printSettings_1 = require("./printSettings");
 var TypeHelperClass = (function () {
     function TypeHelperClass(options) {
         this.options = options;
@@ -54,32 +54,20 @@ var TypeHelperClass = (function () {
             }
         }
     }
-    TypeHelperClass.prototype.printSettings = function (options) {
-        printResult_1.print(chalk_1.default.yellow('\n' + "Typechecker name: " + chalk_1.default.white("" + options.name + '\n')));
-        printResult_1.print(chalk_1.default.yellow("Typechecker basepath: " + chalk_1.default.white("" + options.basePath + '\n')));
-        if (options.tsConfig) {
-            var tsconf = getPath_1.getPath(options.tsConfig, options);
-            printResult_1.print(chalk_1.default.yellow("Typechecker tsconfig: " + chalk_1.default.white("" + tsconf + '\n')));
-        }
-        else {
-            printResult_1.print(chalk_1.default.yellow("Typechecker tsconfig: " + chalk_1.default.white("undefined, using ts defaults" + '\n')));
-        }
-        if (options.tsLint) {
-            var tsLint = getPath_1.getPath(options.tsLint, options);
-            printResult_1.print(chalk_1.default.yellow("Typechecker tsLint: " + chalk_1.default.white("" + tsLint + '\n')));
-        }
+    TypeHelperClass.prototype.printSettings = function () {
+        printSettings_1.printSettings(this.options);
     };
-    TypeHelperClass.prototype.inspectAndPrint_local = function () {
+    TypeHelperClass.prototype.inspectAndPrint = function () {
         var lastResult = inspectCode_1.inspectCode(this.options);
         return printResult_1.printResult(this.options, lastResult);
     };
-    TypeHelperClass.prototype.inspect_local = function (oldProgram) {
+    TypeHelperClass.prototype.inspectOnly = function (oldProgram) {
         return inspectCode_1.inspectCode(this.options, oldProgram);
     };
-    TypeHelperClass.prototype.print_local = function (errors) {
+    TypeHelperClass.prototype.printOnly = function (errors) {
         return printResult_1.printResult(this.options, errors);
     };
-    TypeHelperClass.prototype.startWatch = function (pathToWatch) {
+    TypeHelperClass.prototype.worker_watch = function (pathToWatch) {
         this.startWorker();
         this.worker.send({
             quit: false,
@@ -88,18 +76,18 @@ var TypeHelperClass = (function () {
             options: this.options
         });
     };
-    TypeHelperClass.prototype.kill = function () {
+    TypeHelperClass.prototype.worker_kill = function () {
         if (this.worker) {
             this.worker.kill();
         }
     };
-    TypeHelperClass.prototype.inspect_worker = function () {
+    TypeHelperClass.prototype.worker_Inspect = function () {
         if (!this.worker) {
             this.startWorker();
         }
         this.worker.send({ type: interfaces_1.WorkerCommand.inspectCode, options: this.options });
     };
-    TypeHelperClass.prototype.print_worker = function () {
+    TypeHelperClass.prototype.worker_print = function () {
         if (!this.worker) {
             printResult_1.print('Need to inspect code before printing first');
         }
@@ -107,7 +95,7 @@ var TypeHelperClass = (function () {
             this.worker.send({ type: interfaces_1.WorkerCommand.printResult, options: this.options });
         }
     };
-    TypeHelperClass.prototype.inspectAndPrint_worker = function () {
+    TypeHelperClass.prototype.worker_inspectAndPrint = function () {
         if (!this.worker) {
             printResult_1.print('Need to inspect code before printing first');
         }
@@ -125,7 +113,7 @@ var TypeHelperClass = (function () {
             }
             else {
                 printResult_1.print('killing worker');
-                _this.kill();
+                _this.worker_kill();
             }
         });
     };

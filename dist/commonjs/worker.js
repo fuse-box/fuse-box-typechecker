@@ -4,6 +4,7 @@ var interfaces_1 = require("./interfaces");
 var inspectCode_1 = require("./inspectCode");
 var printResult_1 = require("./printResult");
 var watchSrc_1 = require("./watchSrc");
+var printSettings_1 = require("./printSettings");
 var lastResult;
 var printErrorTotal;
 process.on('message', function (msg) {
@@ -32,6 +33,14 @@ process.on('message', function (msg) {
             }
             else {
                 throw new Error('You tried to print code without ts/lint options or without having inspected code');
+            }
+            break;
+        case interfaces_1.WorkerCommand.printSettings:
+            if (msg.options) {
+                printSettings_1.printSettings(msg.options);
+            }
+            else {
+                throw new Error('You tried to print settings without ts/lint options or without having inspected code');
             }
             break;
         case interfaces_1.WorkerCommand.watch:

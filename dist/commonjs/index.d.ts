@@ -5,15 +5,15 @@ export declare class TypeHelperClass {
     private options;
     private worker;
     constructor(options: ITypeCheckerOptions);
-    printSettings(options: ITypeCheckerOptions): void;
-    inspectAndPrint_local(): number;
-    inspect_local(oldProgram: ts.EmitAndSemanticDiagnosticsBuilderProgram): IResults;
-    print_local(errors: IResults): number;
-    startWatch(pathToWatch: string): void;
-    kill(): void;
-    inspect_worker(): void;
-    print_worker(): void;
-    inspectAndPrint_worker(): void;
+    printSettings(): void;
+    inspectAndPrint(): number;
+    inspectOnly(oldProgram: ts.EmitAndSemanticDiagnosticsBuilderProgram): IResults;
+    printOnly(errors: IResults): number;
+    worker_watch(pathToWatch: string): void;
+    worker_kill(): void;
+    worker_Inspect(): void;
+    worker_print(): void;
+    worker_inspectAndPrint(): void;
     private startWorker;
 }
 export declare const TypeChecker: (options: ITypeCheckerOptions) => TypeHelperClass;

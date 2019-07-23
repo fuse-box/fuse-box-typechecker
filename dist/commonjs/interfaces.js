@@ -6,6 +6,7 @@ var WorkerCommand;
     WorkerCommand[WorkerCommand["printResult"] = 1] = "printResult";
     WorkerCommand[WorkerCommand["inspectCodeAndPrint"] = 2] = "inspectCodeAndPrint";
     WorkerCommand[WorkerCommand["watch"] = 3] = "watch";
+    WorkerCommand[WorkerCommand["printSettings"] = 4] = "printSettings";
 })(WorkerCommand = exports.WorkerCommand || (exports.WorkerCommand = {}));
 var TypecheckerRunType;
 (function (TypecheckerRunType) {

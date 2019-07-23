@@ -40,7 +40,8 @@ export declare enum WorkerCommand {
     inspectCode = 0,
     printResult = 1,
     inspectCodeAndPrint = 2,
-    watch = 3
+    watch = 3,
+    printSettings = 4
 }
 export interface IWorkerOptions {
     options: ITypeCheckerOptions;
