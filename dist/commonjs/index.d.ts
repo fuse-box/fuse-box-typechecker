@@ -11,7 +11,8 @@ export declare class TypeHelperClass {
     printOnly(errors: IResults): number;
     worker_watch(pathToWatch: string): void;
     worker_kill(): void;
-    worker_Inspect(): void;
+    worker_inspect(): void;
+    worker_PrintSettings(): void;
     worker_print(): void;
     worker_inspectAndPrint(): void;
     private startWorker;

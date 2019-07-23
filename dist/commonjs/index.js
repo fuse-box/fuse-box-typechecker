@@ -14,7 +14,7 @@ var TypeHelperClass = (function () {
         this.options.basePath = options.basePath
             ? path.resolve(process.cwd(), options.basePath)
             : process.cwd();
-        this.options.name = this.options.name ? ':' + this.options.name : '';
+        this.options.name = this.options.name ? this.options.name : '';
         this.options.shortenFilenames = !!this.options.shortenFilenames;
         var lintOp = this.options.lintoptions;
         this.options.lintoptions = lintOp ? lintOp : {};
@@ -81,11 +81,17 @@ var TypeHelperClass = (function () {
             this.worker.kill();
         }
     };
-    TypeHelperClass.prototype.worker_Inspect = function () {
+    TypeHelperClass.prototype.worker_inspect = function () {
         if (!this.worker) {
             this.startWorker();
         }
         this.worker.send({ type: interfaces_1.WorkerCommand.inspectCode, options: this.options });
+    };
+    TypeHelperClass.prototype.worker_PrintSettings = function () {
+        if (!this.worker) {
+            this.startWorker();
+        }
+        this.worker.send({ type: interfaces_1.WorkerCommand.printSettings, options: this.options });
     };
     TypeHelperClass.prototype.worker_print = function () {
         if (!this.worker) {

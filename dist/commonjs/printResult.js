@@ -14,8 +14,8 @@ function isTSError(error) {
     return error.code !== undefined;
 }
 function printResult(options, errors) {
-    print(chalk_1.default.bgWhite(chalk_1.default.black(interfaces_1.END_LINE + "Typechecker plugin(" + options.name)) +
-        chalk_1.default.white("." + interfaces_1.END_LINE));
+    print(chalk_1.default.bgWhite(chalk_1.default.black(interfaces_1.END_LINE + "Typechecker plugin: " + options.name + "." + interfaces_1.END_LINE)) +
+        chalk_1.default.white(""));
     print(chalk_1.default.grey("Time:" + new Date().toString() + " " + interfaces_1.END_LINE));
     var lintErrorMessages = processLintErrors_1.processLintFiles(options, errors.lintFileResult);
     var tsErrorMessages = processTsDiagnostics_1.processTsDiagnostics(options, errors);
