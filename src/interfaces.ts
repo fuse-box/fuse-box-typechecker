@@ -1,5 +1,7 @@
-
 // options they can use to create the typechecker
+import * as ts from 'typescript';
+import * as TSLintTypes from 'tslint';
+
 export interface ITypeCheckerOptions {
     // base path
     basePath: string;
@@ -44,7 +46,7 @@ export interface ITypeCheckerOptions {
     clearOnEmit?: boolean;
 
     // skip ts errors
-    skipTsErrors?: number[];
+    skipTsErrors?: SkipError;
 
     // debug helpers for when it fails
     // this will help users supply better issues
@@ -52,6 +54,9 @@ export interface ITypeCheckerOptions {
     debug_parsedFileNames?: boolean;
     debug_parsedOptions?: boolean;
     debug_tsConfigJsonContent?: boolean;
+
+    // internals
+    tsConfigJsonContent: any;
 }
 
 // lint options,this is the same as tsLint uses all paths will be from basepath
@@ -62,28 +67,26 @@ export interface ILintOptions {
     rulesDirectory?: string | null;
 }
 
+export type TotalErrorsFound = number;
+export type SkipError = number[];
+export type TypeCheckError = ITSLintError | ITSError;
 // extended internal options, needed for some internal usage
-export interface IInternalTypeCheckerOptions extends ITypeCheckerOptions {
-    type: TypecheckerRunType;
-    tsConfigJsonContent?: any;
-    quit?: boolean;
-}
 
-// params used when calling worker to tell it what to do
-export interface IWorkerOptions {
-    type: WorkerCommand;
-    options?: IInternalTypeCheckerOptions;
-    hasCallback?: boolean;
-}
+
 
 // run options for worker
 export enum WorkerCommand {
     inspectCode,
     printResult,
-    getResultObj
+    inspectCodeAndPrint,
+    watch
 }
 
-
+export interface IWorkerOptions {
+    options: ITypeCheckerOptions;
+    watchSrc: string;
+    type: WorkerCommand;
+}
 
 // checkers run types (when generating cmd print)
 export enum TypecheckerRunType {
@@ -114,11 +117,13 @@ export interface ITSError {
 }
 
 export interface IResults {
-    lintErrors: ITSLintError[];
-    optionsErrors: ITSError[];
-    globalErrors: ITSError[];
-    syntacticErrors: ITSError[];
-    semanticErrors: ITSError[];
+    oldProgram: ts.EmitAndSemanticDiagnosticsBuilderProgram;
+    lintFileResult: TSLintTypes.LintResult[];
+    optionsErrors: ts.Diagnostic[];
+    globalErrors: ts.Diagnostic[];
+    syntacticErrors: ts.Diagnostic[];
+    semanticErrors: ts.Diagnostic[];
+    elapsedInspectionTime: number;
 }
 
 export const END_LINE = '\n';

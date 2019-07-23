@@ -5,7 +5,7 @@ import * as JSON5 from 'json5';
 // however, it does not overide .json.
 // This will just override our require for *.json files and use
 // JSON5 to parse.
-require.extensions['.json'] = function (module, filename) {
+require.extensions['.json'] = function(module, filename) {
     const content = readFileSync(filename, 'utf8');
     try {
         module.exports = JSON5.parse(content);

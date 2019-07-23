@@ -1,46 +1,57 @@
-// typechecker
-import { Checker } from './checker';
-import { WorkerCommand, IWorkerOptions } from './interfaces';
+import { WorkerCommand, IWorkerOptions, IResults } from './interfaces';
+import { inspectCode } from './inspectCode';
+import { printResult } from './printResult';
+import { watchSrc } from './watchSrc';
 
+let lastResult: IResults;
+let printErrorTotal: number;
 
-// create checker instance
-let checker = new Checker();
-let hasCallback = false;
 // listen for messages
-process.on('message', function (msg: IWorkerOptions) {
-
-    // set if callback is awaited
-    hasCallback = msg.hasCallback || false;
+process.on('message', function(msg: IWorkerOptions) {
 
     switch (msg.type) {
-
         // tell checker to inspect code
         case WorkerCommand.inspectCode:
             if (msg.options) {
-                checker.inspectCode(msg.options);
+                lastResult = inspectCode(msg.options, lastResult && lastResult.oldProgram);
             } else {
                 throw new Error('You tried to inspect code without ts/lint options');
             }
+            break;
 
+        // tell checker to inspect code
+        case WorkerCommand.inspectCodeAndPrint:
+            if (msg.options) {
+                lastResult = inspectCode(msg.options, lastResult && lastResult.oldProgram);
+                printErrorTotal = printResult(msg.options, lastResult);
+                printErrorTotal = printErrorTotal;
+            } else {
+                throw new Error('You tried to inspect code without ts/lint options');
+            }
             break;
 
         // tell checker to print result
         case WorkerCommand.printResult:
-            let result = checker.printResult(true);
-
-            if (process.send && hasCallback) {
-                process.send({ type: 'result', result: result });
+            if (msg.options && lastResult) {
+                printErrorTotal = printResult(msg.options, lastResult);
+            } else {
+                throw new Error(
+                    'You tried to print code without ts/lint options or without having inspected code'
+                );
             }
-
             break;
 
-        // tell checker to return result obj
-        case WorkerCommand.getResultObj:
-            if (process.send && hasCallback) {
-                process.send({ type: 'result', result: checker.getResultObj() });
-                (<any>process).send('done');
+        case WorkerCommand.watch:
+            if (msg.options) {
+                watchSrc(msg.watchSrc, msg.options, () => {
+                    lastResult = inspectCode(msg.options, lastResult && lastResult.oldProgram);
+                    printErrorTotal = printResult(msg.options, lastResult);
+                });
+            } else {
+                throw new Error(
+                    'You tried to print code without ts/lint options or without having inspected code'
+                );
             }
-
             break;
     }
 });
