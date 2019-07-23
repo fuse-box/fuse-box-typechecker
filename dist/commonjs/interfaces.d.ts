@@ -1,3 +1,5 @@
+import * as ts from 'typescript';
+import * as TSLintTypes from 'tslint';
 export interface ITypeCheckerOptions {
     basePath: string;
     tsConfig: string;
@@ -18,11 +20,12 @@ export interface ITypeCheckerOptions {
     shortenFilenames?: boolean;
     emit?: boolean;
     clearOnEmit?: boolean;
-    skipTsErrors?: number[];
+    skipTsErrors?: SkipError;
     debug_projectReferences?: boolean;
     debug_parsedFileNames?: boolean;
     debug_parsedOptions?: boolean;
     debug_tsConfigJsonContent?: boolean;
+    tsConfigJsonContent: any;
 }
 export interface ILintOptions {
     fix?: boolean;
@@ -30,20 +33,19 @@ export interface ILintOptions {
     formattersDirectory?: string | null;
     rulesDirectory?: string | null;
 }
-export interface IInternalTypeCheckerOptions extends ITypeCheckerOptions {
-    type: TypecheckerRunType;
-    tsConfigJsonContent?: any;
-    quit?: boolean;
-}
-export interface IWorkerOptions {
-    type: WorkerCommand;
-    options?: IInternalTypeCheckerOptions;
-    hasCallback?: boolean;
-}
+export declare type TotalErrorsFound = number;
+export declare type SkipError = number[];
+export declare type TypeCheckError = ITSLintError | ITSError;
 export declare enum WorkerCommand {
     inspectCode = 0,
     printResult = 1,
-    getResultObj = 2
+    inspectCodeAndPrint = 2,
+    watch = 3
+}
+export interface IWorkerOptions {
+    options: ITypeCheckerOptions;
+    watchSrc: string;
+    type: WorkerCommand;
 }
 export declare enum TypecheckerRunType {
     sync,
@@ -70,10 +72,12 @@ export interface ITSError {
     code: string;
 }
 export interface IResults {
-    lintErrors: ITSLintError[];
-    optionsErrors: ITSError[];
-    globalErrors: ITSError[];
-    syntacticErrors: ITSError[];
-    semanticErrors: ITSError[];
+    oldProgram: ts.EmitAndSemanticDiagnosticsBuilderProgram;
+    lintFileResult: TSLintTypes.LintResult[];
+    optionsErrors: ts.Diagnostic[];
+    globalErrors: ts.Diagnostic[];
+    syntacticErrors: ts.Diagnostic[];
+    semanticErrors: ts.Diagnostic[];
+    elapsedInspectionTime: number;
 }
 export declare const END_LINE = "\n";

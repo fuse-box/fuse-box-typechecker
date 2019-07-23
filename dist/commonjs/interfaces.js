@@ -4,7 +4,8 @@ var WorkerCommand;
 (function (WorkerCommand) {
     WorkerCommand[WorkerCommand["inspectCode"] = 0] = "inspectCode";
     WorkerCommand[WorkerCommand["printResult"] = 1] = "printResult";
-    WorkerCommand[WorkerCommand["getResultObj"] = 2] = "getResultObj";
+    WorkerCommand[WorkerCommand["inspectCodeAndPrint"] = 2] = "inspectCodeAndPrint";
+    WorkerCommand[WorkerCommand["watch"] = 3] = "watch";
 })(WorkerCommand = exports.WorkerCommand || (exports.WorkerCommand = {}));
 var TypecheckerRunType;
 (function (TypecheckerRunType) {

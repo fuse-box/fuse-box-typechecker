@@ -1,30 +1,48 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var checker_1 = require("./checker");
 var interfaces_1 = require("./interfaces");
-var checker = new checker_1.Checker();
-var hasCallback = false;
+var inspectCode_1 = require("./inspectCode");
+var printResult_1 = require("./printResult");
+var watchSrc_1 = require("./watchSrc");
+var lastResult;
+var printErrorTotal;
 process.on('message', function (msg) {
-    hasCallback = msg.hasCallback || false;
     switch (msg.type) {
         case interfaces_1.WorkerCommand.inspectCode:
             if (msg.options) {
-                checker.inspectCode(msg.options);
+                lastResult = inspectCode_1.inspectCode(msg.options, lastResult && lastResult.oldProgram);
+            }
+            else {
+                throw new Error('You tried to inspect code without ts/lint options');
+            }
+            break;
+        case interfaces_1.WorkerCommand.inspectCodeAndPrint:
+            if (msg.options) {
+                lastResult = inspectCode_1.inspectCode(msg.options, lastResult && lastResult.oldProgram);
+                printErrorTotal = printResult_1.printResult(msg.options, lastResult);
+                printErrorTotal = printErrorTotal;
             }
             else {
                 throw new Error('You tried to inspect code without ts/lint options');
             }
             break;
         case interfaces_1.WorkerCommand.printResult:
-            var result = checker.printResult(true);
-            if (process.send && hasCallback) {
-                process.send({ type: 'result', result: result });
+            if (msg.options && lastResult) {
+                printErrorTotal = printResult_1.printResult(msg.options, lastResult);
+            }
+            else {
+                throw new Error('You tried to print code without ts/lint options or without having inspected code');
             }
             break;
-        case interfaces_1.WorkerCommand.getResultObj:
-            if (process.send && hasCallback) {
-                process.send({ type: 'result', result: checker.getResultObj() });
-                process.send('done');
+        case interfaces_1.WorkerCommand.watch:
+            if (msg.options) {
+                watchSrc_1.watchSrc(msg.watchSrc, msg.options, function () {
+                    lastResult = inspectCode_1.inspectCode(msg.options, lastResult && lastResult.oldProgram);
+                    printErrorTotal = printResult_1.printResult(msg.options, lastResult);
+                });
+            }
+            else {
+                throw new Error('You tried to print code without ts/lint options or without having inspected code');
             }
             break;
     }
