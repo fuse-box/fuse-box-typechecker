@@ -2,6 +2,7 @@ import { WorkerCommand, IWorkerOptions, IResults } from './interfaces';
 import { inspectCode } from './inspectCode';
 import { printResult } from './printResult';
 import { watchSrc } from './watchSrc';
+import { printSettings } from './printSettings';
 
 let lastResult: IResults;
 let printErrorTotal: number;
@@ -30,7 +31,7 @@ process.on('message', function(msg: IWorkerOptions) {
             }
             break;
 
-        // tell checker to print result
+
         case WorkerCommand.printResult:
             if (msg.options && lastResult) {
                 printErrorTotal = printResult(msg.options, lastResult);
@@ -40,6 +41,16 @@ process.on('message', function(msg: IWorkerOptions) {
                 );
             }
             break;
+
+            case WorkerCommand.printSettings:
+                    if (msg.options) {
+                        printSettings(msg.options);
+                    } else {
+                        throw new Error(
+                            'You tried to print settings without ts/lint options or without having inspected code'
+                        );
+                    }
+                    break;
 
         case WorkerCommand.watch:
             if (msg.options) {

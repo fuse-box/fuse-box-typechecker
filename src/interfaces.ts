@@ -79,7 +79,8 @@ export enum WorkerCommand {
     inspectCode,
     printResult,
     inspectCodeAndPrint,
-    watch
+    watch,
+    printSettings
 }
 
 export interface IWorkerOptions {

@@ -1,5 +1,3 @@
-// mostly a little from compiler API, gulp-typescript, tslint and a lot of failing :-)
-
 import * as child from 'child_process';
 import * as path from 'path';
 import {
@@ -9,12 +7,13 @@ import {
     TypecheckerRunType,
     IResults
 } from './interfaces';
-import chalk from 'chalk';
+
 import * as ts from 'typescript';
 import './register.json5';
 import { getPath } from './getPath';
 import { inspectCode } from './inspectCode';
 import { printResult, print } from './printResult';
+import { printSettings } from './printSettings';
 
 export class TypeHelperClass {
     private options: ITypeCheckerOptions;
@@ -79,46 +78,25 @@ export class TypeHelperClass {
         }
     }
 
-    public printSettings(options: ITypeCheckerOptions) {
-        // configuration name
-        print(chalk.yellow(`${'\n'}Typechecker name: ${chalk.white(`${options.name}${'\n'}`)}`));
-
-        // base path being used
-        print(chalk.yellow(`Typechecker basepath: ${chalk.white(`${options.basePath}${'\n'}`)}`));
-
-        // get tsconfig path and options
-        if (options.tsConfig) {
-            let tsconf = getPath(options.tsConfig, options);
-            print(chalk.yellow(`Typechecker tsconfig: ${chalk.white(`${tsconf}${'\n'}`)}`));
-        } else {
-            print(
-                chalk.yellow(
-                    `Typechecker tsconfig: ${chalk.white(`undefined, using ts defaults${'\n'}`)}`
-                )
-            );
-        }
-
-        // get tslint path and options
-        if (options.tsLint) {
-            let tsLint = getPath(options.tsLint, options);
-            print(chalk.yellow(`Typechecker tsLint: ${chalk.white(`${tsLint}${'\n'}`)}`));
-        }
+    public printSettings() {
+        printSettings(this.options);
     }
 
-    public inspectAndPrint_local(): number {
+
+    public inspectAndPrint(): number {
         const lastResult = inspectCode(this.options);
         return printResult(this.options, lastResult);
     }
 
-    public inspect_local(oldProgram: ts.EmitAndSemanticDiagnosticsBuilderProgram) {
+    public inspectOnly(oldProgram: ts.EmitAndSemanticDiagnosticsBuilderProgram) {
         return inspectCode(this.options, oldProgram);
     }
 
-    public print_local(errors: IResults) {
+    public printOnly(errors: IResults) {
         return printResult(this.options, errors);
     }
 
-    public startWatch(pathToWatch: string): void {
+    public worker_watch(pathToWatch: string): void {
         this.startWorker();
         this.worker.send({
             quit: false,
@@ -128,20 +106,20 @@ export class TypeHelperClass {
         });
     }
 
-    public kill(): void {
+    public worker_kill(): void {
         if (this.worker) {
             this.worker.kill();
         }
     }
 
-    public inspect_worker(): void {
+    public worker_Inspect(): void {
         if (!this.worker) {
             this.startWorker();
         }
         this.worker.send({ type: WorkerCommand.inspectCode, options: this.options });
     }
 
-    public print_worker(): void {
+    public worker_print(): void {
         if (!this.worker) {
             print('Need to inspect code before printing first');
         } else {
@@ -149,7 +127,7 @@ export class TypeHelperClass {
         }
     }
 
-    public inspectAndPrint_worker(): void {
+    public worker_inspectAndPrint(): void {
         if (!this.worker) {
             print('Need to inspect code before printing first');
         } else {
@@ -170,7 +148,7 @@ export class TypeHelperClass {
             } else {
                 // if not error, then just kill worker
                 print('killing worker');
-                this.kill();
+                this.worker_kill();
             }
         });
     }
