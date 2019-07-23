@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import { print } from './printResult';
 import { END_LINE } from './interfaces';
 
-const enable = true;
+const enable = false;
 
 export function debugPrint(text: string) {
     if (enable) {

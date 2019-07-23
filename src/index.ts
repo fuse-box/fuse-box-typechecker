@@ -29,7 +29,7 @@ export class TypeHelperClass {
             : process.cwd();
 
         // get name
-        this.options.name = this.options.name ? ':' + this.options.name : '';
+        this.options.name = this.options.name ? this.options.name : '';
 
         // shorten filenames to de-clutter output?
         this.options.shortenFilenames = !!this.options.shortenFilenames;
@@ -112,12 +112,20 @@ export class TypeHelperClass {
         }
     }
 
-    public worker_Inspect(): void {
+    public worker_inspect(): void {
         if (!this.worker) {
             this.startWorker();
         }
 
         this.worker.send({ type: WorkerCommand.inspectCode, options: this.options });
+    }
+
+    public worker_PrintSettings(): void {
+        if (!this.worker) {
+            this.startWorker();
+        }
+
+        this.worker.send({ type: WorkerCommand.printSettings, options: this.options });
     }
 
     public worker_print(): void {

@@ -24,8 +24,8 @@ function isTSError(error: TypeCheckError) {
 export function printResult(options: ITypeCheckerOptions, errors: IResults): TotalErrorsFound {
     // print header
     print(
-        chalk.bgWhite(chalk.black(`${END_LINE}Typechecker plugin(${options.name}`)) +
-            chalk.white(`.${END_LINE}`)
+        chalk.bgWhite(chalk.black(`${END_LINE}Typechecker plugin: ${options.name}.${END_LINE}`)) +
+            chalk.white(``)
     );
 
     // print time
