@@ -34,7 +34,7 @@ export function watchSrc(pathToWatch: string, options: ITypeCheckerOptions, call
             clearTimeout(watchTimeout);
             watchTimeout = setTimeout(() => {
                 callback();
-            }, 500);
+            }, 100);
         });
 
         monitor.on('removed', (f: any /*, stat: any*/) => {
@@ -46,7 +46,7 @@ export function watchSrc(pathToWatch: string, options: ITypeCheckerOptions, call
             clearTimeout(watchTimeout);
             watchTimeout = setTimeout(() => {
                 callback();
-            }, 500);
+            }, 100);
         });
     });
 }

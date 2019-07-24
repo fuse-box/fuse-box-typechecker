@@ -22,7 +22,7 @@ function watchSrc(pathToWatch, options, callback) {
             clearTimeout(watchTimeout);
             watchTimeout = setTimeout(function () {
                 callback();
-            }, 500);
+            }, 100);
         });
         monitor.on('removed', function (f) {
             printResult_1.print(interfaces_1.END_LINE + chalk_1.default.yellow("File removed: " + chalk_1.default.white("" + f + interfaces_1.END_LINE)));
@@ -30,7 +30,7 @@ function watchSrc(pathToWatch, options, callback) {
             clearTimeout(watchTimeout);
             watchTimeout = setTimeout(function () {
                 callback();
-            }, 500);
+            }, 100);
         });
     });
 }
