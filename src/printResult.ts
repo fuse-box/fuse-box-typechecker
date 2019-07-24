@@ -5,11 +5,9 @@ import {
     TotalErrorsFound,
     TypeCheckError,
     ITSError,
-    ITSLintError,
     IResults
 } from './interfaces';
 import * as ts from 'typescript';
-import { processLintFiles } from './processLintErrors';
 import * as path from 'path';
 import { processTsDiagnostics } from './processTsDiagnostics';
 
@@ -17,9 +15,6 @@ export function print(text: string) {
     ts.sys.write(text);
 }
 
-function isTSError(error: TypeCheckError) {
-    return (<ITSError>error).code !== undefined;
-}
 
 export function printResult(options: ITypeCheckerOptions, errors: IResults): TotalErrorsFound {
     // print header
@@ -32,14 +27,11 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
     print(chalk.grey(`Time:${new Date().toString()} ${END_LINE}`));
 
     // get the lint errors messages
-
-    const lintErrorMessages: TypeCheckError[] = processLintFiles(options, errors.lintFileResult);
     const tsErrorMessages: TypeCheckError[] = processTsDiagnostics(options, errors);
-    const combinedErrors: TypeCheckError[] = tsErrorMessages.concat(lintErrorMessages);
 
     // group by filename
     let groupedErrors: { [k: string]: TypeCheckError[] } = {};
-    combinedErrors.forEach((error: TypeCheckError) => {
+    tsErrorMessages.forEach((error: TypeCheckError) => {
         if (!groupedErrors[error.fileName]) {
             groupedErrors[error.fileName] = [] as TypeCheckError[];
         }
@@ -56,22 +48,13 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
             errors
                 .map((err: TypeCheckError) => {
                     let text = chalk.red('   |');
-                    if (isTSError(err)) {
-                        text += chalk[err.color](
-                            ` ${short ? shortFileName : fullFileName} (${err.line},${err.char}) `
-                        );
-                        text += chalk.white(`(${(<ITSError>err).category}`);
-                        text += chalk.white(`${(<ITSError>err).code})`);
-                        text += ' ' + (<ITSError>err).message;
-                    } else {
-                        text += chalk[err.color](
-                            ` ${short ? shortFileName : fullFileName} (${err.line + 1},${err.char +
-                                1}) `
-                        );
-                        text += chalk.white(`(${(<ITSLintError>err).ruleSeverity}:`);
-                        text += chalk.white(`${(<ITSLintError>err).ruleName})`);
-                        text += ' ' + (<ITSLintError>err).failure;
-                    }
+
+                    text += chalk[err.color](
+                        ` ${short ? shortFileName : fullFileName} (${err.line},${err.char}) `
+                    );
+                    text += chalk.white(`(${(<ITSError>err).category}`);
+                    text += chalk.white(`${(<ITSError>err).code})`);
+                    text += ' ' + (<ITSError>err).message;
 
                     return text;
                 })
@@ -134,9 +117,7 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
     let globalErrors = errors.globalErrors.length;
     let syntacticErrors = errors.syntacticErrors.length;
     let semanticErrors = errors.semanticErrors.length;
-    let tsLintErrors = lintErrorMessages.length;
-    let totalsErrors =
-        optionsErrors + globalErrors + syntacticErrors + semanticErrors + tsLintErrors;
+    let totalsErrors = optionsErrors + globalErrors + syntacticErrors + semanticErrors;
 
     // if errors, show user
     if (totalsErrors) {
@@ -167,12 +148,6 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
         print(
             chalk[semanticErrors ? (options.yellowOnSemantic ? 'yellow' : 'red') : 'white'](
                 `└── Semantic: ${semanticErrors}${END_LINE}`
-            )
-        );
-
-        print(
-            chalk[tsLintErrors ? (options.yellowOnLint ? 'yellow' : 'red') : 'white'](
-                `└── TsLint: ${tsLintErrors}${END_LINE}${END_LINE}`
             )
         );
     } else {

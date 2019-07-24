@@ -2,12 +2,14 @@
   "compileOnSave": false,
   "compilerOptions": {
     "rootDir": "src/",
-    "outDir": "dev/",
+    "outDir": "dist/",
     "sourceMap": true,
     "target": "es5",
     "module": "commonjs",
     "declaration": true,
     "noImplicitAny": true,
+    "incremental": true,
+    "tsBuildInfoFile": "./dist/compilation.info",
     "noImplicitReturns": true,
     "noUnusedParameters": true,
     "suppressImplicitAnyIndexErrors": true,
@@ -34,10 +36,5 @@
   "exclude": [
     "node_modules",
     "dist",
-  ],
-  /* Adding some comments and trailing commas for testing */
-  "atom": {
-    // Note trailing commas
-    "rewriteTsconfig": false,
-  },
+  ]
 }

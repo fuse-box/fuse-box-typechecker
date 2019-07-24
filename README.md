@@ -3,7 +3,7 @@ See [here for v2 docs](https://github.com/fuse-box/fuse-box-typechecker/tree/dee
 
 # fuse-box-typechecker
 Simple helper to do typechecking
-You need to install typescript to use this, I suggest installing tslint also
+You need to install typescript to use this
 
 ### How to install
 ```npm install fuse-box-typechecker```
@@ -11,13 +11,12 @@ You need to install typescript to use this, I suggest installing tslint also
 
 ## Note
 This have been tested with
- * "tslint": "^5.18.0",
  * "typescript": "^3.5.3"
 
-So this might not work with earlier version if typescript and tslint (tsLint 3 will fail, been tested).
 You do not need fusebox, can be used with any project
 
 
+(todo: update image, V3 will not be doing linting since TSTSLint will be deprecated some time in 2019.)
 ### Output sample (image)
 ![Output sample](https://github.com/fuse-box/fuse-box-typechecker/raw/master/image/sampleNew2.png "Output sample")
 
@@ -30,7 +29,6 @@ You do not need fusebox, can be used with any project
 const checker = require('fuse-box-typechecker').TypeChecker({
     tsConfig: './tsconfig.json',
     basePath: './',
-    tsLint: './tslint.json',
     name: 'checkerSync'
 });
 
@@ -86,18 +84,7 @@ interface ITypeCheckerOptionsInterface {
     
     // name, will be displayed when it runs, useful when you have more then 1 checker
     name?: string; 
-    
-    
-    // config file (compared to basepath './tslint.json')
-    tsLint: string; 
-    
-    
-    // see below, optional
-    lintoptions? ILintOptions; 
-    
-    
-    // use yellow color instead of red on TSLint errors
-    yellowOnLint?: boolean; 
+       
     
     
     // use yellow color instead of red on Options errors
@@ -131,7 +118,6 @@ interface ITypeCheckerOptionsInterface {
 
 export interface IResults {
     oldProgram: ts.EmitAndSemanticDiagnosticsBuilderProgram;
-    lintFileResult: TSLintTypes.LintResult[];
     optionsErrors: ts.Diagnostic[];
     globalErrors: ts.Diagnostic[];
     syntacticErrors: ts.Diagnostic[];

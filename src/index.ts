@@ -1,7 +1,6 @@
 import * as child from 'child_process';
 import * as path from 'path';
 import {
-    ILintOptions,
     ITypeCheckerOptions,
     WorkerCommand,
     IResults
@@ -33,17 +32,6 @@ export class TypeHelperClass {
         // shorten filenames to de-clutter output?
         this.options.shortenFilenames = !!this.options.shortenFilenames;
 
-        // tslint options
-        let lintOp = this.options.lintoptions;
-        this.options.lintoptions = lintOp ? lintOp : ({} as ILintOptions);
-
-        // fix tslint options so tslint do not complain
-        this.options.lintoptions = {
-            fix: this.options.lintoptions.fix || false, // <- this can be useful to have
-            formatter: 'json',
-            formattersDirectory: this.options.lintoptions.formattersDirectory || null,
-            rulesDirectory: this.options.lintoptions.rulesDirectory || null
-        };
 
         // get tsconfig path and options
         if (options.tsConfig) {

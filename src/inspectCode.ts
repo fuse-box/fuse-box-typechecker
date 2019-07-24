@@ -4,7 +4,7 @@ import { getOptionsDiagnostics } from './getOptionsDiagnostics';
 import { getGlobalDiagnostics } from './getGlobalDiagnostics';
 import { getSyntacticDiagnostics } from './getSyntacticDiagnostics';
 import { getSemanticDiagnostics } from './getSemanticDiagnostics';
-import { getTsLintDiagnostics } from './geTsLintDiagnostics';
+
 
 export function inspectCode(
     options: ITypeCheckerOptions,
@@ -39,7 +39,6 @@ export function inspectCode(
 
     return {
         oldProgram: program,
-        lintFileResult: getTsLintDiagnostics(options, program),
         optionsErrors: getOptionsDiagnostics(options, program),
         globalErrors: getGlobalDiagnostics(options, program),
         syntacticErrors: getSyntacticDiagnostics(options, program),

@@ -1,4 +1,4 @@
-const checker = require('./dist/commonjs/index.js').TypeChecker({
+const checker = require('./dist/index.js').TypeChecker({
     tsConfig: './tsconfig.json',
     basePath: './',
     tsLint: './tslint.json',
@@ -52,7 +52,7 @@ async function test4() {
     return new Promise(resolve => {
         console.log('test4 --wait...');
         
-        checker.worker_Inspect();
+        checker.worker_inspect();
 
         setTimeout(() => {
             resolve();
