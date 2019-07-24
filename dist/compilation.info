@@ -174,8 +174,8 @@
         "signature": "340f05ebff175d9916016b2f25798755a1a6b0a1b9e25898ab653a7b96f4c4c0"
       },
       "c:/users/developer/documents/xx/react-example/node_modules/fuse-box-typechecker/src/index.ts": {
-        "version": "351128e768c95372d296a4c1d6449c33e4ee4d20b476272d69375a3b06fdc329",
-        "signature": "06a30483304de95554e3f2c9ea1b11f4ebb4446131c6fba6c8a56783af805ec7"
+        "version": "6d0abfc9d88b12fc7e1b2de8730c1292fd85ff11a8e2ab23815f5c876f2507bf",
+        "signature": "5531b0af0ea2ad919e5e62c89850937d9d0e1e515255661fcd74d3575430310a"
       },
       "c:/users/developer/documents/xx/react-example/node_modules/fuse-box-typechecker/src/test.ts": {
         "version": "fb36d1764dab7163b0a1fb8d81e6b82141dabbf22d0bb030549842cf8adc4ba1",
@@ -1452,7 +1452,6 @@
       "c:/users/developer/documents/xx/react-example/node_modules/fuse-box-typechecker/src/throwiferrors.ts",
       "c:/users/developer/documents/xx/react-example/node_modules/fuse-box-typechecker/src/inspectcode.ts",
       "c:/users/developer/documents/xx/react-example/node_modules/fuse-box-typechecker/src/printsettings.ts",
-      "c:/users/developer/documents/xx/react-example/node_modules/fuse-box-typechecker/src/index.ts",
       "c:/users/developer/documents/xx/react-example/node_modules/fuse-box-typechecker/src/test.ts",
       "c:/users/developer/documents/xx/react-example/node_modules/fuse-box-typechecker/node_modules/@types/node/globals.d.ts",
       "c:/users/developer/documents/xx/react-example/node_modules/fuse-box-typechecker/node_modules/@types/node/assert.d.ts",
@@ -1503,7 +1502,8 @@
       "c:/users/developer/documents/xx/react-example/node_modules/fuse-box-typechecker/src/watchsrc.ts",
       "c:/users/developer/documents/xx/react-example/node_modules/fuse-box-typechecker/src/worker.ts",
       "c:/users/developer/documents/xx/react-example/node_modules/@types/minimatch/index.d.ts",
-      "c:/users/developer/documents/xx/react-example/node_modules/@types/glob/index.d.ts"
+      "c:/users/developer/documents/xx/react-example/node_modules/@types/glob/index.d.ts",
+      "c:/users/developer/documents/xx/react-example/node_modules/fuse-box-typechecker/src/index.ts"
     ]
   },
   "version": "3.5.3"

@@ -25,9 +25,11 @@ var TypeHelperClass = (function () {
             this.options.tsConfigJsonContent = require(tsconf);
         }
         else {
-            this.options.tsConfigJsonContent = {
-                compilerOptions: {}
-            };
+            if (!this.options.tsConfigJsonContent) {
+                this.options.tsConfigJsonContent = {
+                    compilerOptions: {}
+                };
+            }
         }
         if (options.tsConfigOverride) {
             var oldConfig = this.options.tsConfigJsonContent;
@@ -131,6 +133,10 @@ function pluginTypeChecker(opts) {
             }
             else {
                 opts = { isPlugin: true };
+            }
+            if (!opts.tsConfig && !opts.tsConfigJsonContent) {
+                opts.tsConfigJsonContent = props.ctx.tsConfig;
+                console.log(JSON.stringify(opts.tsConfigJsonContent));
             }
             printResult_1.print(chalk_1.default.white(" Typechecker (" + (opts.name ? opts.name : 'no-name') + "): Starting thread " + interfaces_1.END_LINE));
             ctx.typeChecker = exports.TypeChecker(opts);
