@@ -17,7 +17,7 @@ This have been tested with
 
 ## How to load and configure
 ```js
-// get typechecker
+// get typechecker, se under options for more info
 const checker = require('fuse-box-typechecker').TypeChecker({
     tsConfig: './tsconfig.json',
     basePath: './',
@@ -33,11 +33,11 @@ checker.inspectAndPrint();
 typechecker.worker_watch('./src');
 
 
-// see public function for more ways to use it
+// see public functions for more ways to use it
 
 ```
 
-### public function
+### public functions
 
 ```ts
 printSettings(): void;
@@ -54,7 +54,7 @@ worker_inspectAndPrint(): void;
 ```
 
 
-### Interface
+### Options
 
 ```typescript
 
@@ -63,8 +63,7 @@ worker_inspectAndPrint(): void;
 interface ITypeCheckerOptionsInterface {
     //config file (compared to basepath './tsconfig.json')
     tsConfig: string; 
-    
-    
+
     
     // override tsconfig settings, does not override entire compilerOptions object, only parts you set
     tsConfigOverride: Object 
@@ -83,7 +82,6 @@ interface ITypeCheckerOptionsInterface {
     throwOnGlobal?: boolean;
     throwOnOptions?: boolean;
        
-    
     
     // use yellow color instead of red on Options errors
     yellowOnOptions?: boolean; 
@@ -109,7 +107,7 @@ interface ITypeCheckerOptionsInterface {
     
 }
 
-
+// result from inspect code, u need this to run print
 export interface IResults {
     oldProgram: ts.EmitAndSemanticDiagnosticsBuilderProgram;
     optionsErrors: ts.Diagnostic[];
