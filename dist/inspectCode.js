@@ -5,6 +5,7 @@ var getOptionsDiagnostics_1 = require("./getOptionsDiagnostics");
 var getGlobalDiagnostics_1 = require("./getGlobalDiagnostics");
 var getSyntacticDiagnostics_1 = require("./getSyntacticDiagnostics");
 var getSemanticDiagnostics_1 = require("./getSemanticDiagnostics");
+var throwIfErrors_1 = require("./throwIfErrors");
 function inspectCode(options, oldProgram) {
     var parseConfigHost = {
         fileExists: ts.sys.fileExists,
@@ -16,7 +17,7 @@ function inspectCode(options, oldProgram) {
     var parsed = ts.parseJsonConfigFileContent(options.tsConfigJsonContent, parseConfigHost, options.basePath || '.', undefined);
     var host = ts.createIncrementalCompilerHost(parsed.options);
     var program = ts.createEmitAndSemanticDiagnosticsBuilderProgram(parsed.fileNames, parsed.options, host, oldProgram, undefined, parsed.projectReferences);
-    return {
+    var results = {
         oldProgram: program,
         optionsErrors: getOptionsDiagnostics_1.getOptionsDiagnostics(options, program),
         globalErrors: getGlobalDiagnostics_1.getGlobalDiagnostics(options, program),
@@ -24,6 +25,8 @@ function inspectCode(options, oldProgram) {
         semanticErrors: getSemanticDiagnostics_1.getSemanticDiagnostics(options, program),
         elapsedInspectionTime: new Date().getTime() - inspectionTimeStart
     };
+    throwIfErrors_1.throwIfError(options, results);
+    return results;
 }
 exports.inspectCode = inspectCode;
 //# sourceMappingURL=inspectCode.js.map

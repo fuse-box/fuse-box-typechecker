@@ -3,14 +3,16 @@ export interface ITypeCheckerOptions {
     basePath: string;
     tsConfig: string;
     tsConfigOverride?: Object;
+    throwOnSyntactic?: boolean;
+    throwOnSemantic?: boolean;
+    throwOnGlobal?: boolean;
+    throwOnOptions?: boolean;
     yellowOnOptions?: boolean;
     yellowOnGlobal?: boolean;
     yellowOnSemantic?: boolean;
     yellowOnSyntactic?: boolean;
     name?: string;
     shortenFilenames?: boolean;
-    emit?: boolean;
-    clearOnEmit?: boolean;
     skipTsErrors?: SkipError;
     tsConfigJsonContent: any;
 }
