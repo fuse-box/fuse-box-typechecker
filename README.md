@@ -40,10 +40,29 @@ checker.inspectAndPrint();
 
 ```
 
+### public function
+
+```ts
+printSettings(): void;
+inspectAndPrint(): number;
+inspectOnly(oldProgram: ts.EmitAndSemanticDiagnosticsBuilderProgram): IResults;
+printOnly(errors: IResults): number;
+worker_watch(pathToWatch: string): void;
+worker_kill(): void;
+worker_inspect(): void;
+worker_PrintSettings(): void;
+worker_print(): void;
+worker_inspectAndPrint(): void;
+
+```
+
 
 ### Interface
 
 ```typescript
+
+
+// options
 interface ITypeCheckerOptionsInterface {
     //config file (compared to basepath './tsconfig.json')
     tsConfig: string; 
@@ -101,3 +120,15 @@ interface ITypeCheckerOptionsInterface {
 
     
 }
+
+
+export interface IResults {
+    oldProgram: ts.EmitAndSemanticDiagnosticsBuilderProgram;
+    lintFileResult: TSLintTypes.LintResult[];
+    optionsErrors: ts.Diagnostic[];
+    globalErrors: ts.Diagnostic[];
+    syntacticErrors: ts.Diagnostic[];
+    semanticErrors: ts.Diagnostic[];
+    elapsedInspectionTime: number;
+}
+```
