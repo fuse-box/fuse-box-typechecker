@@ -30,11 +30,6 @@ export interface ITypeCheckerOptions {
     // use shortened filenames in order to make output less cluttered
     shortenFilenames?: boolean;
 
-    // emit files according to tsconfig file
-    emit?: boolean;
-
-    // output folder on emit
-    clearOnEmit?: boolean;
 
     // skip ts errors
     skipTsErrors?: SkipError;

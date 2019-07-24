@@ -1,7 +1,6 @@
 const checker = require('./dist/index.js').TypeChecker({
     tsConfig: './tsconfig.json',
     basePath: './',
-    tsLint: './tslint.json',
     name: 'checkerSync'
 });
 

@@ -1,7 +1,7 @@
 ### NB! This is readme for 3.0.0 - vNext version
 See [here for v2 docs](https://github.com/fuse-box/fuse-box-typechecker/tree/dee2380a88b66704299b1c2e3345d935ca21f651)
 
-# fuse-box-typechecker
+# fuse-box-typechecker 3.0.0-vNext
 Simple helper to do typechecking
 You need to install typescript to use this
 
@@ -12,14 +12,6 @@ You need to install typescript to use this
 ## Note
 This have been tested with
  * "typescript": "^3.5.3"
-
-You do not need fusebox, can be used with any project
-
-
-(todo: update image, V3 will not be doing linting since TSTSLint will be deprecated some time in 2019.)
-### Output sample (image)
-![Output sample](https://github.com/fuse-box/fuse-box-typechecker/raw/master/image/sampleNew2.png "Output sample")
-
 
 ---
 
@@ -108,10 +100,6 @@ interface ITypeCheckerOptionsInterface {
     
     // skip ts errors
     skipTsErrors?: number[];
-    
-    
-
-
     
 }
 
