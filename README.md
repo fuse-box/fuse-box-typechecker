@@ -5,7 +5,7 @@ See [here for v2 docs](https://github.com/fuse-box/fuse-box-typechecker/tree/dee
 Simple helper to do typechecking
 You need to install newest typescript to use this.
 
-```npm install fuse-box-typechecker```
+```npm install fuse-box-typechecker@3.0.0-next.5```
 
 
 ---
