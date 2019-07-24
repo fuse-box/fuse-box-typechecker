@@ -76,6 +76,12 @@ interface ITypeCheckerOptionsInterface {
     
     // name, will be displayed when it runs, useful when you have more then 1 checker
     name?: string; 
+
+    // throw options
+    throwOnSyntactic?: boolean;
+    throwOnSemantic?: boolean;
+    throwOnGlobal?: boolean;
+    throwOnOptions?: boolean;
        
     
     

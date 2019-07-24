@@ -12,12 +12,11 @@ export interface ITypeCheckerOptions {
     // path to tsconfig file (from basepath)
     tsConfigOverride?: Object;
 
-    // throw options
- /*    throwOnSyntactic?: boolean;
+    throwOnSyntactic?: boolean;
     throwOnSemantic?: boolean;
     throwOnGlobal?: boolean;
     throwOnOptions?: boolean;
- */
+
     // color options
     yellowOnOptions?: boolean;
     yellowOnGlobal?: boolean;

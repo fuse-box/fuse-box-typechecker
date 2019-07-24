@@ -4,6 +4,7 @@ import { getOptionsDiagnostics } from './getOptionsDiagnostics';
 import { getGlobalDiagnostics } from './getGlobalDiagnostics';
 import { getSyntacticDiagnostics } from './getSyntacticDiagnostics';
 import { getSemanticDiagnostics } from './getSemanticDiagnostics';
+import { throwIfError } from './throwIfErrors';
 
 
 export function inspectCode(
@@ -37,7 +38,7 @@ export function inspectCode(
         parsed.projectReferences
     );
 
-    return {
+    const results = {
         oldProgram: program,
         optionsErrors: getOptionsDiagnostics(options, program),
         globalErrors: getGlobalDiagnostics(options, program),
@@ -45,4 +46,8 @@ export function inspectCode(
         semanticErrors: getSemanticDiagnostics(options, program),
         elapsedInspectionTime: new Date().getTime() - inspectionTimeStart
     };
+
+    throwIfError(options, results);
+
+    return results;
 }
