@@ -18,3 +18,4 @@ export declare class TypeHelperClass {
     private startWorker;
 }
 export declare const TypeChecker: (options: ITypeCheckerOptions) => TypeHelperClass;
+export declare function pluginTypeChecker(opts: any): (ctx: any) => void;

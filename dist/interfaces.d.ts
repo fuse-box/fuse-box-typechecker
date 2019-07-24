@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 export interface ITypeCheckerOptions {
-    basePath: string;
-    tsConfig: string;
+    basePath?: string;
+    tsConfig?: string;
     tsConfigOverride?: Object;
     throwOnSyntactic?: boolean;
     throwOnSemantic?: boolean;
@@ -14,7 +14,11 @@ export interface ITypeCheckerOptions {
     name?: string;
     shortenFilenames?: boolean;
     skipTsErrors?: SkipError;
+    printFirstRun: boolean;
+    print_summary?: boolean;
+    print_runtime?: boolean;
     tsConfigJsonContent: any;
+    isPlugin: boolean;
 }
 export declare type TotalErrorsFound = number;
 export declare type SkipError = number[];

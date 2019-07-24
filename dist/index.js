@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var child = require("child_process");
+var chalk_1 = require("chalk");
 var path = require("path");
 var interfaces_1 = require("./interfaces");
 require("./register.json5");
@@ -11,11 +12,14 @@ var printSettings_1 = require("./printSettings");
 var TypeHelperClass = (function () {
     function TypeHelperClass(options) {
         this.options = options;
+        if (!this.options) {
+            this.options = {};
+        }
         this.options.basePath = options.basePath
             ? path.resolve(process.cwd(), options.basePath)
             : process.cwd();
         this.options.name = this.options.name ? this.options.name : '';
-        this.options.shortenFilenames = !!this.options.shortenFilenames;
+        this.options.shortenFilenames = this.options.shortenFilenames === false ? false : true;
         if (options.tsConfig) {
             var tsconf = getPath_1.getPath(options.tsConfig, options);
             this.options.tsConfigJsonContent = require(tsconf);
@@ -119,4 +123,29 @@ exports.TypeHelperClass = TypeHelperClass;
 exports.TypeChecker = function (options) {
     return new TypeHelperClass(options);
 };
+function pluginTypeChecker(opts) {
+    return function (ctx) {
+        ctx.ict.on('complete', function (props) {
+            if (opts) {
+                opts.isPlugin = true;
+            }
+            else {
+                opts = { isPlugin: true };
+            }
+            printResult_1.print(chalk_1.default.white(" Typechecker (" + (opts.name ? opts.name : 'no-name') + "): Starting thread " + interfaces_1.END_LINE));
+            ctx.typeChecker = exports.TypeChecker(opts);
+            if (opts.printFirstRun) {
+                ctx.typeChecker.worker_PrintSettings();
+            }
+            ctx.typeChecker.worker_inspect();
+            return props;
+        });
+        ctx.ict.on('rebundle_complete', function (props) {
+            printResult_1.print(chalk_1.default.white(" Typechecker (" + (opts.name ? opts.name : 'no-name') + "): Calling thread for new report...please wait " + interfaces_1.END_LINE));
+            ctx.typeChecker.worker_inspectAndPrint();
+            return props;
+        });
+    };
+}
+exports.pluginTypeChecker = pluginTypeChecker;
 //# sourceMappingURL=index.js.map
