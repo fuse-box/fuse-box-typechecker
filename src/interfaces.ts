@@ -4,10 +4,10 @@ import * as ts from 'typescript';
 
 export interface ITypeCheckerOptions {
     // base path
-    basePath: string;
+    basePath?: string;
 
     // path to tsconfig file (from basepath)
-    tsConfig: string;
+    tsConfig?: string;
 
     // path to tsconfig file (from basepath)
     tsConfigOverride?: Object;
@@ -27,14 +27,26 @@ export interface ITypeCheckerOptions {
     name?: string;
 
     // use shortened filenames in order to make output less cluttered
-    shortenFilenames?: boolean;
+    shortenFilenames?: boolean; // default true
 
 
     // skip ts errors
     skipTsErrors?: SkipError;
 
+
+    // plugin options
+    printFirstRun: boolean // default true when used as plugin
+
+
+    // print settings
+    print_summary?: boolean; //default false
+    print_runtime?: boolean //default false
+
+
     // internals
     tsConfigJsonContent: any;
+    isPlugin: boolean;
+    
 }
 
 

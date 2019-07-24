@@ -11,6 +11,25 @@ You need to install newest typescript to use this.
 ---
 
 ## How to load and configure
+
+#### As plugin for fusebox v4
+```js
+import {pluginTypeChecker} from 'fuse-box-typechecker';
+
+
+//under plugins
+    plugins:[pluginTypeChecker({
+        tsConfig: './src/tsconfig', // optional, uses default if missing
+        name: 'Superman' // optional, uses "no-name" if missing
+    })]
+
+```
+### Output sample plugin
+![Output sample](https://github.com/fuse-box/fuse-box-typechecker/raw/master/image/sampleNew4.png "Output sample")
+
+#### As Standalone
+
+
 ```js
 // get typechecker, se under options for more info
 const typeChecker = require('fuse-box-typechecker').TypeChecker({
@@ -33,6 +52,11 @@ typeChecker.worker_watch('./src');
 ---
 
 ```
+
+### Output sample standalone
+![Output sample](https://github.com/fuse-box/fuse-box-typechecker/raw/master/image/sampleNew3.png "Output sample")
+
+---
 
 #### Public functions
 
@@ -101,6 +125,10 @@ interface ITypeCheckerOptionsInterface {
     
     // skip ts errors
     skipTsErrors?: number[];
+
+    // print settings
+    print_summary?: boolean; //default false
+    print_runtime?: boolean //default false
     
 }
 

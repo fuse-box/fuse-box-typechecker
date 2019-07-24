@@ -15,17 +15,7 @@ export function print(text: string) {
     ts.sys.write(text);
 }
 
-
 export function printResult(options: ITypeCheckerOptions, errors: IResults): TotalErrorsFound {
-    // print header
-    print(
-        chalk.bgWhite(chalk.black(`${END_LINE}Typechecker plugin: ${options.name}.${END_LINE}`)) +
-            chalk.white(``)
-    );
-
-    // print time
-    print(chalk.grey(`Time:${new Date().toString()} ${END_LINE}`));
-
     // get the lint errors messages
     const tsErrorMessages: TypeCheckError[] = processTsDiagnostics(options, errors);
 
@@ -39,22 +29,23 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
     });
 
     let allErrors = Object.entries(groupedErrors).map(([fileName, errors]) => {
-        const short = options.shortenFilenames;
+        const short = options.shortenFilenames !== false ? true : false;
         const fullFileName = path.resolve(fileName);
-        const shortFileName = fullFileName.split(options.basePath).join('.');
+        const shortFileName = fullFileName.split(options.basePath as string).join('.');
         return (
-            chalk.white(`└── ${shortFileName}`) +
+            chalk.grey(` └──`) +
+            chalk.blueBright(`${shortFileName}`) +
             END_LINE +
             errors
                 .map((err: TypeCheckError) => {
-                    let text = chalk.red('   |');
+                    let text = chalk.red('    |');
 
                     text += chalk[err.color](
                         ` ${short ? shortFileName : fullFileName} (${err.line},${err.char}) `
                     );
-                    text += chalk.white(`(${(<ITSError>err).category}`);
-                    text += chalk.white(`${(<ITSError>err).code})`);
-                    text += ' ' + (<ITSError>err).message;
+                    text += chalk.grey(`(${(<ITSError>err).category}`);
+                    text += chalk.grey(`${(<ITSError>err).code})`);
+                    text += ' ' + chalk.grey((<ITSError>err).message);
 
                     return text;
                 })
@@ -62,13 +53,16 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
         );
     });
 
+    const name = options.name;
     // print if any
     if (allErrors.length > 0) {
         // insert header
         allErrors.unshift(
-            chalk.underline(`${END_LINE}File errors`) + chalk.white(':') // fix windows
+            chalk.white(` Typechecker (${name ? name: 'no-name' }):` + chalk.white('')) // fix windows
         );
         print(allErrors.join(END_LINE));
+    } else {
+        print(chalk.white(` Typechecker ${name ? name: 'no-name'}: No Errors found` + chalk.white(''))); // fix windows
     }
 
     // print option errors
@@ -80,14 +74,15 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
             if (typeof messageText === 'object' && messageText !== null) {
                 messageText = JSON.stringify(messageText);
             }
-            text = chalk[options.yellowOnOptions ? 'yellow' : 'red'](`└── tsConfig: `);
-            text += chalk.white(`(${(<any>err).category}:`);
-            text += chalk.white(`${(<any>err).code})`);
-            text += chalk.white(` ${messageText}`);
+            text = chalk[options.yellowOnOptions ? 'yellow' : 'red'](` └── tsConfig: `);
+            text += chalk.grey(`(${(<any>err).category}:`);
+            text += chalk.grey(`${(<any>err).code})`);
+            text += chalk.grey(` ${messageText}`);
             return text;
         });
         print(optionErrorsText.join(END_LINE));
     }
+    print(END_LINE);
 
     // print global errors
     // todo: this needs testing, how do I create a global error??
@@ -111,7 +106,6 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
         } */
 
     // time for summary >>>>>
-
     // get errors totals
     let optionsErrors = errors.optionsErrors.length;
     let globalErrors = errors.globalErrors.length;
@@ -120,42 +114,45 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
     let totalsErrors = optionsErrors + globalErrors + syntacticErrors + semanticErrors;
 
     // if errors, show user
-    if (totalsErrors) {
-        // write header
-        print(
-            chalk.underline(`${END_LINE}${END_LINE}Errors`) +
-                chalk.white(`:${totalsErrors}${END_LINE}`)
-        );
+    if (options.print_summary) {
+        if (totalsErrors) {
+            // write header
+            print(
+                chalk.underline(`${END_LINE}${END_LINE}Errors`) +
+                    chalk.white(`:${totalsErrors}${END_LINE}`)
+            );
 
-        print(
-            chalk[optionsErrors ? (options.yellowOnOptions ? 'yellow' : 'red') : 'white'](
-                `└── Options: ${optionsErrors}${END_LINE}`
-            )
-        );
+            print(
+                chalk[optionsErrors ? (options.yellowOnOptions ? 'yellow' : 'red') : 'white'](
+                    `└── Options: ${optionsErrors}${END_LINE}`
+                )
+            );
 
-        print(
-            chalk[globalErrors ? (options.yellowOnGlobal ? 'yellow' : 'red') : 'white'](
-                `└── Global: ${globalErrors}${END_LINE}`
-            )
-        );
+            print(
+                chalk[globalErrors ? (options.yellowOnGlobal ? 'yellow' : 'red') : 'white'](
+                    `└── Global: ${globalErrors}${END_LINE}`
+                )
+            );
 
-        print(
-            chalk[syntacticErrors ? (options.yellowOnSyntactic ? 'yellow' : 'red') : 'white'](
-                `└── Syntactic: ${syntacticErrors}${END_LINE}`
-            )
-        );
+            print(
+                chalk[syntacticErrors ? (options.yellowOnSyntactic ? 'yellow' : 'red') : 'white'](
+                    `└── Syntactic: ${syntacticErrors}${END_LINE}`
+                )
+            );
 
-        print(
-            chalk[semanticErrors ? (options.yellowOnSemantic ? 'yellow' : 'red') : 'white'](
-                `└── Semantic: ${semanticErrors}${END_LINE}`
-            )
-        );
-    } else {
-        // if there no errors, then also give some feedback about this, so they know its working
-        print(chalk.grey(`All good, no errors :-)${END_LINE}`));
+            print(
+                chalk[semanticErrors ? (options.yellowOnSemantic ? 'yellow' : 'red') : 'white'](
+                    `└── Semantic: ${semanticErrors}${END_LINE}`
+                )
+            );
+        }
     }
 
-    print(chalk.grey(`Typechecking time: ${errors.elapsedInspectionTime}ms${END_LINE}`));
+    if (options.print_runtime) {
+        print(
+            chalk.grey(`Typechecking time: ${errors.elapsedInspectionTime}ms${END_LINE}${END_LINE}`)
+        );
+    }
 
     return totalsErrors;
 }

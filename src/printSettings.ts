@@ -5,19 +5,19 @@ import { getPath } from './getPath';
 
 export function printSettings(options: ITypeCheckerOptions) {
     // configuration name
-    print(chalk.yellow(`${'\n'}Typechecker name: ${chalk.white(`${options.name}${'\n'}`)}`));
+    print(chalk.white(`${'\n'} Typechecker name: ${chalk.grey(`${options.name}${'\n'}`)}`));
 
     // base path being used
-    print(chalk.yellow(`Typechecker basepath: ${chalk.white(`${options.basePath}${'\n'}`)}`));
+    print(chalk.white(` Typechecker basepath: ${chalk.grey(`${options.basePath}${'\n'}`)}`));
 
     // get tsconfig path and options
     if (options.tsConfig) {
         let tsconf = getPath(options.tsConfig, options);
-        print(chalk.yellow(`Typechecker tsconfig: ${chalk.white(`${tsconf}${'\n'}`)}`));
+        print(chalk.white(` Typechecker tsconfig: ${chalk.grey(`${tsconf}${'\n'}`)}`));
     } else {
         print(
-            chalk.yellow(
-                `Typechecker tsconfig: ${chalk.white(`undefined, using ts defaults${'\n'}`)}`
+            chalk.white(
+                ` Typechecker tsconfig: ${chalk.grey(`undefined, using ts defaults${'\n'}`)}`
             )
         );
     }

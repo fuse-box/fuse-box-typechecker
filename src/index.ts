@@ -1,10 +1,7 @@
 import * as child from 'child_process';
+import chalk from 'chalk';
 import * as path from 'path';
-import {
-    ITypeCheckerOptions,
-    WorkerCommand,
-    IResults
-} from './interfaces';
+import { ITypeCheckerOptions, WorkerCommand, IResults, END_LINE } from './interfaces';
 
 import * as ts from 'typescript';
 import './register.json5';
@@ -12,7 +9,6 @@ import { getPath } from './getPath';
 import { inspectCode } from './inspectCode';
 import { printResult, print } from './printResult';
 import { printSettings } from './printSettings';
-
 
 export class TypeHelperClass {
     private options: ITypeCheckerOptions;
@@ -22,6 +18,10 @@ export class TypeHelperClass {
         this.options = options;
 
         // get/set base path
+        if (!this.options) {
+            (this.options as any) = {};
+        }
+
         this.options.basePath = options.basePath
             ? path.resolve(process.cwd(), options.basePath)
             : process.cwd();
@@ -30,8 +30,7 @@ export class TypeHelperClass {
         this.options.name = this.options.name ? this.options.name : '';
 
         // shorten filenames to de-clutter output?
-        this.options.shortenFilenames = !!this.options.shortenFilenames;
-
+        this.options.shortenFilenames = this.options.shortenFilenames === false ? false : true;
 
         // get tsconfig path and options
         if (options.tsConfig) {
@@ -152,3 +151,34 @@ export class TypeHelperClass {
 export const TypeChecker = (options: ITypeCheckerOptions): TypeHelperClass => {
     return new TypeHelperClass(options);
 };
+
+export function pluginTypeChecker(opts: any) {
+    return (ctx: any) => {
+        ctx.ict.on('complete', (props: any) => {
+            // initial run
+            if (opts) {
+                opts.isPlugin = true;
+            } else {
+                (<any>opts) = { isPlugin: true };
+            }
+            print(
+                chalk.white(
+                    ` Typechecker (${opts.name ? opts.name : 'no-name'}): Starting thread ${END_LINE}`
+                )
+            );
+            ctx.typeChecker = TypeChecker(opts);
+            if (opts.printFirstRun) {
+                ctx.typeChecker.worker_PrintSettings();
+            }
+            ctx.typeChecker.worker_inspect(); // do 1 check so it uses less time next time, we do not print by default
+            return props;
+        });
+        ctx.ict.on('rebundle_complete', (props: any) => {
+            print(
+                chalk.white(` Typechecker (${opts.name ? opts.name : 'no-name'}): Calling thread for new report...please wait ${END_LINE}`)
+            );
+            ctx.typeChecker.worker_inspectAndPrint();
+            return props;
+        });
+    };
+}
