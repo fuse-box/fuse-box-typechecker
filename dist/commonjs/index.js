@@ -71,7 +71,7 @@ var TypeHelperClass = (function () {
         this.startWorker();
         this.worker.send({
             quit: false,
-            type: interfaces_1.TypecheckerRunType.watch,
+            type: interfaces_1.WorkerCommand.watch,
             pathToWatch: pathToWatch,
             options: this.options
         });

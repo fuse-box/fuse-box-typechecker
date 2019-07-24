@@ -5,8 +5,10 @@ var interfaces_1 = require("./interfaces");
 var printResult_1 = require("./printResult");
 var watch = require("watch");
 var getPath_1 = require("./getPath");
+var debugPrint_1 = require("./debugPrint");
 var watchTimeout;
 function watchSrc(pathToWatch, options, callback) {
+    debugPrint_1.debugPrint('wwatchSrc' + pathToWatch);
     var basePath = getPath_1.getPath(pathToWatch, options);
     watch.createMonitor(basePath, function (monitor) {
         printResult_1.print(chalk_1.default.yellow("Typechecker watching: " + chalk_1.default.white("" + basePath + interfaces_1.END_LINE)));

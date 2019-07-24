@@ -52,7 +52,7 @@ process.on('message', function (msg) {
         case interfaces_1.WorkerCommand.watch:
             debugPrint_1.debugPrint('worker watch');
             if (msg.options) {
-                watchSrc_1.watchSrc(msg.watchSrc, msg.options, function () {
+                watchSrc_1.watchSrc(msg.pathToWatch, msg.options, function () {
                     lastResult = inspectCode_1.inspectCode(msg.options, lastResult && lastResult.oldProgram);
                     printErrorTotal = printResult_1.printResult(msg.options, lastResult);
                 });

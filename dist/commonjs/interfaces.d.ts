@@ -4,11 +4,6 @@ export interface ITypeCheckerOptions {
     basePath: string;
     tsConfig: string;
     tsConfigOverride?: Object;
-    throwOnSyntactic?: boolean;
-    throwOnSemantic?: boolean;
-    throwOnTsLint?: boolean;
-    throwOnGlobal?: boolean;
-    throwOnOptions?: boolean;
     yellowOnLint?: boolean;
     yellowOnOptions?: boolean;
     yellowOnGlobal?: boolean;
@@ -21,10 +16,6 @@ export interface ITypeCheckerOptions {
     emit?: boolean;
     clearOnEmit?: boolean;
     skipTsErrors?: SkipError;
-    debug_projectReferences?: boolean;
-    debug_parsedFileNames?: boolean;
-    debug_parsedOptions?: boolean;
-    debug_tsConfigJsonContent?: boolean;
     tsConfigJsonContent: any;
 }
 export interface ILintOptions {
@@ -45,7 +36,7 @@ export declare enum WorkerCommand {
 }
 export interface IWorkerOptions {
     options: ITypeCheckerOptions;
-    watchSrc: string;
+    pathToWatch: string;
     type: WorkerCommand;
 }
 export declare enum TypecheckerRunType {
