@@ -1,8 +1,8 @@
-import chalk from 'chalk';
+/*import chalk from 'chalk';
 import { END_LINE, ITypeCheckerOptions, IResults } from './interfaces';
 import { print } from './printResult';
 
-export function throwIfError(options: ITypeCheckerOptions, errors: IResults) {
+ export function throwIfError(options: ITypeCheckerOptions, errors: IResults) {
     switch (true) {
         // if throwError is set then callback and quit
         case options.throwOnGlobal && errors.globalErrors.length > 0:
@@ -19,4 +19,4 @@ export function throwIfError(options: ITypeCheckerOptions, errors: IResults) {
             process.exit(1);
             break;
     }
-}
+} */

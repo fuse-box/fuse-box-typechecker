@@ -4,7 +4,6 @@ import {
     ILintOptions,
     ITypeCheckerOptions,
     WorkerCommand,
-    TypecheckerRunType,
     IResults
 } from './interfaces';
 
@@ -100,7 +99,7 @@ export class TypeHelperClass {
         this.startWorker();
         this.worker.send({
             quit: false,
-            type: TypecheckerRunType.watch,
+            type: WorkerCommand.watch,
             pathToWatch: pathToWatch,
             options: this.options
         });

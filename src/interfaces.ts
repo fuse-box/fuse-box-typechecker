@@ -13,12 +13,12 @@ export interface ITypeCheckerOptions {
     tsConfigOverride?: Object;
 
     // throw options
-    throwOnSyntactic?: boolean;
+ /*    throwOnSyntactic?: boolean;
     throwOnSemantic?: boolean;
     throwOnTsLint?: boolean;
     throwOnGlobal?: boolean;
     throwOnOptions?: boolean;
-
+ */
     // color options
     yellowOnLint?: boolean;
     yellowOnOptions?: boolean;
@@ -50,10 +50,10 @@ export interface ITypeCheckerOptions {
 
     // debug helpers for when it fails
     // this will help users supply better issues
-    debug_projectReferences?: boolean;
+    /* debug_projectReferences?: boolean;
     debug_parsedFileNames?: boolean;
     debug_parsedOptions?: boolean;
-    debug_tsConfigJsonContent?: boolean;
+    debug_tsConfigJsonContent?: boolean; */
 
     // internals
     tsConfigJsonContent: any;
@@ -85,7 +85,7 @@ export enum WorkerCommand {
 
 export interface IWorkerOptions {
     options: ITypeCheckerOptions;
-    watchSrc: string;
+    pathToWatch: string;
     type: WorkerCommand;
 }
 

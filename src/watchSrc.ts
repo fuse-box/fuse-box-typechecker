@@ -1,14 +1,16 @@
 import chalk from 'chalk';
-import { END_LINE, ITypeCheckerOptions} from './interfaces';
-import {print} from './printResult';
+import { END_LINE, ITypeCheckerOptions } from './interfaces';
+import { print } from './printResult';
 import * as watch from 'watch';
 import { getPath } from './getPath';
+import { debugPrint } from './debugPrint';
 
 let watchTimeout: any;
 
-
 export function watchSrc(pathToWatch: string, options: ITypeCheckerOptions, callback: Function) {
+    debugPrint('wwatchSrc' + pathToWatch);
     let basePath = getPath(pathToWatch, options);
+
 
     watch.createMonitor(basePath, (monitor: any) => {
         // todo-> move into thread
@@ -24,7 +26,6 @@ export function watchSrc(pathToWatch: string, options: ITypeCheckerOptions, call
 
         // on changed file event
         monitor.on('changed', (f: any /*, curr: any, prev: any*/) => {
-
             // tell user about event
             print(END_LINE + chalk.yellow(`File changed: ${chalk.white(`${f}${END_LINE}`)}`));
             print(chalk.grey(`Calling typechecker${END_LINE}`));
@@ -47,6 +48,5 @@ export function watchSrc(pathToWatch: string, options: ITypeCheckerOptions, call
                 callback();
             }, 500);
         });
-
     });
 }
