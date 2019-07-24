@@ -27,16 +27,23 @@ You do not need fusebox, can be used with any project
 ## How to load and configure
 ```js
 // get typechecker
-const checker = require('./dist/commonjs/index.js').TypeChecker({
+const checker = require('fuse-box-typechecker').TypeChecker({
     tsConfig: './tsconfig.json',
     basePath: './',
     tsLint: './tslint.json',
     name: 'checkerSync'
 });
+
+
+// to run it right away
 checker.printSettings();
 checker.inspectAndPrint();
 
-// opional just run watch
+// or just run watch, it will now run in own tread and wait for changes
+typechecker.worker_watch('./src');
+
+
+// see public function for more ways to use it
 
 ```
 
