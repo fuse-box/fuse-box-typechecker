@@ -19,7 +19,7 @@ import {pluginTypeChecker} from 'fuse-box-typechecker';
 
 //under plugins
     plugins:[pluginTypeChecker({
-        tsConfig: './src/tsconfig', // optional, uses default if missing
+        tsConfig: './src/tsconfig', // optional, uses fusebox tsconfig if else
         name: 'Superman' // optional, uses "no-name" if missing
     })]
 

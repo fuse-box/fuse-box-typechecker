@@ -38,9 +38,11 @@ export class TypeHelperClass {
             this.options.tsConfigJsonContent = require(tsconf);
         } else {
             // no settings, using default
-            this.options.tsConfigJsonContent = {
-                compilerOptions: {}
-            };
+            if (!this.options.tsConfigJsonContent) {
+                this.options.tsConfigJsonContent = {
+                    compilerOptions: {}
+                };
+            }
         }
 
         if (options.tsConfigOverride) {
@@ -152,7 +154,7 @@ export const TypeChecker = (options: ITypeCheckerOptions): TypeHelperClass => {
     return new TypeHelperClass(options);
 };
 
-export function pluginTypeChecker(opts: any) {
+export function pluginTypeChecker(opts?: any) {
     return (ctx: any) => {
         ctx.ict.on('complete', (props: any) => {
             // initial run
@@ -161,9 +163,15 @@ export function pluginTypeChecker(opts: any) {
             } else {
                 (<any>opts) = { isPlugin: true };
             }
+            if (!opts.tsConfig && !opts.tsConfigJsonContent) {
+                opts.tsConfigJsonContent = props.ctx.tsConfig;
+                console.log(JSON.stringify(opts.tsConfigJsonContent));
+            }
             print(
                 chalk.white(
-                    ` Typechecker (${opts.name ? opts.name : 'no-name'}): Starting thread ${END_LINE}`
+                    ` Typechecker (${
+                        opts.name ? opts.name : 'no-name'
+                    }): Starting thread ${END_LINE}`
                 )
             );
             ctx.typeChecker = TypeChecker(opts);
@@ -175,7 +183,11 @@ export function pluginTypeChecker(opts: any) {
         });
         ctx.ict.on('rebundle_complete', (props: any) => {
             print(
-                chalk.white(` Typechecker (${opts.name ? opts.name : 'no-name'}): Calling thread for new report...please wait ${END_LINE}`)
+                chalk.white(
+                    ` Typechecker (${
+                        opts.name ? opts.name : 'no-name'
+                    }): Calling thread for new report...please wait ${END_LINE}`
+                )
             );
             ctx.typeChecker.worker_inspectAndPrint();
             return props;
