@@ -22,9 +22,4 @@ export function printSettings(options: ITypeCheckerOptions) {
         );
     }
 
-    // get tslint path and options
-    if (options.tsLint) {
-        let tsLint = getPath(options.tsLint, options);
-        print(chalk.yellow(`Typechecker tsLint: ${chalk.white(`${tsLint}${'\n'}`)}`));
-    }
 }
