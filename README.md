@@ -1,24 +1,19 @@
-### NB! This is readme for 3.0.0 - vNext version
+##### NB! This is readme for 3.0.0 - vNext version
 See [here for v2 docs](https://github.com/fuse-box/fuse-box-typechecker/tree/dee2380a88b66704299b1c2e3345d935ca21f651)
 
 # fuse-box-typechecker 3.0.0-vNext
 Simple helper to do typechecking
-You need to install typescript to use this
+You need to install newest typescript to use this.
 
-### How to install
 ```npm install fuse-box-typechecker```
 
-
-## Note
-This have been tested with
- * "typescript": "^3.5.3"
 
 ---
 
 ## How to load and configure
 ```js
 // get typechecker, se under options for more info
-const checker = require('fuse-box-typechecker').TypeChecker({
+const typeChecker = require('fuse-box-typechecker').TypeChecker({
     tsConfig: './tsconfig.json',
     basePath: './',
     name: 'checkerSync'
@@ -26,18 +21,20 @@ const checker = require('fuse-box-typechecker').TypeChecker({
 
 
 // to run it right away
-checker.printSettings();
-checker.inspectAndPrint();
+typeChecker.printSettings();
+typeChecker.inspectAndPrint();
 
 // or just run watch, it will now run in own tread and wait for changes
-typechecker.worker_watch('./src');
+typeChecker.worker_watch('./src');
 
 
 // see public functions for more ways to use it
 
+---
+
 ```
 
-### public functions
+#### Public functions
 
 ```ts
 printSettings(): void;
@@ -54,7 +51,7 @@ worker_inspectAndPrint(): void;
 ```
 
 
-### Options
+#### Options/interface info
 
 ```typescript
 
