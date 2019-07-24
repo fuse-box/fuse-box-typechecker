@@ -13,10 +13,6 @@ function printSettings(options) {
     else {
         printResult_1.print(chalk_1.default.yellow("Typechecker tsconfig: " + chalk_1.default.white("undefined, using ts defaults" + '\n')));
     }
-    if (options.tsLint) {
-        var tsLint = getPath_1.getPath(options.tsLint, options);
-        printResult_1.print(chalk_1.default.yellow("Typechecker tsLint: " + chalk_1.default.white("" + tsLint + '\n')));
-    }
 }
 exports.printSettings = printSettings;
 //# sourceMappingURL=printSettings.js.map

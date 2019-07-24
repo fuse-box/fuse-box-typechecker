@@ -16,14 +16,6 @@ var TypeHelperClass = (function () {
             : process.cwd();
         this.options.name = this.options.name ? this.options.name : '';
         this.options.shortenFilenames = !!this.options.shortenFilenames;
-        var lintOp = this.options.lintoptions;
-        this.options.lintoptions = lintOp ? lintOp : {};
-        this.options.lintoptions = {
-            fix: this.options.lintoptions.fix || false,
-            formatter: 'json',
-            formattersDirectory: this.options.lintoptions.formattersDirectory || null,
-            rulesDirectory: this.options.lintoptions.rulesDirectory || null
-        };
         if (options.tsConfig) {
             var tsconf = getPath_1.getPath(options.tsConfig, options);
             this.options.tsConfigJsonContent = require(tsconf);

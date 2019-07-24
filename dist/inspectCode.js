@@ -5,7 +5,6 @@ var getOptionsDiagnostics_1 = require("./getOptionsDiagnostics");
 var getGlobalDiagnostics_1 = require("./getGlobalDiagnostics");
 var getSyntacticDiagnostics_1 = require("./getSyntacticDiagnostics");
 var getSemanticDiagnostics_1 = require("./getSemanticDiagnostics");
-var geTsLintDiagnostics_1 = require("./geTsLintDiagnostics");
 function inspectCode(options, oldProgram) {
     var parseConfigHost = {
         fileExists: ts.sys.fileExists,
@@ -19,7 +18,6 @@ function inspectCode(options, oldProgram) {
     var program = ts.createEmitAndSemanticDiagnosticsBuilderProgram(parsed.fileNames, parsed.options, host, oldProgram, undefined, parsed.projectReferences);
     return {
         oldProgram: program,
-        lintFileResult: geTsLintDiagnostics_1.getTsLintDiagnostics(options, program),
         optionsErrors: getOptionsDiagnostics_1.getOptionsDiagnostics(options, program),
         globalErrors: getGlobalDiagnostics_1.getGlobalDiagnostics(options, program),
         syntacticErrors: getSyntacticDiagnostics_1.getSyntacticDiagnostics(options, program),
