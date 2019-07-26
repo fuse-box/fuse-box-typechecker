@@ -165,7 +165,9 @@ export function pluginTypeChecker(opts?: any) {
             }
             if (!opts.tsConfig && !opts.tsConfigJsonContent) {
                 opts.tsConfigJsonContent = props.ctx.tsConfig;
-                console.log(JSON.stringify(opts.tsConfigJsonContent));
+                if(opts.tsConfigJsonContent){
+                    console.log(JSON.stringify(opts.tsConfigJsonContent));
+                }
             }
             print(
                 chalk.white(
