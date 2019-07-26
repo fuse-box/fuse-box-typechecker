@@ -173,14 +173,14 @@ export function pluginTypeChecker(opts?: any) {
                 chalk.white(
                     ` Typechecker (${
                         opts.name ? opts.name : 'no-name'
-                    }): Starting thread ${END_LINE}`
+                    }): Starting thread. Will print status soon, please wait ${END_LINE}`
                 )
             );
             ctx.typeChecker = TypeChecker(opts);
             if (opts.printFirstRun) {
                 ctx.typeChecker.worker_PrintSettings();
             }
-            ctx.typeChecker.worker_inspect(); // do 1 check so it uses less time next time, we do not print by default
+            ctx.typeChecker.worker_inspectAndPrint(); // do 1 check so it uses less time next time, we do not print by default
             return props;
         });
         ctx.ict.on('rebundle_complete', (props: any) => {
@@ -188,7 +188,7 @@ export function pluginTypeChecker(opts?: any) {
                 chalk.white(
                     ` Typechecker (${
                         opts.name ? opts.name : 'no-name'
-                    }): Calling thread for new report...please wait ${END_LINE}`
+                    }): Calling thread for new report, please wait ${END_LINE}`
                 )
             );
             ctx.typeChecker.worker_inspectAndPrint();

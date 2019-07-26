@@ -140,16 +140,16 @@ function pluginTypeChecker(opts) {
                     console.log(JSON.stringify(opts.tsConfigJsonContent));
                 }
             }
-            printResult_1.print(chalk_1.default.white(" Typechecker (" + (opts.name ? opts.name : 'no-name') + "): Starting thread " + interfaces_1.END_LINE));
+            printResult_1.print(chalk_1.default.white(" Typechecker (" + (opts.name ? opts.name : 'no-name') + "): Starting thread. Will print status soon, please wait " + interfaces_1.END_LINE));
             ctx.typeChecker = exports.TypeChecker(opts);
             if (opts.printFirstRun) {
                 ctx.typeChecker.worker_PrintSettings();
             }
-            ctx.typeChecker.worker_inspect();
+            ctx.typeChecker.worker_inspectAndPrint();
             return props;
         });
         ctx.ict.on('rebundle_complete', function (props) {
-            printResult_1.print(chalk_1.default.white(" Typechecker (" + (opts.name ? opts.name : 'no-name') + "): Calling thread for new report...please wait " + interfaces_1.END_LINE));
+            printResult_1.print(chalk_1.default.white(" Typechecker (" + (opts.name ? opts.name : 'no-name') + "): Calling thread for new report, please wait " + interfaces_1.END_LINE));
             ctx.typeChecker.worker_inspectAndPrint();
             return props;
         });
