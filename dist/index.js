@@ -135,8 +135,8 @@ function pluginTypeChecker(opts) {
                 opts = { isPlugin: true };
             }
             if (!opts.tsConfig && !opts.tsConfigJsonContent) {
-                opts.tsConfigJsonContent = props.ctx.tsConfig;
-                if (opts.tsConfigJsonContent) {
+                opts.tsConfigJsonContent = props.ctx.tsConfig && { compilerOptions: props.ctx.tsConfig.jsonCompilerOptions };
+                if (opts.tsConfigJsonContentPrint) {
                     console.log(JSON.stringify(opts.tsConfigJsonContent));
                 }
             }
