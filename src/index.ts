@@ -22,6 +22,7 @@ export class TypeHelperClass {
             (this.options as any) = {};
         }
 
+        this.options.basePathSetup = options.basePath; // save original path
         this.options.basePath = options.basePath
             ? path.resolve(process.cwd(), options.basePath)
             : process.cwd();
@@ -169,18 +170,32 @@ export function pluginTypeChecker(opts?: any) {
                     console.log(JSON.stringify(opts.tsConfigJsonContent));
                 }
             }
-            print(
-                chalk.white(
-                    ` Typechecker (${
-                        opts.name ? opts.name : 'no-name'
-                    }): Starting thread. Will print status soon, please wait ${END_LINE}`
-                )
-            );
+            
             ctx.typeChecker = TypeChecker(opts);
-            if (opts.printFirstRun) {
-                ctx.typeChecker.worker_PrintSettings();
+            if (ctx.config.env.NODE_ENV === "production") {
+                print(
+                    chalk.white(
+                        ` Typechecker (${
+                            opts.name ? opts.name : 'no-name'
+                        }): inspecting code, please wait ${END_LINE}`
+                    )
+                );
+                ctx.typeChecker.inspectAndPrint()
+                
+            } else {
+                // only print text if not production run
+                print(
+                    chalk.white(
+                        ` Typechecker (${
+                            opts.name ? opts.name : 'no-name'
+                        }): Starting thread. Will print status soon, please wait ${END_LINE}`
+                    )
+                );
+                if (opts.printFirstRun) {
+                    ctx.typeChecker.worker_PrintSettings();
+                }
+                ctx.typeChecker.worker_inspectAndPrint(); // do 1 check so it uses less time next time, we do not print by default
             }
-            ctx.typeChecker.worker_inspectAndPrint(); // do 1 check so it uses less time next time, we do not print by default
             return props;
         });
         ctx.ict.on('rebundle_complete', (props: any) => {

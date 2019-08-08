@@ -31,7 +31,14 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
     let allErrors = Object.entries(groupedErrors).map(([fileName, errors]) => {
         const short = options.shortenFilenames !== false ? true : false;
         const fullFileName = path.resolve(fileName);
-        const shortFileName = fullFileName.split(options.basePath as string).join('.');
+        let shortFileName = fullFileName.split(options.basePath as string).join('.');
+
+        // if somepne passes in basepath we need to use that in print
+        if(options.basePathSetup){
+            shortFileName = path.join(options.basePathSetup, shortFileName);
+        }
+
+
         return (
             chalk.grey(` └──`) +
             chalk.blueBright(`${shortFileName}`) +

@@ -46,6 +46,7 @@ export interface ITypeCheckerOptions {
     // internals
     tsConfigJsonContent: any;
     isPlugin: boolean;
+    basePathSetup?: string;
     
 }
 
