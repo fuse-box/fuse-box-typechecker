@@ -15,6 +15,7 @@ var TypeHelperClass = (function () {
         if (!this.options) {
             this.options = {};
         }
+        this.options.basePathSetup = options.basePath;
         this.options.basePath = options.basePath
             ? path.resolve(process.cwd(), options.basePath)
             : process.cwd();
@@ -140,12 +141,18 @@ function pluginTypeChecker(opts) {
                     console.log(JSON.stringify(opts.tsConfigJsonContent));
                 }
             }
-            printResult_1.print(chalk_1.default.white(" Typechecker (" + (opts.name ? opts.name : 'no-name') + "): Starting thread. Will print status soon, please wait " + interfaces_1.END_LINE));
             ctx.typeChecker = exports.TypeChecker(opts);
-            if (opts.printFirstRun) {
-                ctx.typeChecker.worker_PrintSettings();
+            if (ctx.config.env.NODE_ENV === "production") {
+                printResult_1.print(chalk_1.default.white(" Typechecker (" + (opts.name ? opts.name : 'no-name') + "): inspecting code, please wait " + interfaces_1.END_LINE));
+                ctx.typeChecker.inspectAndPrint();
             }
-            ctx.typeChecker.worker_inspectAndPrint();
+            else {
+                printResult_1.print(chalk_1.default.white(" Typechecker (" + (opts.name ? opts.name : 'no-name') + "): Starting thread. Will print status soon, please wait " + interfaces_1.END_LINE));
+                if (opts.printFirstRun) {
+                    ctx.typeChecker.worker_PrintSettings();
+                }
+                ctx.typeChecker.worker_inspectAndPrint();
+            }
             return props;
         });
         ctx.ict.on('rebundle_complete', function (props) {
