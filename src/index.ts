@@ -24,8 +24,8 @@ export class TypeHelperClass {
 
         this.options.basePathSetup = options.basePath; // save original path
         this.options.basePath = options.basePath
-            ? path.resolve(process.cwd(), options.basePath)
-            : process.cwd();
+            ? path.resolve(options.homeDir || process.cwd(), options.basePath)
+            : options.homeDir|| process.cwd();
 
         // get name
         this.options.name = this.options.name ? this.options.name : '';
@@ -161,6 +161,7 @@ export function pluginTypeChecker(opts?: any) {
             // initial run
             if (opts) {
                 opts.isPlugin = true;
+                opts.homeDir = props.ctx.config.homeDir;
             } else {
                 (<any>opts) = { isPlugin: true };
             }
