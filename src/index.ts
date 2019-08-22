@@ -24,8 +24,8 @@ export class TypeHelperClass {
 
         this.options.basePathSetup = options.basePath; // save original path
         this.options.basePath = options.basePath
-            ? path.resolve(options.homeDir || process.cwd(), options.basePath)
-            : options.homeDir|| process.cwd();
+            ? path.resolve(process.cwd(), options.basePath)
+            : process.cwd();
 
         // get name
         this.options.name = this.options.name ? this.options.name : '';
@@ -166,14 +166,16 @@ export function pluginTypeChecker(opts?: any) {
                 (<any>opts) = { isPlugin: true };
             }
             if (!opts.tsConfig && !opts.tsConfigJsonContent) {
-                opts.tsConfigJsonContent = props.ctx.tsConfig && {compilerOptions:props.ctx.tsConfig.jsonCompilerOptions};
-                if(opts.tsConfigJsonContentPrint){
+                opts.tsConfigJsonContent = props.ctx.tsConfig && {
+                    compilerOptions: props.ctx.tsConfig.jsonCompilerOptions
+                };
+                if (opts.tsConfigJsonContentPrint) {
                     console.log(JSON.stringify(opts.tsConfigJsonContent));
                 }
             }
-            
+
             ctx.typeChecker = TypeChecker(opts);
-            if (ctx.config.env.NODE_ENV === "production") {
+            if (ctx.config.env.NODE_ENV === 'production') {
                 print(
                     chalk.white(
                         ` Typechecker (${
@@ -181,8 +183,7 @@ export function pluginTypeChecker(opts?: any) {
                         }): inspecting code, please wait ${END_LINE}`
                     )
                 );
-                ctx.typeChecker.inspectAndPrint()
-                
+                ctx.typeChecker.inspectAndPrint();
             } else {
                 // only print text if not production run
                 print(
