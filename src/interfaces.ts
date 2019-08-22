@@ -1,7 +1,6 @@
 // options they can use to create the typechecker
 import * as ts from 'typescript';
 
-
 export interface ITypeCheckerOptions {
     // base path
     basePath?: string;
@@ -29,34 +28,27 @@ export interface ITypeCheckerOptions {
     // use shortened filenames in order to make output less cluttered
     shortenFilenames?: boolean; // default true
 
-
     // skip ts errors
     skipTsErrors?: SkipError;
 
-
     // plugin options
-    printFirstRun: boolean // default true when used as plugin
-
+    printFirstRun: boolean; // default true when used as plugin
 
     // print settings
     print_summary?: boolean; //default false
-    print_runtime?: boolean //default false
-
+    print_runtime?: boolean; //default false
 
     // internals
     tsConfigJsonContent: any;
     isPlugin: boolean;
     basePathSetup?: string;
-    
+    homeDir: string;
 }
-
 
 export type TotalErrorsFound = number;
 export type SkipError = number[];
 export type TypeCheckError = ITSError;
 // extended internal options, needed for some internal usage
-
-
 
 // run options for worker
 export enum WorkerCommand {
@@ -72,7 +64,6 @@ export interface IWorkerOptions {
     pathToWatch: string;
     type: WorkerCommand;
 }
-
 
 export interface ITSError {
     fileName: string;
