@@ -20,6 +20,7 @@ export interface ITypeCheckerOptions {
     tsConfigJsonContent: any;
     isPlugin: boolean;
     basePathSetup?: string;
+    homeDir: string;
 }
 export declare type TotalErrorsFound = number;
 export declare type SkipError = number[];

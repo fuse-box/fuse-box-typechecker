@@ -17,8 +17,8 @@ var TypeHelperClass = (function () {
         }
         this.options.basePathSetup = options.basePath;
         this.options.basePath = options.basePath
-            ? path.resolve(process.cwd(), options.basePath)
-            : process.cwd();
+            ? path.resolve(options.homeDir || process.cwd(), options.basePath)
+            : options.homeDir || process.cwd();
         this.options.name = this.options.name ? this.options.name : '';
         this.options.shortenFilenames = this.options.shortenFilenames === false ? false : true;
         if (options.tsConfig) {
@@ -131,6 +131,7 @@ function pluginTypeChecker(opts) {
         ctx.ict.on('complete', function (props) {
             if (opts) {
                 opts.isPlugin = true;
+                opts.homeDir = props.ctx.config.homeDir;
             }
             else {
                 opts = { isPlugin: true };
