@@ -174,7 +174,7 @@
         "signature": "340f05ebff175d9916016b2f25798755a1a6b0a1b9e25898ab653a7b96f4c4c0"
       },
       "c:/users/developer/documents/fuse-box-typechecker/src/index.ts": {
-        "version": "b5bd88cb08fb0b8ed1cb8f94008f4acca775ca803af63e33cd439cfd9b695f9c",
+        "version": "95fc4ce59987c175f0964e5e58c9e44faf6ca1daad9497cfe4b19d9343a4e535",
         "signature": "5531b0af0ea2ad919e5e62c89850937d9d0e1e515255661fcd74d3575430310a"
       },
       "c:/users/developer/documents/fuse-box-typechecker/src/test.ts": {
@@ -1396,8 +1396,20 @@
       "c:/users/developer/documents/fuse-box-typechecker/node_modules/typescript/lib/lib.esnext.bigint.d.ts",
       "c:/users/developer/documents/fuse-box-typechecker/node_modules/chalk/types/index.d.ts",
       "c:/users/developer/documents/fuse-box-typechecker/node_modules/typescript/lib/typescript.d.ts",
+      "c:/users/developer/documents/fuse-box-typechecker/src/interfaces.ts",
+      "c:/users/developer/documents/fuse-box-typechecker/src/processtsdiagnostics.ts",
+      "c:/users/developer/documents/fuse-box-typechecker/src/printresult.ts",
+      "c:/users/developer/documents/fuse-box-typechecker/src/debugprint.ts",
+      "c:/users/developer/documents/fuse-box-typechecker/src/getglobaldiagnostics.ts",
+      "c:/users/developer/documents/fuse-box-typechecker/src/getoptionsdiagnostics.ts",
+      "c:/users/developer/documents/fuse-box-typechecker/src/getpath.ts",
+      "c:/users/developer/documents/fuse-box-typechecker/src/getsemanticdiagnostics.ts",
+      "c:/users/developer/documents/fuse-box-typechecker/src/getsyntacticdiagnostics.ts",
       "c:/users/developer/documents/fuse-box-typechecker/node_modules/@types/json5/index.d.ts",
       "c:/users/developer/documents/fuse-box-typechecker/src/register.json5.ts",
+      "c:/users/developer/documents/fuse-box-typechecker/src/throwiferrors.ts",
+      "c:/users/developer/documents/fuse-box-typechecker/src/inspectcode.ts",
+      "c:/users/developer/documents/fuse-box-typechecker/src/printsettings.ts",
       "c:/users/developer/documents/fuse-box-typechecker/src/test.ts",
       "c:/users/developer/documents/fuse-box-typechecker/node_modules/@types/node/globals.d.ts",
       "c:/users/developer/documents/fuse-box-typechecker/node_modules/@types/node/assert.d.ts",
@@ -1444,21 +1456,9 @@
       "c:/users/developer/documents/fuse-box-typechecker/node_modules/@types/node/ts3.2/globals.d.ts",
       "c:/users/developer/documents/fuse-box-typechecker/node_modules/@types/node/ts3.2/index.d.ts",
       "c:/users/developer/documents/fuse-box-typechecker/node_modules/@types/watch/index.d.ts",
-      "c:/users/developer/documents/fuse-box-typechecker/src/interfaces.ts",
-      "c:/users/developer/documents/fuse-box-typechecker/src/processtsdiagnostics.ts",
-      "c:/users/developer/documents/fuse-box-typechecker/src/printresult.ts",
-      "c:/users/developer/documents/fuse-box-typechecker/src/debugprint.ts",
-      "c:/users/developer/documents/fuse-box-typechecker/src/getglobaldiagnostics.ts",
-      "c:/users/developer/documents/fuse-box-typechecker/src/getoptionsdiagnostics.ts",
-      "c:/users/developer/documents/fuse-box-typechecker/src/getpath.ts",
-      "c:/users/developer/documents/fuse-box-typechecker/src/getsemanticdiagnostics.ts",
-      "c:/users/developer/documents/fuse-box-typechecker/src/getsyntacticdiagnostics.ts",
-      "c:/users/developer/documents/fuse-box-typechecker/src/throwiferrors.ts",
-      "c:/users/developer/documents/fuse-box-typechecker/src/inspectcode.ts",
-      "c:/users/developer/documents/fuse-box-typechecker/src/printsettings.ts",
-      "c:/users/developer/documents/fuse-box-typechecker/src/index.ts",
       "c:/users/developer/documents/fuse-box-typechecker/src/watchsrc.ts",
-      "c:/users/developer/documents/fuse-box-typechecker/src/worker.ts"
+      "c:/users/developer/documents/fuse-box-typechecker/src/worker.ts",
+      "c:/users/developer/documents/fuse-box-typechecker/src/index.ts"
     ]
   },
   "version": "3.5.3"

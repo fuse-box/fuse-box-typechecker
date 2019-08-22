@@ -17,8 +17,8 @@ var TypeHelperClass = (function () {
         }
         this.options.basePathSetup = options.basePath;
         this.options.basePath = options.basePath
-            ? path.resolve(options.homeDir || process.cwd(), options.basePath)
-            : options.homeDir || process.cwd();
+            ? path.resolve(process.cwd(), options.basePath)
+            : process.cwd();
         this.options.name = this.options.name ? this.options.name : '';
         this.options.shortenFilenames = this.options.shortenFilenames === false ? false : true;
         if (options.tsConfig) {
@@ -137,13 +137,15 @@ function pluginTypeChecker(opts) {
                 opts = { isPlugin: true };
             }
             if (!opts.tsConfig && !opts.tsConfigJsonContent) {
-                opts.tsConfigJsonContent = props.ctx.tsConfig && { compilerOptions: props.ctx.tsConfig.jsonCompilerOptions };
+                opts.tsConfigJsonContent = props.ctx.tsConfig && {
+                    compilerOptions: props.ctx.tsConfig.jsonCompilerOptions
+                };
                 if (opts.tsConfigJsonContentPrint) {
                     console.log(JSON.stringify(opts.tsConfigJsonContent));
                 }
             }
             ctx.typeChecker = exports.TypeChecker(opts);
-            if (ctx.config.env.NODE_ENV === "production") {
+            if (ctx.config.env.NODE_ENV === 'production') {
                 printResult_1.print(chalk_1.default.white(" Typechecker (" + (opts.name ? opts.name : 'no-name') + "): inspecting code, please wait " + interfaces_1.END_LINE));
                 ctx.typeChecker.inspectAndPrint();
             }
