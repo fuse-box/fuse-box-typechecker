@@ -32,11 +32,17 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
         const short = options.shortenFilenames !== false ? true : false;
         const fullFileName = path.resolve(fileName);
         let shortFileName = fullFileName.split(options.basePath as string).join('.');
-
-        // if somepne passes in basepath we need to use that in print
-        if(options.basePathSetup){
-            shortFileName = path.join(options.basePathSetup, shortFileName);
+        if( path.isAbsolute(shortFileName)){
+            // most likely a tsconfig path
+            shortFileName = path.relative(process.cwd(), fullFileName)
+        } else{
+            // if somepne passes in basepath we need to use that in print
+            if(options.basePathSetup){
+                shortFileName = path.join(options.basePathSetup, shortFileName);
+            }
         }
+
+        
 
 
         return (
