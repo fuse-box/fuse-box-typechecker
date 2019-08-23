@@ -23,8 +23,13 @@ function printResult(options, errors) {
         var short = options.shortenFilenames !== false ? true : false;
         var fullFileName = path.resolve(fileName);
         var shortFileName = fullFileName.split(options.basePath).join('.');
-        if (options.basePathSetup) {
-            shortFileName = path.join(options.basePathSetup, shortFileName);
+        if (path.isAbsolute(shortFileName)) {
+            shortFileName = path.relative(process.cwd(), fullFileName);
+        }
+        else {
+            if (options.basePathSetup) {
+                shortFileName = path.join(options.basePathSetup, shortFileName);
+            }
         }
         return (chalk_1.default.grey(" \u2514\u2500\u2500") +
             chalk_1.default.blueBright("" + shortFileName) +

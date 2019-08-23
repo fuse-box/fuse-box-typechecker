@@ -126,7 +126,7 @@
         "signature": "44012fecc904a418d1a63a9436878d4925907f78d01b0c3a6cb42d68ef88103f"
       },
       "c:/users/developer/documents/fuse-box-typechecker/src/printresult.ts": {
-        "version": "3e088926d2cd2151c5195e74ef3c21c184995070b19c1422c388319501d42870",
+        "version": "bffd644970c42ee04e4175c63adcd887efbc48ed60a0ccadba82b9cd2a0ee329",
         "signature": "73fe7b08e296beb28bdb1205e3d590569b37c71d22bdb594b53189c621b27898"
       },
       "c:/users/developer/documents/fuse-box-typechecker/src/debugprint.ts": {
@@ -1398,7 +1398,6 @@
       "c:/users/developer/documents/fuse-box-typechecker/node_modules/typescript/lib/typescript.d.ts",
       "c:/users/developer/documents/fuse-box-typechecker/src/interfaces.ts",
       "c:/users/developer/documents/fuse-box-typechecker/src/processtsdiagnostics.ts",
-      "c:/users/developer/documents/fuse-box-typechecker/src/printresult.ts",
       "c:/users/developer/documents/fuse-box-typechecker/src/debugprint.ts",
       "c:/users/developer/documents/fuse-box-typechecker/src/getglobaldiagnostics.ts",
       "c:/users/developer/documents/fuse-box-typechecker/src/getoptionsdiagnostics.ts",
@@ -1410,6 +1409,7 @@
       "c:/users/developer/documents/fuse-box-typechecker/src/throwiferrors.ts",
       "c:/users/developer/documents/fuse-box-typechecker/src/inspectcode.ts",
       "c:/users/developer/documents/fuse-box-typechecker/src/printsettings.ts",
+      "c:/users/developer/documents/fuse-box-typechecker/src/index.ts",
       "c:/users/developer/documents/fuse-box-typechecker/src/test.ts",
       "c:/users/developer/documents/fuse-box-typechecker/node_modules/@types/node/globals.d.ts",
       "c:/users/developer/documents/fuse-box-typechecker/node_modules/@types/node/assert.d.ts",
@@ -1458,7 +1458,7 @@
       "c:/users/developer/documents/fuse-box-typechecker/node_modules/@types/watch/index.d.ts",
       "c:/users/developer/documents/fuse-box-typechecker/src/watchsrc.ts",
       "c:/users/developer/documents/fuse-box-typechecker/src/worker.ts",
-      "c:/users/developer/documents/fuse-box-typechecker/src/index.ts"
+      "c:/users/developer/documents/fuse-box-typechecker/src/printresult.ts"
     ]
   },
   "version": "3.5.3"
