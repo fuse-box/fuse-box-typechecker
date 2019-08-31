@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import {
     END_LINE,
     ITypeCheckerOptions,
@@ -7,13 +6,9 @@ import {
     ITSError,
     IResults
 } from './interfaces';
-import * as ts from 'typescript';
 import * as path from 'path';
 import { processTsDiagnostics } from './processTsDiagnostics';
-
-export function print(text: string) {
-    ts.sys.write(text);
-}
+import { Style, Logger } from './logger';
 
 export function printResult(options: ITypeCheckerOptions, errors: IResults): TotalErrorsFound {
     // get the lint errors messages
@@ -32,33 +27,30 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
         const short = options.shortenFilenames !== false ? true : false;
         const fullFileName = path.resolve(fileName);
         let shortFileName = fullFileName.split(options.basePath as string).join('.');
-        if( path.isAbsolute(shortFileName)){
+        if (path.isAbsolute(shortFileName)) {
             // most likely a tsconfig path
-            shortFileName = path.relative(process.cwd(), fullFileName)
-        } else{
+            shortFileName = path.relative(process.cwd(), fullFileName);
+        } else {
             // if somepne passes in basepath we need to use that in print
-            if(options.basePathSetup){
+            if (options.basePathSetup) {
                 shortFileName = path.join(options.basePathSetup, shortFileName);
             }
         }
 
-        
-
-
         return (
-            chalk.grey(` └──`) +
-            chalk.blueBright(`${shortFileName}`) +
+            Style.grey(` └──`) +
+            Style.cyan(`${shortFileName}`) +
             END_LINE +
             errors
                 .map((err: TypeCheckError) => {
-                    let text = chalk.red('    |');
+                    let text = Style.red('    |');
 
-                    text += chalk[err.color](
+                    text += Style[err.color](
                         ` ${short ? shortFileName : fullFileName} (${err.line},${err.char}) `
                     );
-                    text += chalk.grey(`(${(<ITSError>err).category}`);
-                    text += chalk.grey(`${(<ITSError>err).code})`);
-                    text += ' ' + chalk.grey((<ITSError>err).message);
+                    text += Style.grey(`(${(<ITSError>err).category}`);
+                    text += Style.grey(`${(<ITSError>err).code})`);
+                    text += ' ' + Style.grey((<ITSError>err).message);
 
                     return text;
                 })
@@ -70,32 +62,31 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
     // print if any
     if (allErrors.length > 0) {
         // insert header
-        allErrors.unshift(
-            chalk.white(` Typechecker (${name ? name: 'no-name' }):` + chalk.white('')) // fix windows
-        );
-        print(allErrors.join(END_LINE));
+        allErrors.unshift(` Typechecker (${name ? name : 'no-name'}):`);
+        Logger.echo(allErrors.join(END_LINE));
     } else {
-        print(chalk.white(` Typechecker ${name ? name: 'no-name'}: No Errors found` + chalk.white(''))); // fix windows
+        Logger.info(` Typechecker ${name ? name : 'no-name'}:`, ` No Errors found`);
     }
 
     // print option errors
     if (errors.globalErrors.length) {
-        print(chalk.underline(`${END_LINE}${END_LINE}Option errors`) + chalk.white(`:${END_LINE}`));
+        Logger.echo(
+            Style.underline(`${END_LINE}${END_LINE}Option errors`) + Style.white(`:${END_LINE}`)
+        );
         let optionErrorsText = Object.entries(errors.globalErrors).map(([no, err]) => {
             let text = no + ':';
             let messageText = (<any>err).messageText;
             if (typeof messageText === 'object' && messageText !== null) {
                 messageText = JSON.stringify(messageText);
             }
-            text = chalk[options.yellowOnOptions ? 'yellow' : 'red'](` └── tsConfig: `);
-            text += chalk.grey(`(${(<any>err).category}:`);
-            text += chalk.grey(`${(<any>err).code})`);
-            text += chalk.grey(` ${messageText}`);
+            text = Style[options.yellowOnOptions ? 'yellow' : 'red'](` └── tsConfig: `);
+            text += Style.grey(`(${(<any>err).category}:`);
+            text += Style.grey(`${(<any>err).code})`);
+            text += Style.grey(` ${messageText}`);
             return text;
         });
-        print(optionErrorsText.join(END_LINE));
+        Logger.echo(optionErrorsText.join(END_LINE));
     }
-    print(END_LINE);
 
     // print global errors
     // todo: this needs testing, how do I create a global error??
@@ -130,31 +121,31 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
     if (options.print_summary) {
         if (totalsErrors) {
             // write header
-            print(
-                chalk.underline(`${END_LINE}${END_LINE}Errors`) +
-                    chalk.white(`:${totalsErrors}${END_LINE}`)
+            Logger.echo(
+                Style.underline(`${END_LINE}${END_LINE}Errors`) +
+                    Style.white(`:${totalsErrors}${END_LINE}`)
             );
 
-            print(
-                chalk[optionsErrors ? (options.yellowOnOptions ? 'yellow' : 'red') : 'white'](
+            Logger.echo(
+                Style[optionsErrors ? (options.yellowOnOptions ? 'yellow' : 'red') : 'white'](
                     `└── Options: ${optionsErrors}${END_LINE}`
                 )
             );
 
-            print(
-                chalk[globalErrors ? (options.yellowOnGlobal ? 'yellow' : 'red') : 'white'](
+            Logger.echo(
+                Style[globalErrors ? (options.yellowOnGlobal ? 'yellow' : 'red') : 'white'](
                     `└── Global: ${globalErrors}${END_LINE}`
                 )
             );
 
-            print(
-                chalk[syntacticErrors ? (options.yellowOnSyntactic ? 'yellow' : 'red') : 'white'](
+            Logger.echo(
+                Style[syntacticErrors ? (options.yellowOnSyntactic ? 'yellow' : 'red') : 'white'](
                     `└── Syntactic: ${syntacticErrors}${END_LINE}`
                 )
             );
 
-            print(
-                chalk[semanticErrors ? (options.yellowOnSemantic ? 'yellow' : 'red') : 'white'](
+            Logger.echo(
+                Style[semanticErrors ? (options.yellowOnSemantic ? 'yellow' : 'red') : 'white'](
                     `└── Semantic: ${semanticErrors}${END_LINE}`
                 )
             );
@@ -162,8 +153,8 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
     }
 
     if (options.print_runtime) {
-        print(
-            chalk.grey(`Typechecking time: ${errors.elapsedInspectionTime}ms${END_LINE}${END_LINE}`)
+        Logger.echo(
+            Style.grey(`Typechecking time: ${errors.elapsedInspectionTime}ms${END_LINE}${END_LINE}`)
         );
     }
 
