@@ -97,5 +97,6 @@ export class Logger{
     public static success = _logger.success;
     public static meta = _logger.meta;
     public static error = _logger.error;
+    public static echo = _logger.error;
 }
 
