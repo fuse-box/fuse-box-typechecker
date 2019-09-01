@@ -19,7 +19,7 @@ export function watchSrc(pathToWatch: string, options: ITypeCheckerOptions, call
         // on created file event
         monitor.on('created', (f: any /*, stat: any*/) => {
             Logger.echo(Style.yellow(`\n  File created: ${f}`));
-            callbacsk();
+            callback();
         });
 
         // on changed file event
