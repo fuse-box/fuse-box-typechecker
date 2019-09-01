@@ -35,7 +35,7 @@ export class Style {
         return `<gray>${text}</gray>`;
     }
     public static white(text: string) {
-        return `<white>${text}</strikethrowhiteugh>`;
+        return `<white>${text}</white>`;
     }
     public static cyan(text: string) {
         return `<cyan>${text}</cyan>`;
