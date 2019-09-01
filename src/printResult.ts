@@ -66,6 +66,7 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
         );
     });
 
+    
     const name = options.name;
     // print if any
     if (allErrors.length > 0) {
@@ -77,7 +78,7 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
         );
         Logger.echo(allErrors.join(END_LINE));
     } else {
-        Logger.echo(END_LINE);
+        // Logger.echo('');
         Logger.info(`Typechecker inspection - (${name ? name : 'no-name'}):`, ` No Errors found`);
     }
 
@@ -99,7 +100,7 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
             text += Style.grey(` ${messageText}`);
             return text;
         });
-        Logger.echo(optionErrorsText.join(END_LINE));
+        Logger.echo(optionErrorsText.join(''));
     }
 
     // print global errors
@@ -155,7 +156,7 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
     if (options.print_runtime) {
         Logger.info(
             `Typechecker inspection time:`,
-            Style.grey(`${errors.elapsedInspectionTime}ms${END_LINE}${END_LINE}`)
+            Style.grey(`${errors.elapsedInspectionTime}ms`)
         );
     }
 
