@@ -49,9 +49,30 @@ typeChecker.worker_watch('./src');
 
 // see public functions for more ways to use it
 
----
+
 
 ```
+
+Emiting code
+
+```js
+const checker = require('fuse-box-type-checker').TypeChecker({
+    tsConfig: './tsconfig.json',
+    tsConfigOverride:{
+        "compilerOptions": {
+            "outDir": "testme/"
+        }
+    },
+    basePath: './',
+    name: 'checkerEmit'
+});
+checker.printSettings(); // optional
+let result = checker.inspectOnly();
+checker.printOnly(result); // optional...
+result.oldProgram.emit();
+```
+
+---
 
 ### Output sample standalone
 ![Output sample](https://github.com/fuse-box/fuse-box-typechecker/raw/master/image/sampleNew4.png "Output sample")
