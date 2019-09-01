@@ -16,12 +16,6 @@ export interface ITypeCheckerOptions {
     throwOnGlobal?: boolean;
     throwOnOptions?: boolean;
 
-    // color options
-    yellowOnOptions?: boolean;
-    yellowOnGlobal?: boolean;
-    yellowOnSemantic?: boolean;
-    yellowOnSyntactic?: boolean;
-
     // name that will be displayed on cmd echo
     name?: string;
 

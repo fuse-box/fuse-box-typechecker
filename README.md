@@ -102,24 +102,7 @@ interface ITypeCheckerOptionsInterface {
     throwOnSyntactic?: boolean;
     throwOnSemantic?: boolean;
     throwOnGlobal?: boolean;
-    throwOnOptions?: boolean;
-       
-    
-    // use yellow color instead of red on Options errors
-    yellowOnOptions?: boolean; 
-    
-    
-    // use yellow color instead of red on Global errors
-    yellowOnGlobal?: boolean; 
-    
-    
-    // use yellow color instead of red on Semantic errors
-    yellowOnSemantic?: boolean; 
-    
-    
-    // use yellow color instead of red on Syntactic errors
-    yellowOnSyntactic?: boolean; 
-    
+    throwOnOptions?: boolean;  
     
     // use shortened filenames in order to make output less noisy
     shortenFilenames?: boolean; 
@@ -130,6 +113,7 @@ interface ITypeCheckerOptionsInterface {
     // print settings
     print_summary?: boolean; //default false
     print_runtime?: boolean //default false
+    printFirstRun?: boolean //default false  /plugin only
     
 }
 

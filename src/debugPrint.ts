@@ -5,6 +5,6 @@ const enable = false;
 
 export function debugPrint(text: string) {
     if (enable) {
-        Logger.info(`debugPrint`, text + END_LINE);
+        Logger.info(`Typechecker debugPrint:`, text + END_LINE);
     }
 }
