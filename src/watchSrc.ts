@@ -1,4 +1,4 @@
-import { END_LINE, ITypeCheckerOptions } from './interfaces';
+import { ITypeCheckerOptions } from './interfaces';
 import * as watch from 'watch';
 import { getPath } from './getPath';
 import { debugPrint } from './debugPrint';
@@ -14,19 +14,19 @@ export function watchSrc(pathToWatch: string, options: ITypeCheckerOptions, call
         // todo-> move into thread
 
         // tell user what path we are watching
-        Logger.echo(Style.yellow(`Typechecker watching: ${Style.white(`${basePath}${END_LINE}`)}`));
+        Logger.echo(Style.yellow(`  Typechecker watching: ${Style.grey(`${basePath}`)}`));
 
         // on created file event
         monitor.on('created', (f: any /*, stat: any*/) => {
-            Logger.echo(END_LINE + Style.yellow(`File created: ${f}${END_LINE}`));
-            callback();
+            Logger.echo(Style.yellow(`\n  File created: ${f}`));
+            callbacsk();
         });
 
         // on changed file event
         monitor.on('changed', (f: any /*, curr: any, prev: any*/) => {
             // tell user about event
-            Logger.echo(END_LINE + Style.yellow(`File changed: ${Style.white(`${f}${END_LINE}`)}`));
-            Logger.echo(Style.grey(`Calling typechecker${END_LINE}`));
+            Logger.echo(Style.yellow(`\n  File changed: ${Style.grey(`${f}`)}`));
+            Logger.echo(Style.grey(`  Calling typechecker`));
 
             // have inside timeout, so we only run once when multiple files are saved
             clearTimeout(watchTimeout);
@@ -37,8 +37,8 @@ export function watchSrc(pathToWatch: string, options: ITypeCheckerOptions, call
 
         monitor.on('removed', (f: any /*, stat: any*/) => {
             // tell user about event
-            Logger.echo(END_LINE + Style.yellow(`File removed: ${Style.white(`${f}${END_LINE}`)}`));
-            Logger.echo(Style.grey(`Calling typechecker${END_LINE}`));
+            Logger.echo(Style.yellow(`\n  File removed: ${Style.white(`${f}`)}`));
+            Logger.echo(Style.grey(`Calling typechecker`));
 
             // have inside timeout, so we only run once when multiple files are saved
             clearTimeout(watchTimeout);
