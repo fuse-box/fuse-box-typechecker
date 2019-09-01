@@ -1,17 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var chalk_1 = require("chalk");
-var printResult_1 = require("./printResult");
 var getPath_1 = require("./getPath");
+var logger_1 = require("./logger");
 function printSettings(options) {
-    printResult_1.print(chalk_1.default.white('\n' + " Typechecker name: " + chalk_1.default.grey("" + options.name + '\n')));
-    printResult_1.print(chalk_1.default.white(" Typechecker basepath: " + chalk_1.default.grey("" + options.basePath + '\n')));
+    logger_1.Logger.info("Typechecker settings - name:", logger_1.Style.grey("" + options.name));
+    logger_1.Logger.info("Typechecker settings - basepath:", logger_1.Style.grey("" + options.basePath));
     if (options.tsConfig) {
         var tsconf = getPath_1.getPath(options.tsConfig, options);
-        printResult_1.print(chalk_1.default.white(" Typechecker tsconfig: " + chalk_1.default.grey("" + tsconf + '\n')));
+        logger_1.Logger.info("Typechecker settings - tsconfig:", logger_1.Style.grey("" + tsconf));
     }
     else {
-        printResult_1.print(chalk_1.default.white(" Typechecker tsconfig: " + chalk_1.default.grey("undefined, using ts defaults" + '\n')));
+        logger_1.Logger.info("Typechecker settings - tsconfig:", logger_1.Style.grey("undefined, using ts defaults/override if defined"));
     }
 }
 exports.printSettings = printSettings;

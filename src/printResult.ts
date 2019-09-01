@@ -82,6 +82,7 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
     }
 
     // print option errors
+    // todo: this needs testing, how do I create a option error??
     if (errors.globalErrors.length) {
         Logger.echo(
             Style.underline(`${END_LINE}${END_LINE}Option errors`) + Style.white(`:${END_LINE}`)
@@ -134,10 +135,18 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
                 Style.grey(`Errors - ${totalsErrors}`)
             );
 
-            str += `   ${Style[optionsErrors ? 'red':'grey'](`└── Options: ${optionsErrors}${END_LINE}`)}`;
-            str += `   ${Style[globalErrors ? 'red':'grey'](`└── Global: ${globalErrors}${END_LINE}`)}`;
-            str += `   ${Style[syntacticErrors ? 'red':'grey'](`└── Syntactic: ${syntacticErrors}${END_LINE}`)}`;
-            str += `   ${Style[semanticErrors ? 'red':'grey'](`└── Semantic: ${semanticErrors}${END_LINE}`)}`;
+            str += `   ${Style[optionsErrors ? 'red' : 'grey'](
+                `└── Options: ${optionsErrors}${END_LINE}`
+            )}`;
+            str += `   ${Style[globalErrors ? 'red' : 'grey'](
+                `└── Global: ${globalErrors}${END_LINE}`
+            )}`;
+            str += `   ${Style[syntacticErrors ? 'red' : 'grey'](
+                `└── Syntactic: ${syntacticErrors}${END_LINE}`
+            )}`;
+            str += `   ${Style[semanticErrors ? 'red' : 'grey'](
+                `└── Semantic: ${semanticErrors}${END_LINE}`
+            )}`;
 
             Logger.echo(str);
         }

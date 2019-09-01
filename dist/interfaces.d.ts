@@ -7,10 +7,6 @@ export interface ITypeCheckerOptions {
     throwOnSemantic?: boolean;
     throwOnGlobal?: boolean;
     throwOnOptions?: boolean;
-    yellowOnOptions?: boolean;
-    yellowOnGlobal?: boolean;
-    yellowOnSemantic?: boolean;
-    yellowOnSyntactic?: boolean;
     name?: string;
     shortenFilenames?: boolean;
     skipTsErrors?: SkipError;

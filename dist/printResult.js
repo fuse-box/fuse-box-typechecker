@@ -1,14 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var chalk_1 = require("chalk");
 var interfaces_1 = require("./interfaces");
-var ts = require("typescript");
 var path = require("path");
 var processTsDiagnostics_1 = require("./processTsDiagnostics");
-function print(text) {
-    ts.sys.write(text);
-}
-exports.print = print;
+var logger_1 = require("./logger");
 function printResult(options, errors) {
     var tsErrorMessages = processTsDiagnostics_1.processTsDiagnostics(options, errors);
     var groupedErrors = {};
@@ -18,6 +13,11 @@ function printResult(options, errors) {
         }
         groupedErrors[error.fileName].push(error);
     });
+    var optionsErrors = errors.optionsErrors.length;
+    var globalErrors = errors.globalErrors.length;
+    var syntacticErrors = errors.syntacticErrors.length;
+    var semanticErrors = errors.semanticErrors.length;
+    var totalsErrors = optionsErrors + globalErrors + syntacticErrors + semanticErrors;
     var allErrors = Object.entries(groupedErrors).map(function (_a) {
         var fileName = _a[0], errors = _a[1];
         var short = options.shortenFilenames !== false ? true : false;
@@ -31,30 +31,33 @@ function printResult(options, errors) {
                 shortFileName = path.join(options.basePathSetup, shortFileName);
             }
         }
-        return (chalk_1.default.grey(" \u2514\u2500\u2500") +
-            chalk_1.default.blueBright("" + shortFileName) +
+        return (logger_1.Style.grey("   \u2514\u2500\u2500 ") +
+            logger_1.Style.underline(logger_1.Style.cyan("" + shortFileName)) +
+            logger_1.Style.grey(" - " + errors.length + " errors") +
             interfaces_1.END_LINE +
             errors
                 .map(function (err) {
-                var text = chalk_1.default.red('    |');
-                text += chalk_1.default[err.color](" " + (short ? shortFileName : fullFileName) + " (" + err.line + "," + err.char + ") ");
-                text += chalk_1.default.grey("(" + err.category);
-                text += chalk_1.default.grey(err.code + ")");
-                text += ' ' + chalk_1.default.grey(err.message);
+                var text = logger_1.Style.red('    | ');
+                text += logger_1.Style[err.color](" " + (short ? shortFileName : fullFileName) + " (" + err.line + "," + err.char + ") ");
+                text += logger_1.Style.grey("(" + err.category);
+                text += logger_1.Style.grey(err.code + ")");
+                text += ' ' + logger_1.Style.grey(err.message);
                 return text;
             })
                 .join(interfaces_1.END_LINE));
     });
     var name = options.name;
     if (allErrors.length > 0) {
-        allErrors.unshift(chalk_1.default.white(" Typechecker (" + (name ? name : 'no-name') + "):" + chalk_1.default.white('')));
-        print(allErrors.join(interfaces_1.END_LINE));
+        logger_1.Logger.echo('');
+        logger_1.Logger.info("Typechecker inspection - (" + (name ? name : 'no-name') + "):", logger_1.Style.grey(totalsErrors + " errors."));
+        logger_1.Logger.echo(allErrors.join(interfaces_1.END_LINE));
     }
     else {
-        print(chalk_1.default.white(" Typechecker " + (name ? name : 'no-name') + ": No Errors found" + chalk_1.default.white('')));
+        logger_1.Logger.echo(interfaces_1.END_LINE);
+        logger_1.Logger.info("Typechecker inspection - (" + (name ? name : 'no-name') + "):", " No Errors found");
     }
     if (errors.globalErrors.length) {
-        print(chalk_1.default.underline("" + interfaces_1.END_LINE + interfaces_1.END_LINE + "Option errors") + chalk_1.default.white(":" + interfaces_1.END_LINE));
+        logger_1.Logger.echo(logger_1.Style.underline("" + interfaces_1.END_LINE + interfaces_1.END_LINE + "Option errors") + logger_1.Style.white(":" + interfaces_1.END_LINE));
         var optionErrorsText = Object.entries(errors.globalErrors).map(function (_a) {
             var no = _a[0], err = _a[1];
             var text = no + ':';
@@ -62,32 +65,27 @@ function printResult(options, errors) {
             if (typeof messageText === 'object' && messageText !== null) {
                 messageText = JSON.stringify(messageText);
             }
-            text = chalk_1.default[options.yellowOnOptions ? 'yellow' : 'red'](" \u2514\u2500\u2500 tsConfig: ");
-            text += chalk_1.default.grey("(" + err.category + ":");
-            text += chalk_1.default.grey(err.code + ")");
-            text += chalk_1.default.grey(" " + messageText);
+            text = "   \u2514\u2500\u2500 tsConfig: ";
+            text += logger_1.Style.grey("(" + err.category + ":");
+            text += logger_1.Style.grey(err.code + ")");
+            text += logger_1.Style.grey(" " + messageText);
             return text;
         });
-        print(optionErrorsText.join(interfaces_1.END_LINE));
+        logger_1.Logger.echo(optionErrorsText.join(interfaces_1.END_LINE));
     }
-    print(interfaces_1.END_LINE);
-    var optionsErrors = errors.optionsErrors.length;
-    var globalErrors = errors.globalErrors.length;
-    var syntacticErrors = errors.syntacticErrors.length;
-    var semanticErrors = errors.semanticErrors.length;
-    var totalsErrors = optionsErrors + globalErrors + syntacticErrors + semanticErrors;
     if (options.print_summary) {
         if (totalsErrors) {
-            print(chalk_1.default.underline("" + interfaces_1.END_LINE + interfaces_1.END_LINE + "Errors") +
-                chalk_1.default.white(":" + totalsErrors + interfaces_1.END_LINE));
-            print(chalk_1.default[optionsErrors ? (options.yellowOnOptions ? 'yellow' : 'red') : 'white']("\u2514\u2500\u2500 Options: " + optionsErrors + interfaces_1.END_LINE));
-            print(chalk_1.default[globalErrors ? (options.yellowOnGlobal ? 'yellow' : 'red') : 'white']("\u2514\u2500\u2500 Global: " + globalErrors + interfaces_1.END_LINE));
-            print(chalk_1.default[syntacticErrors ? (options.yellowOnSyntactic ? 'yellow' : 'red') : 'white']("\u2514\u2500\u2500 Syntactic: " + syntacticErrors + interfaces_1.END_LINE));
-            print(chalk_1.default[semanticErrors ? (options.yellowOnSemantic ? 'yellow' : 'red') : 'white']("\u2514\u2500\u2500 Semantic: " + semanticErrors + interfaces_1.END_LINE));
+            var str = '';
+            logger_1.Logger.info(interfaces_1.END_LINE + "  " + logger_1.Style.underline("Typechecker Summary:"), logger_1.Style.grey("Errors - " + totalsErrors));
+            str += "   " + logger_1.Style[optionsErrors ? 'red' : 'grey']("\u2514\u2500\u2500 Options: " + optionsErrors + interfaces_1.END_LINE);
+            str += "   " + logger_1.Style[globalErrors ? 'red' : 'grey']("\u2514\u2500\u2500 Global: " + globalErrors + interfaces_1.END_LINE);
+            str += "   " + logger_1.Style[syntacticErrors ? 'red' : 'grey']("\u2514\u2500\u2500 Syntactic: " + syntacticErrors + interfaces_1.END_LINE);
+            str += "   " + logger_1.Style[semanticErrors ? 'red' : 'grey']("\u2514\u2500\u2500 Semantic: " + semanticErrors + interfaces_1.END_LINE);
+            logger_1.Logger.echo(str);
         }
     }
     if (options.print_runtime) {
-        print(chalk_1.default.grey("Typechecking time: " + errors.elapsedInspectionTime + "ms" + interfaces_1.END_LINE + interfaces_1.END_LINE));
+        logger_1.Logger.info("Typechecker inspection time:", logger_1.Style.grey(errors.elapsedInspectionTime + "ms" + interfaces_1.END_LINE + interfaces_1.END_LINE));
     }
     return totalsErrors;
 }

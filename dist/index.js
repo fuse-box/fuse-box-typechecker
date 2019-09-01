@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var child = require("child_process");
-var chalk_1 = require("chalk");
 var path = require("path");
 var interfaces_1 = require("./interfaces");
 require("./register.json5");
@@ -9,6 +8,7 @@ var getPath_1 = require("./getPath");
 var inspectCode_1 = require("./inspectCode");
 var printResult_1 = require("./printResult");
 var printSettings_1 = require("./printSettings");
+var logger_1 = require("./logger");
 var TypeHelperClass = (function () {
     function TypeHelperClass(options) {
         this.options = options;
@@ -94,7 +94,7 @@ var TypeHelperClass = (function () {
     };
     TypeHelperClass.prototype.worker_print = function () {
         if (!this.worker) {
-            printResult_1.print('Need to inspect code before printing first');
+            logger_1.Logger.warn('Need to inspect code before printing first');
         }
         else {
             this.worker.send({ type: interfaces_1.WorkerCommand.printResult, options: this.options });
@@ -111,11 +111,11 @@ var TypeHelperClass = (function () {
         this.worker = child.fork(path.join(__dirname, 'worker.js'), []);
         this.worker.on('message', function (msg) {
             if (msg === 'error') {
-                printResult_1.print('error typechecker');
+                logger_1.Logger.error('error typechecker');
                 process.exit(1);
             }
             else {
-                printResult_1.print('killing worker');
+                logger_1.Logger.info("Typechecker(" + _this.options.name + ")", 'killing worker');
                 _this.worker_kill();
             }
         });
@@ -146,11 +146,11 @@ function pluginTypeChecker(opts) {
             }
             ctx.typeChecker = exports.TypeChecker(opts);
             if (ctx.config.env.NODE_ENV === 'production') {
-                printResult_1.print(chalk_1.default.white(" Typechecker (" + (opts.name ? opts.name : 'no-name') + "): inspecting code, please wait " + interfaces_1.END_LINE));
+                logger_1.Logger.info(" Typechecker (" + (opts.name ? opts.name : 'no-name') + "):", " inspecting code, please wait " + interfaces_1.END_LINE);
                 ctx.typeChecker.inspectAndPrint();
             }
             else {
-                printResult_1.print(chalk_1.default.white(" Typechecker (" + (opts.name ? opts.name : 'no-name') + "): Starting thread. Will print status soon, please wait " + interfaces_1.END_LINE));
+                logger_1.Logger.info(" Typechecker (" + (opts.name ? opts.name : 'no-name') + "):", " Starting thread. Will print status soon, please wait " + interfaces_1.END_LINE);
                 if (opts.printFirstRun) {
                     ctx.typeChecker.worker_PrintSettings();
                 }
@@ -159,7 +159,7 @@ function pluginTypeChecker(opts) {
             return props;
         });
         ctx.ict.on('rebundle_complete', function (props) {
-            printResult_1.print(chalk_1.default.white(" Typechecker (" + (opts.name ? opts.name : 'no-name') + "): Calling thread for new report, please wait " + interfaces_1.END_LINE));
+            logger_1.Logger.info(" Typechecker (" + (opts.name ? opts.name : 'no-name') + "):", " Calling thread for new report, please wait " + interfaces_1.END_LINE);
             ctx.typeChecker.worker_inspectAndPrint();
             return props;
         });
