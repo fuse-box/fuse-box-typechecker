@@ -85,16 +85,16 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
     // print option errors
     // todo: this needs testing, how do I create a option error??
     if (errors.optionsErrors.length) {
-        Logger.echo(
-            Style.underline(`${END_LINE}${END_LINE}Option errors`) + Style.white(`:${END_LINE}`)
+        Logger.info(
+            Style.cyan(`Typechecker option errors:`)
         );
-        let optionErrorsText = Object.entries(errors.globalErrors).map(([no, err]) => {
+        let optionErrorsText = Object.entries(errors.optionsErrors).map(([no, err]) => {
             let text = no + ':';
             let messageText = (<any>err).messageText;
             if (typeof messageText === 'object' && messageText !== null) {
                 messageText = JSON.stringify(messageText);
             }
-            text = `   └── tsConfig: `;
+            text = Style.grey(`   └──`)  + Style.red(` tsConfig: `);
             text += Style.grey(`(${(<any>err).category}:`);
             text += Style.grey(`${(<any>err).code})`);
             text += Style.grey(` ${messageText}`);
