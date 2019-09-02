@@ -9,7 +9,7 @@ export interface ITypeCheckerOptions {
     tsConfig?: string;
 
     // path to tsconfig file (from basepath)
-    tsConfigOverride?: Object;
+    tsConfigOverride?: object;
 
     throwOnSyntactic?: boolean;
     throwOnSemantic?: boolean;
