@@ -1,15 +1,13 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "rootDir": "src/",
-    "outDir": "dist/",
+    "rootDir": "./src/",
+    "outDir": "./dist/",
     "sourceMap": true,
-    "target": "es5",
+    "target": "es2018",
     "module": "commonjs",
     "declaration": true,
     "noImplicitAny": true,
-    "incremental": true,
-    "tsBuildInfoFile": "./dist/compilation.info",
     "noImplicitReturns": true,
     "noUnusedParameters": true,
     "suppressImplicitAnyIndexErrors": true,
@@ -17,6 +15,7 @@
     "forceConsistentCasingInFileNames": true,
     "strictNullChecks": true,
     "alwaysStrict": true,
+    "importHelpers": true,
     "noImplicitThis": false,
     "noUnusedLocals": true,
     "allowUnusedLabels": false,
@@ -28,13 +27,10 @@
     "moduleResolution": "node",
     "lib": ["es2015", "es2017", "dom"]
   },
-  "filesGlob": [
-    "./src/**/*.ts",
-    "./node_modules/**/*.ts",
-    "./node_modules/chalk/types/index.d.ts"
-  ],
   "exclude": [
     "node_modules",
     "dist",
+    "test",
+    "scripts"
   ]
 }
