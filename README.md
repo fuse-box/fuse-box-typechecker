@@ -75,10 +75,7 @@ checker.printOnly(result); // optional...
 result.oldProgram.emit();
 ```
 
----
 
-
-one with with errors and one is a try without any
 ---
 
 #### Public functions
