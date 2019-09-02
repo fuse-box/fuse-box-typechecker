@@ -29,6 +29,9 @@
     "@types/node": "^12.6.8",
     "@types/watch": "^1.0.1",
     "fuse-box-typechecker": "3.0.0-next.14",
+    "husky": "^3.0.5",
+    "lint-staged": "^9.2.5",
+    "prettier": "^1.18.2",
     "ts-node": "^8.3.0",
     "typescript": "^3.5.3"
   },
@@ -37,5 +40,24 @@
     "object.entries": "^1.1.0",
     "tslib": "^1.10.0",
     "watch": "^1.0.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{json,md,ts}": [
+      "prettier --write",
+      "git add"
+    ],
+    "test/**/*.{json,md,ts}": [
+      "prettier --write",
+      "git add"
+    ],
+    "scripts/**/*.{json,md,ts}": [
+      "prettier --write",
+      "git add"
+    ]
   }
 }
