@@ -8,8 +8,8 @@ You need to install newest typescript to use this.
 ```npm install fuse-box-typechecker@next```
 
 
-### Output sample plugin
-![Output sample](https://github.com/fuse-box/fuse-box-typechecker/raw/master/image/sampleNew5.png "Output sample")
+### Output sample with all options enabled
+![Output sample](https://github.com/fuse-box/fuse-box-typechecker/raw/master/image/sampleNew6.png "Output sample")
 
 
 
