@@ -130,7 +130,7 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
             // write header
             let str = '';
             Logger.info(
-                Style.underline(`Typechecker Summary:`),
+                '\n  '+ Style.underline(`Error Summary:`),
                 Style.grey(`Errors - ${totalsErrors}`)
             );
 

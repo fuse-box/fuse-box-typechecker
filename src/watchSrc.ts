@@ -38,7 +38,7 @@ export function watchSrc(pathToWatch: string, options: ITypeCheckerOptions, call
         monitor.on('removed', (f: any /*, stat: any*/) => {
             // tell user about event
             Logger.echo(Style.yellow(`\n  File removed: ${Style.white(`${f}`)}`));
-            Logger.echo(Style.grey(`Calling typechecker`));
+            Logger.echo(Style.grey(`  Calling typechecker`));
 
             // have inside timeout, so we only run once when multiple files are saved
             clearTimeout(watchTimeout);
