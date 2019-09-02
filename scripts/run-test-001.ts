@@ -22,6 +22,8 @@ const checker: TypeHelperClass = require('../src/index').TypeChecker(<ITypeCheck
     print_runtime: true
 });
 
+checker.printSettings();
+console.log()
 checker.inspectAndPrint();
 
 
