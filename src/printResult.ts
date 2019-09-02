@@ -45,20 +45,20 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
         }
 
         return (
-            Style.grey(`   └── `) +
-            Style.underline(Style.cyan(`${shortFileName}`)) +
-            Style.grey(` - ${errors.length} errors`) +
+            Style.dim(`   `) +
+            Style.cyan(Style.italic(Style.underline(`${shortFileName}.`))) + ' '+
+            Style.grey(` - ${errors.length} errors.`) +
             END_LINE +
             errors
                 .map((err: TypeCheckError) => {
-                    let text = Style.red('    | ');
+                    let text = Style.red('    -');
 
-                    text += Style[err.color](
+                    text += Style.bold(Style[err.color](
                         ` ${short ? shortFileName : fullFileName} (${err.line},${err.char}) `
-                    );
-                    text += Style.grey(`(${(<ITSError>err).category}`);
-                    text += Style.grey(`${(<ITSError>err).code})`);
-                    text += ' ' + Style.grey((<ITSError>err).message);
+                    ));
+                    text += Style.dim(`(${(<ITSError>err).category}`);
+                    text += Style.dim(`${(<ITSError>err).code})`);
+                    text += ' ' + Style.dim((<ITSError>err).message);
 
                     return text;
                 })
@@ -71,15 +71,13 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
     // print if any
     if (allErrors.length > 0) {
         // insert header
-        Logger.echo('');
         Logger.info(
             `Typechecker inspection - (${name ? name : 'no-name'}):`,
-            Style.grey(`${totalsErrors} errors.`)
+            Style.gray(`@warning ${totalsErrors} errors.`)
         );
         Logger.echo(allErrors.join(END_LINE));
     } else {
-        // Logger.echo('');
-        Logger.info(`Typechecker inspection - (${name ? name : 'no-name'}):`, ` No Errors found`);
+        Logger.info(`Typechecker inspection - (${name ? name : 'no-name'}):`, `@success ${Style.green(`No Errors found`)}`);
     }
 
     // print option errors
@@ -94,10 +92,10 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
             if (typeof messageText === 'object' && messageText !== null) {
                 messageText = JSON.stringify(messageText);
             }
-            text = Style.grey(`   └──`)  + Style.red(` tsConfig: `);
-            text += Style.grey(`(${(<any>err).category}:`);
-            text += Style.grey(`${(<any>err).code})`);
-            text += Style.grey(` ${messageText}`);
+            text = Style.dim(`   `)  + Style.red(` tsConfig: `);
+            text += Style.dim(`(${(<any>err).category}:`);
+            text += Style.dim(`${(<any>err).code})`);
+            text += Style.dim(` ${messageText}`);
             return text;
         });
         Logger.echo(optionErrorsText.join(''));
@@ -132,21 +130,21 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
             // write header
             let str = '';
             Logger.info(
-                `${END_LINE}  ` + Style.underline(`Typechecker Summary:`),
+                Style.underline(`Typechecker Summary:`),
                 Style.grey(`Errors - ${totalsErrors}`)
             );
 
-            str += `   ${Style[optionsErrors ? 'red' : 'grey'](
-                `└── Options: ${optionsErrors}${END_LINE}`
+            str += `   ${Style[optionsErrors ? 'red' : 'dim'](
+                `- Options: ${optionsErrors}${END_LINE}`
             )}`;
-            str += `   ${Style[globalErrors ? 'red' : 'grey'](
-                `└── Global: ${globalErrors}${END_LINE}`
+            str += `   ${Style[globalErrors ? 'red' : 'dim'](
+                `- Global: ${globalErrors}${END_LINE}`
             )}`;
-            str += `   ${Style[syntacticErrors ? 'red' : 'grey'](
-                `└── Syntactic: ${syntacticErrors}${END_LINE}`
+            str += `   ${Style[syntacticErrors ? 'red' : 'dim'](
+                `- Syntactic: ${syntacticErrors}${END_LINE}`
             )}`;
-            str += `   ${Style[semanticErrors ? 'red' : 'grey'](
-                `└── Semantic: ${semanticErrors}${END_LINE}`
+            str += `   ${Style[semanticErrors ? 'red' : 'dim'](
+                `- Semantic: ${semanticErrors}`
             )}`;
 
             Logger.echo(str);
@@ -156,7 +154,7 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
     if (options.print_runtime) {
         Logger.info(
             `Typechecker inspection time:`,
-            Style.grey(`${errors.elapsedInspectionTime}ms`)
+            Style.dim(`${errors.elapsedInspectionTime}ms`)
         );
     }
 
