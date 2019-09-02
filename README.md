@@ -8,6 +8,11 @@ You need to install newest typescript to use this.
 ```npm install fuse-box-typechecker@next```
 
 
+### Output sample plugin
+![Output sample](https://github.com/fuse-box/fuse-box-typechecker/raw/master/image/sampleNew5.png "Output sample")
+
+
+
 ---
 
 ## How to load and configure
@@ -24,8 +29,6 @@ import {pluginTypeChecker} from 'fuse-box-typechecker';
     })]
 
 ```
-### Output sample plugin
-![Output sample](https://github.com/fuse-box/fuse-box-typechecker/raw/master/image/sampleNew3.png "Output sample")
 
 #### As Standalone
 
@@ -74,8 +77,6 @@ result.oldProgram.emit();
 
 ---
 
-### Output sample standalone
-![Output sample](https://github.com/fuse-box/fuse-box-typechecker/raw/master/image/sampleNew4.png "Output sample")
 
 one with with errors and one is a try without any
 ---
