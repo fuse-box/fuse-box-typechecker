@@ -22,7 +22,7 @@ const build = target => {
     checker.printSettings();
     let result = checker.inspectOnly();
     checker.printOnly(result);
-    console.log(result);
+
     if (
         result.optionsErrors.length ||
         result.globalErrors.length ||
