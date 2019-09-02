@@ -191,8 +191,13 @@ export function pluginTypeChecker(opts?: any) {
 
                 if (opts.printFirstRun) {
                     ctx.typeChecker.worker_PrintSettings();
+                    ctx.typeChecker.inspectAndPrint();
                 }
-                ctx.typeChecker.worker_inspectAndPrint(); // do 1 check so it uses less time next time, we do not print by default
+                if (opts.dev_print) {
+                    ctx.typeChecker.inspectAndPrint();
+                } else {
+                    ctx.typeChecker.worker_inspectAndPrint(); // do 1 check so it uses less time next time, we do not print by default
+                }
             }
             return props;
         });
