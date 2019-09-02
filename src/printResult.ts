@@ -46,16 +46,19 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
 
         return (
             Style.dim(`   `) +
-            Style.cyan(Style.italic(Style.underline(`${shortFileName}.`))) + ' '+
+            Style.cyan(Style.italic(Style.underline(`${shortFileName}.`))) +
+            ' ' +
             Style.grey(` - ${errors.length} errors.`) +
             END_LINE +
             errors
                 .map((err: TypeCheckError) => {
                     let text = Style.red('    -');
 
-                    text += Style.bold(Style[err.color](
-                        ` ${short ? shortFileName : fullFileName} (${err.line},${err.char}) `
-                    ));
+                    text += Style.bold(
+                        Style[err.color](
+                            ` ${short ? shortFileName : fullFileName} (${err.line},${err.char}) `
+                        )
+                    );
                     text += Style.dim(`(${(<ITSError>err).category}`);
                     text += Style.dim(`${(<ITSError>err).code})`);
                     text += ' ' + Style.dim((<ITSError>err).message);
@@ -66,33 +69,33 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
         );
     });
 
-    
     const name = options.name;
     // print if any
     if (allErrors.length > 0) {
         // insert header
         Logger.info(
-            `Typechecker inspection - (${name ? name : 'no-name'}):`,
-            Style.gray(`@warning ${totalsErrors} errors.`)
+            Style.red(`@warning Typechecker inspection - (${name ? name : 'no-name'}):`),
+            Style.gray(`${totalsErrors} errors.`)
         );
         Logger.echo(allErrors.join(END_LINE));
     } else {
-        Logger.info(`Typechecker inspection - (${name ? name : 'no-name'}):`, `@success ${Style.green(`No Errors found`)}`);
+        Logger.info(
+            `@success ${Style.green(`Typechecker inspection - (${name ? name : 'no-name'}):`)}`,
+            `${Style.green(`No Errors found`)}`
+        );
     }
 
     // print option errors
     // todo: this needs testing, how do I create a option error??
     if (errors.optionsErrors.length) {
-        Logger.info(
-            Style.cyan(`Typechecker option errors:`)
-        );
+        Logger.info(Style.cyan(`Typechecker option errors:`));
         let optionErrorsText = Object.entries(errors.optionsErrors).map(([no, err]) => {
             let text = no + ':';
             let messageText = (<any>err).messageText;
             if (typeof messageText === 'object' && messageText !== null) {
                 messageText = JSON.stringify(messageText);
             }
-            text = Style.dim(`   `)  + Style.red(` tsConfig: `);
+            text = Style.dim(`   `) + Style.red(` tsConfig: `);
             text += Style.dim(`(${(<any>err).category}:`);
             text += Style.dim(`${(<any>err).code})`);
             text += Style.dim(` ${messageText}`);
@@ -130,7 +133,7 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
             // write header
             let str = '';
             Logger.info(
-                '\n  '+ Style.underline(`Error Summary:`),
+                '\n  ' + Style.underline(`Error Summary:`),
                 Style.grey(`Errors - ${totalsErrors}`)
             );
 
@@ -143,9 +146,7 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
             str += `   ${Style[syntacticErrors ? 'red' : 'dim'](
                 `- Syntactic: ${syntacticErrors}${END_LINE}`
             )}`;
-            str += `   ${Style[semanticErrors ? 'red' : 'dim'](
-                `- Semantic: ${semanticErrors}`
-            )}`;
+            str += `   ${Style[semanticErrors ? 'red' : 'dim'](`- Semantic: ${semanticErrors}`)}`;
 
             Logger.echo(str);
         }
@@ -153,7 +154,7 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
 
     if (options.print_runtime) {
         Logger.info(
-            `Typechecker inspection time:`,
+            `  Typechecker inspection time:`,
             Style.dim(`${errors.elapsedInspectionTime}ms`)
         );
     }
