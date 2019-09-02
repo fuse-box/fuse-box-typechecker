@@ -1,7 +1,7 @@
 const { fusebox, sparky } = require('fuse-box');
 const { pluginTypeChecker } = require('../src/index');
 
-class Context {
+const Context = class {
     getConfig() {
         return fusebox({
             target: 'browser',
@@ -22,12 +22,27 @@ class Context {
             plugins: [
                 pluginTypeChecker({
                     basePath: './test',
-                    tsConfig: './tsconfig.json'
+                    dev_print: true,
+                    name: 'checkerSync',
+                    tsConfigOverride: {
+                        compilerOptions: {
+                            rootDir: `./test`,
+                            baseUrl: `./test`,
+                            target: 'es2015',
+                            module: 'commonjs',
+                            lib: ['es2017', 'dom'],
+                            emitDecoratorMetadata: true,
+                            sourceMap: true,
+                            declaration: true,
+                            importHelpers: true,
+                            experimentalDecorators: true
+                        }
+                    }
                 })
             ]
         });
     }
-}
+};
 const { task } = sparky(Context);
 
 task('default', async ctx => {
