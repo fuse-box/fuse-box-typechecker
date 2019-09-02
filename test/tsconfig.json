@@ -1,0 +1,41 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": "./src/",
+    "outDir": "./dist/",
+    "sourceMap": true,
+    "target": "es2018",
+    "module": "commonjs",
+    "declaration": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noUnusedParameters": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+    "strictNullChecks": true,
+    "alwaysStrict": true,
+    "importHelpers": true,
+    "noImplicitThis": false,
+    "noUnusedLocals": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "preserveConstEnums": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "lib": ["es2015", "es2017", "dom"]
+  },
+  "filesGlob": [
+    "./src/**/*.ts",
+    "./node_modules/**/*.ts",
+    "./node_modules/chalk/types/index.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "test",
+    "scripts"
+  ]
+}
