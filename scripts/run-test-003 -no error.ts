@@ -7,7 +7,7 @@ const checker: TypeHelperClass = require('../src/index').TypeChecker(<ITypeCheck
     tsConfigOverride: {
         compilerOptions: {
             rootDir: `./test`,
-            baseUrl:`./test`,
+            baseUrl: `./test`,
             target: 'es2015',
             module: 'commonjs',
             lib: ['es2017', 'dom'],
@@ -16,7 +16,8 @@ const checker: TypeHelperClass = require('../src/index').TypeChecker(<ITypeCheck
             declaration: true,
             importHelpers: true,
             experimentalDecorators: true
-        }
+        },
+        exclude: ['*.*']
     }
 });
 
