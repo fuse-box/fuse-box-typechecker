@@ -9,7 +9,7 @@ You need to install newest typescript to use this.
 
 
 ### Output sample with all options enabled
-![Output sample](https://github.com/fuse-box/fuse-box-typechecker/raw/master/image/sampleNew7.png "Output sample")
+![Output sample](https://github.com/fuse-box/fuse-box-typechecker/raw/master/image/sampleNew8.png "Output sample")
 
 
 
