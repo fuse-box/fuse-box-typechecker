@@ -1,25 +1,19 @@
-import chalk from 'chalk';
-import { print } from './printResult';
 import { ITypeCheckerOptions } from './interfaces';
 import { getPath } from './getPath';
+import { Logger, Style } from './logger';
 
 export function printSettings(options: ITypeCheckerOptions) {
     // configuration name
-    print(chalk.white(`${'\n'} Typechecker name: ${chalk.grey(`${options.name}${'\n'}`)}`));
+    Logger.info(`Typechecker settings - name:`, Style.dim(`${options.name}`));
 
     // base path being used
-    print(chalk.white(` Typechecker basepath: ${chalk.grey(`${options.basePath}${'\n'}`)}`));
+    Logger.info(`Typechecker settings - basepath:`, Style.dim(`${options.basePath}`));
 
     // get tsconfig path and options
     if (options.tsConfig) {
         let tsconf = getPath(options.tsConfig, options);
-        print(chalk.white(` Typechecker tsconfig: ${chalk.grey(`${tsconf}${'\n'}`)}`));
+        Logger.info(`Typechecker settings - tsconfig:`, Style.dim(`${tsconf}`));
     } else {
-        print(
-            chalk.white(
-                ` Typechecker tsconfig: ${chalk.grey(`undefined, using ts defaults${'\n'}`)}`
-            )
-        );
+        Logger.info(`Typechecker settings - tsconfig:`, Style.dim(`undefined, using ts defaults/override if defined`));
     }
-
 }

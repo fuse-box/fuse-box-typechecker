@@ -1,5 +1,4 @@
 import * as child from 'child_process';
-import chalk from 'chalk';
 import * as path from 'path';
 import { ITypeCheckerOptions, WorkerCommand, IResults, END_LINE } from './interfaces';
 
@@ -7,8 +6,9 @@ import * as ts from 'typescript';
 import './register.json5';
 import { getPath } from './getPath';
 import { inspectCode } from './inspectCode';
-import { printResult, print } from './printResult';
+import { printResult } from './printResult';
 import { printSettings } from './printSettings';
+import { Logger } from './logger';
 
 export class TypeHelperClass {
     private options: ITypeCheckerOptions;
@@ -119,7 +119,7 @@ export class TypeHelperClass {
 
     public worker_print(): void {
         if (!this.worker) {
-            print('Need to inspect code before printing first');
+            Logger.warn('Need to inspect code before printing first');
         } else {
             this.worker.send({ type: WorkerCommand.printResult, options: this.options });
         }
@@ -140,11 +140,11 @@ export class TypeHelperClass {
         this.worker.on('message', (msg: any) => {
             if (msg === 'error') {
                 // if error then exit
-                print('error typechecker');
+                Logger.error('error typechecker');
                 process.exit(1);
             } else {
                 // if not error, then just kill worker
-                print('killing worker');
+                Logger.info(`Typechecker(${this.options.name})`, 'killing worker');
                 this.worker_kill();
             }
         });
@@ -176,23 +176,19 @@ export function pluginTypeChecker(opts?: any) {
 
             ctx.typeChecker = TypeChecker(opts);
             if (ctx.config.env.NODE_ENV === 'production') {
-                print(
-                    chalk.white(
-                        ` Typechecker (${
-                            opts.name ? opts.name : 'no-name'
-                        }): inspecting code, please wait ${END_LINE}`
-                    )
+                Logger.info(
+                    ` Typechecker (${opts.name ? opts.name : 'no-name'}):`,
+                    ` inspecting code, please wait ${END_LINE}`
                 );
+
                 ctx.typeChecker.inspectAndPrint();
             } else {
                 // only print text if not production run
-                print(
-                    chalk.white(
-                        ` Typechecker (${
-                            opts.name ? opts.name : 'no-name'
-                        }): Starting thread. Will print status soon, please wait ${END_LINE}`
-                    )
+                Logger.info(
+                    ` Typechecker (${opts.name ? opts.name : 'no-name'}):`,
+                    ` Starting thread. Will print status soon, please wait ${END_LINE}`
                 );
+
                 if (opts.printFirstRun) {
                     ctx.typeChecker.worker_PrintSettings();
                 }
@@ -201,13 +197,11 @@ export function pluginTypeChecker(opts?: any) {
             return props;
         });
         ctx.ict.on('rebundle_complete', (props: any) => {
-            print(
-                chalk.white(
-                    ` Typechecker (${
-                        opts.name ? opts.name : 'no-name'
-                    }): Calling thread for new report, please wait ${END_LINE}`
-                )
+            Logger.info(
+                ` Typechecker (${opts.name ? opts.name : 'no-name'}):`,
+                ` Calling thread for new report, please wait ${END_LINE}`
             );
+
             ctx.typeChecker.worker_inspectAndPrint();
             return props;
         });

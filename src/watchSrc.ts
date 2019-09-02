@@ -1,9 +1,8 @@
-import chalk from 'chalk';
-import { END_LINE, ITypeCheckerOptions } from './interfaces';
-import { print } from './printResult';
+import { ITypeCheckerOptions } from './interfaces';
 import * as watch from 'watch';
 import { getPath } from './getPath';
 import { debugPrint } from './debugPrint';
+import { Logger, Style } from './logger';
 
 let watchTimeout: any;
 
@@ -11,24 +10,23 @@ export function watchSrc(pathToWatch: string, options: ITypeCheckerOptions, call
     debugPrint('wwatchSrc' + pathToWatch);
     let basePath = getPath(pathToWatch, options);
 
-
     watch.createMonitor(basePath, (monitor: any) => {
         // todo-> move into thread
 
         // tell user what path we are watching
-        print(chalk.yellow(`Typechecker watching: ${chalk.white(`${basePath}${END_LINE}`)}`));
+        Logger.echo(Style.yellow(`  Typechecker watching: ${Style.grey(`${basePath}`)}`));
 
         // on created file event
         monitor.on('created', (f: any /*, stat: any*/) => {
-            print(END_LINE + chalk.yellow(`File created: ${f}${END_LINE}`));
+            Logger.echo(Style.yellow(`\n  File created: ${f}`));
             callback();
         });
 
         // on changed file event
         monitor.on('changed', (f: any /*, curr: any, prev: any*/) => {
             // tell user about event
-            print(END_LINE + chalk.yellow(`File changed: ${chalk.white(`${f}${END_LINE}`)}`));
-            print(chalk.grey(`Calling typechecker${END_LINE}`));
+            Logger.echo(Style.yellow(`\n  File changed: ${Style.grey(`${f}`)}`));
+            Logger.echo(Style.grey(`  Calling typechecker`));
 
             // have inside timeout, so we only run once when multiple files are saved
             clearTimeout(watchTimeout);
@@ -39,8 +37,8 @@ export function watchSrc(pathToWatch: string, options: ITypeCheckerOptions, call
 
         monitor.on('removed', (f: any /*, stat: any*/) => {
             // tell user about event
-            print(END_LINE + chalk.yellow(`File removed: ${chalk.white(`${f}${END_LINE}`)}`));
-            print(chalk.grey(`Calling typechecker${END_LINE}`));
+            Logger.echo(Style.yellow(`\n  File removed: ${Style.white(`${f}`)}`));
+            Logger.echo(Style.grey(`  Calling typechecker`));
 
             // have inside timeout, so we only run once when multiple files are saved
             clearTimeout(watchTimeout);

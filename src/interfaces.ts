@@ -9,18 +9,12 @@ export interface ITypeCheckerOptions {
     tsConfig?: string;
 
     // path to tsconfig file (from basepath)
-    tsConfigOverride?: Object;
+    tsConfigOverride?: object;
 
     throwOnSyntactic?: boolean;
     throwOnSemantic?: boolean;
     throwOnGlobal?: boolean;
     throwOnOptions?: boolean;
-
-    // color options
-    yellowOnOptions?: boolean;
-    yellowOnGlobal?: boolean;
-    yellowOnSemantic?: boolean;
-    yellowOnSyntactic?: boolean;
 
     // name that will be displayed on cmd echo
     name?: string;

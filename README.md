@@ -8,6 +8,11 @@ You need to install newest typescript to use this.
 ```npm install fuse-box-typechecker@next```
 
 
+### Output sample with all options enabled
+![Output sample](https://github.com/fuse-box/fuse-box-typechecker/raw/master/image/sampleNew6.png "Output sample")
+
+
+
 ---
 
 ## How to load and configure
@@ -24,8 +29,6 @@ import {pluginTypeChecker} from 'fuse-box-typechecker';
     })]
 
 ```
-### Output sample plugin
-![Output sample](https://github.com/fuse-box/fuse-box-typechecker/raw/master/image/sampleNew3.png "Output sample")
 
 #### As Standalone
 
@@ -49,14 +52,30 @@ typeChecker.worker_watch('./src');
 
 // see public functions for more ways to use it
 
----
+
 
 ```
 
-### Output sample standalone
-![Output sample](https://github.com/fuse-box/fuse-box-typechecker/raw/master/image/sampleNew4.png "Output sample")
+Emiting code
 
-one with with errors and one is a try without any
+```js
+const checker = require('fuse-box-type-checker').TypeChecker({
+    tsConfig: './tsconfig.json',
+    tsConfigOverride:{
+        "compilerOptions": {
+            "outDir": "testme/"
+        }
+    },
+    basePath: './',
+    name: 'checkerEmit'
+});
+checker.printSettings(); // optional
+let result = checker.inspectOnly();
+checker.printOnly(result); // optional...
+result.oldProgram.emit();
+```
+
+
 ---
 
 #### Public functions
@@ -102,24 +121,7 @@ interface ITypeCheckerOptionsInterface {
     throwOnSyntactic?: boolean;
     throwOnSemantic?: boolean;
     throwOnGlobal?: boolean;
-    throwOnOptions?: boolean;
-       
-    
-    // use yellow color instead of red on Options errors
-    yellowOnOptions?: boolean; 
-    
-    
-    // use yellow color instead of red on Global errors
-    yellowOnGlobal?: boolean; 
-    
-    
-    // use yellow color instead of red on Semantic errors
-    yellowOnSemantic?: boolean; 
-    
-    
-    // use yellow color instead of red on Syntactic errors
-    yellowOnSyntactic?: boolean; 
-    
+    throwOnOptions?: boolean;  
     
     // use shortened filenames in order to make output less noisy
     shortenFilenames?: boolean; 
@@ -130,6 +132,7 @@ interface ITypeCheckerOptionsInterface {
     // print settings
     print_summary?: boolean; //default false
     print_runtime?: boolean //default false
+    printFirstRun?: boolean //default false  /plugin only
     
 }
 
