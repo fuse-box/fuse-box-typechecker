@@ -1,5 +1,7 @@
+import { TypeHelperClass } from '../src/index';
+import { ITypeCheckerOptions } from '../src/interfaces';
 
-const checker = require('./dist/index').TypeChecker({
+const checker: TypeHelperClass = require('../src/index').TypeChecker(<ITypeCheckerOptions>{
     basePath: './test',
     name: 'checkerSync',
     tsConfigOverride: {
@@ -15,9 +17,7 @@ const checker = require('./dist/index').TypeChecker({
             importHelpers: true,
             experimentalDecorators: true
         }
-    },
-    print_summary: true,
-    print_runtime: true
+    }
 });
 
 checker.inspectAndPrint();

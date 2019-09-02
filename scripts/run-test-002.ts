@@ -17,9 +17,7 @@ const checker: TypeHelperClass = require('../src/index').TypeChecker(<ITypeCheck
             importHelpers: true,
             experimentalDecorators: true
         }
-    },
-    print_summary: true,
-    print_runtime: true
+    }
 });
 
 checker.inspectAndPrint();

@@ -6,8 +6,8 @@ const checker: TypeHelperClass = require('../src/index').TypeChecker(<ITypeCheck
     name: 'checkerSync',
     tsConfigOverride: {
         compilerOptions: {
-            outDir: `./dist`,
-            rootDir: `./src`,
+            rootDir: `./test`,
+            baseUrl:`./test`,
             target: 'es2015',
             module: 'commonjs',
             lib: ['es2017', 'dom'],
@@ -25,4 +25,3 @@ const checker: TypeHelperClass = require('../src/index').TypeChecker(<ITypeCheck
 checker.inspectAndPrint();
 
 
-var x = 1;
