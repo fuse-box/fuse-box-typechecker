@@ -38,7 +38,7 @@ export class FuseLog {
 
     info(...args: any) {
         const { group, message, vars } = parseArguments(args);
-        let str = this.indent;
+        let str = ''; //this.indent;
         if (group) {
             str += `<bold><cyan>${group}</cyan></bold> `;
         }
