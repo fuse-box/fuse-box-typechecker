@@ -84,7 +84,7 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
 
     // print option errors
     // todo: this needs testing, how do I create a option error??
-    if (errors.globalErrors.length) {
+    if (errors.optionsErrors.length) {
         Logger.echo(
             Style.underline(`${END_LINE}${END_LINE}Option errors`) + Style.white(`:${END_LINE}`)
         );
