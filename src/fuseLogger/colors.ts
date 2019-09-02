@@ -35,11 +35,11 @@ export const COLOR_CODES = {
 };
 
 const SYMBOLS = {
-    warning: '⚠️',
+    warning: '⚠️ ',
     error: '❌',
     checkmark: `✔`,
     clock: `⏲`,
-    stopwatch: `⏱️`,
+    stopwatch: `⏱️ `,
     success: `${wrapCodeString('✔', COLOR_CODES.green)} `
 };
 
