@@ -36,9 +36,9 @@ export const COLOR_CODES = {
 
 const SYMBOLS = {
     warning: '⚠️ ',
-    error: '❌',
+    error: '❌ ',
     checkmark: `✔`,
-    clock: `⏲`,
+    clock: `⏲ `,
     stopwatch: `⏱️ `,
     success: `${wrapCodeString('✔', COLOR_CODES.green)} `
 };
