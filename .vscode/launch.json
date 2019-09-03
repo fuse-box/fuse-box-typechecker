@@ -5,18 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Run current TS file",
-            "type": "node",
-            "request": "launch",
-            "args": ["${relativeFile}"],
-            "program": "${workspaceRoot}/node_modules/ts-node/dist/bin",
-            "env": { "TS_NODE_TRANSPILE_ONLY": "true", "TS_NODE_IGNORE_DIAGNOSTICS":"true" }
-        },
-        {
             "name": "Debug current TS file",
             "type": "node",
             "request": "launch",
             "args": ["${relativeFile}"],
+            "console": "integratedTerminal",
             "runtimeArgs": ["--nolazy", "-r", "./node_modules/ts-node/register"],
             "sourceMaps": true,
             "cwd": "${workspaceRoot}",
