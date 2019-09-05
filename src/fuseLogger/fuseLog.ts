@@ -38,7 +38,7 @@ export class FuseLog {
 
     info(...args: any) {
         const { group, message, vars } = parseArguments(args);
-        let str = ''; //this.indent;
+        let str = this.indent;
         if (group) {
             str += `<bold><cyan>${group}</cyan></bold> `;
         }
@@ -46,52 +46,7 @@ export class FuseLog {
         this.log('info', codeLog(str, vars));
     }
 
-    warn(...args: any) {
-        const { group, message, vars } = parseArguments(args);
-        let str = this.indent;
-        if (group) {
-            str += `<bold>@warning <yellow>${group}</yellow></bold> `;
-            str += `<yellow>${message}</yellow>`;
-        } else {
-            str += `<bold>@warning <yellow>${message}</yellow></bold> `;
-        }
-        this.log('warn', codeLog(str, vars));
-    }
 
-    success(...args: any) {
-        const { group, message, vars } = parseArguments(args);
-        let str = this.indent;
-        if (group) {
-            str += `<bold>@success <green>${group}</green></bold> `;
-            str += `<green>${message}</green>`;
-        } else {
-            str += `<bold>@success <green>${message}</green></bold> `;
-        }
-        this.log('success', codeLog(str, vars));
-    }
-
-    meta(group: string, message: string, vars?: any) {
-        this.log(
-            'meta',
-            codeLog(
-                `${this.indent}<bold><dim><yellow>${group}</yellow> <cyan>${message}</cyan></dim></bold>`,
-                vars
-            )
-        );
-    }
-
-    error(...args: any) {
-        const { group, message, vars } = parseArguments(args);
-        let str = this.indent;
-        if (group) {
-            str += `<bold>@error <white><bgRed>${group}</bgRed></white></bold> `;
-            str += `<red><bold>${message}</bold></red>`;
-        } else {
-            str += `<bold>@error <red>${message}</red></bold> `;
-        }
-
-        this.log('error', codeLog(str, vars));
-    }
 }
 
 export function createLog<L>(_CustomLogger?: L) {
