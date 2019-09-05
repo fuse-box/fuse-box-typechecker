@@ -177,7 +177,7 @@ export function pluginTypeChecker(opts?: any) {
             ctx.typeChecker = TypeChecker(opts);
             if (ctx.config.env.NODE_ENV === 'production') {
                 Logger.info(
-                    `@stopwatch Typechecker (${opts.name ? opts.name : 'no-name'}):`,
+                    `Typechecker (${opts.name ? opts.name : 'no-name'}):`,
                     `inspecting code, please wait...`
                 );
 
@@ -185,7 +185,7 @@ export function pluginTypeChecker(opts?: any) {
             } else {
                 // only print text if not production run
                 Logger.info(
-                    `@stopwatch Typechecker (${opts.name ? opts.name : 'no-name'}):`,
+                    `Typechecker (${opts.name ? opts.name : 'no-name'}):`,
                     `Starting thread. Will print status soon, please wait...`
                 );
 
@@ -203,7 +203,7 @@ export function pluginTypeChecker(opts?: any) {
         });
         ctx.ict.on('rebundle_complete', (props: any) => {
             Logger.info(
-                `@stopwatch Typechecker (${opts.name ? opts.name : 'no-name'}):`,
+                `Typechecker (${opts.name ? opts.name : 'no-name'}):`,
                 `Calling thread for new report, please wait...`
             );
 

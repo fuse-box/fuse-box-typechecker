@@ -74,13 +74,13 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
     if (allErrors.length > 0) {
         // insert header
         Logger.info(
-            Style.red(`@error Typechecker inspection - (${name ? name : 'no-name'}):`),
+            Style.red(`<white><bold><bgRed> ERROR </bgRed></bold></white> <red>Typechecker inspection - (${name ? name : 'no-name'}):</red>`),
             Style.gray(`${totalsErrors} errors.`)
         );
         Logger.echo(allErrors.join(END_LINE));
     } else {
         Logger.info(
-            `@success ${Style.green(`Typechecker inspection - (${name ? name : 'no-name'}):`)}`,
+            `<white><bold><bgGreen> SUCCESS </bgGreen></bold></white> ${Style.green(`Typechecker inspection - (${name ? name : 'no-name'}):`)}`,
             `${Style.green(`No Errors found`)}`
         );
     }
@@ -88,7 +88,7 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
     // print option errors
     // todo: this needs testing, how do I create a option error??
     if (errors.optionsErrors.length) {
-        Logger.info(Style.red(`\n@error Typechecker option errors:`));
+        Logger.info(Style.red(`\n<white><bold><bgRed> ERROR </bgRed></bold></white> <red>Typechecker option errors:</red>`), Style.gray(`${errors.optionsErrors.length} errors.`));
         let optionErrorsText = Object.entries(errors.optionsErrors).map(([no, err]) => {
             let text = no + ':';
             let messageText = (<any>err).messageText;
@@ -101,7 +101,7 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
             text += Style.dim(` ${messageText}`);
             return text;
         });
-        Logger.echo(optionErrorsText.join(''));
+        Logger.echo(optionErrorsText.join('\n'));
     }
 
     // print global errors

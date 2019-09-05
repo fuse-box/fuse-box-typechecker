@@ -9,7 +9,8 @@ export function throwIfError(options: ITypeCheckerOptions, errors: IResults) {
         case options.throwOnOptions && errors.optionsErrors.length > 0:
         case options.throwOnSemantic && errors.semanticErrors.length > 0:
         case options.throwOnSyntactic && errors.syntacticErrors.length > 0:
-            Logger.error(`throw action- quiting${END_LINE}${END_LINE}`);
+            Logger.info(`<black><bold><bgYellow> WARNING </bgYellow></bold></black> <yellow>Typechecker throw on error activated- quitting</yellow>`);
+
             printResult(options, errors);
             process.exit(1);
             break;
