@@ -91,18 +91,6 @@ export class Logger {
     public static info = (...args: any[]) => {
         _logger.info(...args);
     };
-    public static warn = (...args: any[]) => {
-        _logger.warn(...args);
-    };
-    public static success = (...args: any[]) => {
-        _logger.success(...args);
-    };
-    public static meta = (group: string, message: string, vars?: any) => {
-        _logger.meta(group, message, vars);
-    };
-    public static error = (...args: any[]) => {
-        _logger.error(...args);
-    };
     public static echo = (message: string, vars?: any) => {
         _logger.echo(message, vars);
     };

@@ -82,7 +82,12 @@ export class TypeHelperClass {
     }
 
     public printOnly(errors: IResults) {
-        return printResult(this.options, errors);
+        if(!errors  || errors && !errors.oldProgram){
+            Logger.info(`<black><bold><bgYellow> WARNING </bgYellow></bold></black>  <yellow><bold>No old program in params, auto running inspect first</yellow></bold>`)
+            return this.inspectAndPrint();
+        }else {
+            return printResult(this.options, errors);
+        }
     }
 
     public worker_watch(pathToWatch: string): void {
@@ -119,7 +124,7 @@ export class TypeHelperClass {
 
     public worker_print(): void {
         if (!this.worker) {
-            Logger.warn('Need to inspect code before printing first');
+            Logger.info('<black><bold><bgYellow> WARNING </bgYellow></bold></black> <yellow>Need to inspect code before printing first<yellow>');
         } else {
             this.worker.send({ type: WorkerCommand.printResult, options: this.options });
         }
@@ -140,11 +145,11 @@ export class TypeHelperClass {
         this.worker.on('message', (msg: any) => {
             if (msg === 'error') {
                 // if error then exit
-                Logger.error('error typechecker');
+                Logger.echo('<black><bold><bgYellow> WARNING </bgYellow></bold></black> <yellow>- error typechecker</yellow>');
                 process.exit(1);
             } else {
                 // if not error, then just kill worker
-                Logger.info(`Typechecker(${this.options.name})`, 'killing worker');
+                Logger.echo(`<black><bold><bgYellow> WARNING </bgYellow></bold></black> <yellow>`,`<yellow>Typechecker(${this.options.name}) killing worker</yellow>`);
                 this.worker_kill();
             }
         });
