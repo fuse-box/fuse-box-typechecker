@@ -8,7 +8,7 @@ import {
 } from './interfaces';
 import * as path from 'path';
 import { processTsDiagnostics } from './processTsDiagnostics';
-import { Style, Logger } from './logger';
+import { Logger } from './logger';
 
 export function printResult(options: ITypeCheckerOptions, errors: IResults): TotalErrorsFound {
     // get the lint errors messages
@@ -45,23 +45,18 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
         }
 
         return (
-            Style.dim(`   `) +
-            Style.cyan(Style.italic(Style.underline(`${shortFileName}.`))) +
-            ' ' +
-            Style.grey(` - ${errors.length} errors.`) +
-            END_LINE +
+            `   <cyan><bold><underline>${shortFileName}.</underline></bold></cyan> <grey> - ${errors.length} errors.</grey>\n` +
             errors
                 .map((err: TypeCheckError) => {
-                    let text = Style.red('    -');
+                    let text = '<red>    - </red>';
 
-                    text += Style.bold(
-                        Style[err.color](
-                            ` ${short ? shortFileName : fullFileName} (${err.line},${err.char}) `
-                        )
-                    );
-                    text += Style.dim(`(${(<ITSError>err).category}`);
-                    text += Style.dim(`${(<ITSError>err).code})`);
-                    text += ' ' + Style.dim((<ITSError>err).message);
+                    text += `<bold><red> ${short ? shortFileName : fullFileName} (${
+                        err.line
+                    },${err.char})</red><bold>`;
+
+                    text += `<dim> (${(<ITSError>err).category}</dim>`;
+                    text += `<dim> ${(<ITSError>err).code})</dim>`;
+                    text += ` <dim> ${(<ITSError>err).message}</dim>`;
 
                     return text;
                 })
@@ -74,31 +69,38 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
     if (allErrors.length > 0) {
         // insert header
         Logger.info(
-            Style.red(`<white><bold><bgRed> ERROR </bgRed></bold></white> <red>Typechecker inspection - (${name ? name : 'no-name'}):</red>`),
-            Style.gray(`${totalsErrors} errors.`)
+            `<white><bold><bgRed> ERROR </bgRed></bold></white> <red>Typechecker inspection - (${
+                name ? name : 'no-name'
+            }):</red>`,
+            `<gray>${totalsErrors} errors.<gray>`
         );
         Logger.echo(allErrors.join(END_LINE));
     } else {
         Logger.info(
-            `<white><bold><bgGreen> SUCCESS </bgGreen></bold></white> ${Style.green(`Typechecker inspection - (${name ? name : 'no-name'}):`)}`,
-            `${Style.green(`No Errors found`)}`
+            `<white><bold><bgGreen> SUCCESS </bgGreen></bold></white> <green>Typechecker inspection - (${
+                name ? name : 'no-name'
+            }):<green>`,
+            `<green>No Errors found</green>`
         );
     }
 
     // print option errors
     // todo: this needs testing, how do I create a option error??
     if (errors.optionsErrors.length) {
-        Logger.info(Style.red(`\n<white><bold><bgRed> ERROR </bgRed></bold></white> <red>Typechecker option errors:</red>`), Style.gray(`${errors.optionsErrors.length} errors.`));
+        Logger.info(
+            `\n   <red><underline>Option errors:</underline></red>`
+        ),
+            `<grey>${errors.optionsErrors.length} errors.</grey>`;
         let optionErrorsText = Object.entries(errors.optionsErrors).map(([no, err]) => {
             let text = no + ':';
             let messageText = (<any>err).messageText;
             if (typeof messageText === 'object' && messageText !== null) {
                 messageText = JSON.stringify(messageText);
             }
-            text = Style.dim(`   `) + Style.cyan(` tsConfig: `);
-            text += Style.red(`(${(<any>err).category}:`);
-            text += Style.red(`${(<any>err).code})`);
-            text += Style.dim(` ${messageText}`);
+            text = `<cyan>    tsConfig: </cyan>`;
+            text += `<red>(${(<any>err).category}:</red>`;
+            text += `<red>${(<any>err).code})</red>`;
+            text += `<dim> ${messageText}</dim>`;
             return text;
         });
         Logger.echo(optionErrorsText.join('\n'));
@@ -133,20 +135,22 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
             // write header
             let str = '';
             Logger.info(
-                '\n  ' + Style.underline(`Error Summary:`),
-                Style.grey(`Errors - ${totalsErrors}`)
+                `\n  <underline>Error Summary:</underline>`,
+                `<grey> - ${totalsErrors} errors.</grey>`
             );
 
-            str += `   ${Style[optionsErrors ? 'red' : 'dim'](
-                `- Options: ${optionsErrors}${END_LINE}`
-            )}`;
-            str += `   ${Style[globalErrors ? 'red' : 'dim'](
-                `- Global: ${globalErrors}${END_LINE}`
-            )}`;
-            str += `   ${Style[syntacticErrors ? 'red' : 'dim'](
-                `- Syntactic: ${syntacticErrors}${END_LINE}`
-            )}`;
-            str += `   ${Style[semanticErrors ? 'red' : 'dim'](`- Semantic: ${semanticErrors}`)}`;
+            str += `   <${optionsErrors ? 'red' : 'dim'}>- Options: ${optionsErrors}\n</${
+                optionsErrors ? 'red' : 'dim'
+            }>`;
+            str += `   <${semanticErrors ? 'red' : 'dim'}>- Options: ${semanticErrors}\n</${
+                semanticErrors ? 'red' : 'dim'
+            }>`;
+            str += `   <${syntacticErrors ? 'red' : 'dim'}>- Options: ${syntacticErrors}\n</${
+                syntacticErrors ? 'red' : 'dim'
+            }>`;
+            str += `   <${globalErrors ? 'red' : 'dim'}>- Options: ${globalErrors}\n</${
+                globalErrors ? 'red' : 'dim'
+            }>`;
 
             Logger.echo(str);
         }
@@ -155,7 +159,7 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
     if (options.print_runtime) {
         Logger.info(
             `  Typechecker inspection time:`,
-            Style.dim(`${errors.elapsedInspectionTime}ms`)
+            `<dim>${errors.elapsedInspectionTime}ms</dim>`
         );
     }
 
