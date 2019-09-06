@@ -23,7 +23,6 @@ const checker: TypeHelperClass = require('../src/index').TypeChecker(<ITypeCheck
 });
 
 checker.printSettings();
-console.log('')
 checker.inspectAndPrint();
 
 

@@ -65,20 +65,24 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
     // print if any
     if (allErrors.length > 0) {
         // insert header
+        Logger.echo('')
         Logger.info(
             `<white><bold><bgRed> ERROR </bgRed></bold></white> <red>Typechecker inspection - (${
                 name ? name : 'no-name'
             }):</red>`,
             `<gray>${totalsErrors} errors.<gray>`
         );
+        Logger.echo('')
         Logger.echo(allErrors.join(END_LINE));
     } else {
+        Logger.echo('')
         Logger.info(
             `<white><bold><bgGreen> SUCCESS </bgGreen></bold></white> <green>Typechecker inspection - (${
                 name ? name : 'no-name'
             }):<green>`,
             `<green>No Errors found</green>`
         );
+        Logger.echo('')
     }
 
     // print option errors
