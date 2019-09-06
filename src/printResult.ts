@@ -45,18 +45,15 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
         }
 
         return (
-            `   <cyan><bold><underline>${shortFileName}.</underline></bold></cyan> <grey> - ${errors.length} errors.</grey>\n` +
+            `   <cyan><bold><underline>${shortFileName}</underline></bold></cyan> <grey> - ${errors.length} errors.</grey>\n` +
             errors
                 .map((err: TypeCheckError) => {
-                    let text = '<red>    - </red>';
-
-                    text += `<bold><red> ${short ? shortFileName : fullFileName} (${
-                        err.line
-                    },${err.char})</red><bold>`;
-
-                    text += `<dim> (${(<ITSError>err).category}</dim>`;
-                    text += `<dim> ${(<ITSError>err).code})</dim>`;
-                    text += ` <dim> ${(<ITSError>err).message}</dim>`;
+                    const fName = short ? shortFileName : fullFileName;
+                    let text = `<yellow>    -  ${fName}:${err.line}:${err.char}</yellow><dim> (${
+                        (<ITSError>err).category
+                    }</dim><dim> ${(<ITSError>err).code})</dim><dim> ${
+                        (<ITSError>err).message
+                    }</dim>`;
 
                     return text;
                 })
@@ -85,82 +82,69 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
     }
 
     // print option errors
-    // todo: this needs testing, how do I create a option error??
     if (errors.optionsErrors.length) {
-        Logger.info(
-            `\n   <red><underline>Option errors:</underline></red>`
-        ),
-            `<grey>${errors.optionsErrors.length} errors.</grey>`;
+        Logger.info(`\n   <cyan><bold><underline>Option errors:</underline></bold></cyan>`,
+            `<grey>${errors.optionsErrors.length} errors.</grey>`);
         let optionErrorsText = Object.entries(errors.optionsErrors).map(([no, err]) => {
-            let text = no + ':';
             let messageText = (<any>err).messageText;
             if (typeof messageText === 'object' && messageText !== null) {
                 messageText = JSON.stringify(messageText);
             }
-            text = `<cyan>    tsConfig: </cyan>`;
-            text += `<red>(${(<any>err).category}:</red>`;
-            text += `<red>${(<any>err).code})</red>`;
-            text += `<dim> ${messageText}</dim>`;
+            let text = `<yellow>    -  tsConfig: </yellow><yellow>(${
+                (<any>err).category
+            }:</yellow><yellow>${(<any>err).code})</yellow><dim> ${messageText}</dim>`;
             return text;
         });
         Logger.echo(optionErrorsText.join('\n'));
     }
 
-    // print global errors
     // todo: this needs testing, how do I create a global error??
-    /* try {
-            if (getGlobalDiagnostics().length) {
-                print(chalk.underline(`${END_LINE}${END_LINE}Global errors`) + chalk.white(`:${END_LINE}`));
-                let optionErrorsText = Object.entries(getGlobalDiagnostics())
-                    .map(([no, err]) => {
-                        let text = no + ':';
-                        text = chalk[options.yellowOnGlobal ? 'yellow' : 'red']
-                            (`└── tsConfig: `);
-                        text += chalk.white(`(${(<any>err).category}:`);
-                        text += chalk.white(`${(<any>err).code})`);
-                        text += chalk.white(` ${(<any>err).messageText}`);
-                        return text;
-                    });
-                print(optionErrorsText.join(END_LINE));
-            }
-        } catch (err) {
-            console.log(`Global error`);
-        } */
-
-    // time for summary >>>>>
+    try {
+        if (errors.globalErrors.length) {
+            Logger.info(`\n   <red><bold><underline>Option errors:</underline></bold></red>`,
+                `<grey>${errors.globalErrors.length} errors.</grey>`);
+            let globalErrorsText = Object.entries(errors.globalErrors).map(([no, err]) => {
+                let messageText = (<any>err).messageText;
+                if (typeof messageText === 'object' && messageText !== null) {
+                    messageText = JSON.stringify(messageText);
+                }
+                let text = `<yellow>  -  tsConfig: </yellow><yellow>(${
+                    (<any>err).category
+                }:</yellow><yellow>${(<any>err).code})</yellow><dim> ${messageText}</dim>`;
+                return text;
+            });
+            Logger.echo(globalErrorsText.join('\n'));
+        }
+    } catch (err) {
+        console.log(`Global error`, err);
+    }
 
     // if errors, show user
     if (options.print_summary) {
         if (totalsErrors) {
             // write header
-            let str = '';
+
             Logger.info(
                 `\n  <underline>Error Summary:</underline>`,
                 `<grey> - ${totalsErrors} errors.</grey>`
             );
 
-            str += `   <${optionsErrors ? 'red' : 'dim'}>- Options: ${optionsErrors}\n</${
-                optionsErrors ? 'red' : 'dim'
-            }>`;
-            str += `   <${semanticErrors ? 'red' : 'dim'}>- Options: ${semanticErrors}\n</${
-                semanticErrors ? 'red' : 'dim'
-            }>`;
-            str += `   <${syntacticErrors ? 'red' : 'dim'}>- Options: ${syntacticErrors}\n</${
-                syntacticErrors ? 'red' : 'dim'
-            }>`;
-            str += `   <${globalErrors ? 'red' : 'dim'}>- Options: ${globalErrors}\n</${
-                globalErrors ? 'red' : 'dim'
-            }>`;
-
-            Logger.echo(str);
+            Logger.echo(
+                `   <${optionsErrors ? 'red' : 'dim'}>- Options: ${optionsErrors}\n</${
+                    optionsErrors ? 'red' : 'dim'
+                }>   <${semanticErrors ? 'red' : 'dim'}>- Options: ${semanticErrors}\n</${
+                    semanticErrors ? 'red' : 'dim'
+                }>   <${syntacticErrors ? 'red' : 'dim'}>- Options: ${syntacticErrors}\n</${
+                    syntacticErrors ? 'red' : 'dim'
+                }>   <${globalErrors ? 'red' : 'dim'}>- Options: ${globalErrors}\n</${
+                    globalErrors ? 'red' : 'dim'
+                }>`
+            );
         }
     }
 
     if (options.print_runtime) {
-        Logger.info(
-            `  Typechecker inspection time:`,
-            `<dim>${errors.elapsedInspectionTime}ms</dim>`
-        );
+        Logger.info(`Typechecker inspection time:`, `<dim>${errors.elapsedInspectionTime}ms</dim>`);
     }
 
     return totalsErrors;
