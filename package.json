@@ -14,7 +14,13 @@
   },
   "license": "MIT",
   "scripts": {
-    "test": "node test.js",
+    "test1": "ts-node ./scripts/run_test_001",
+    "test2": "ts-node ./scripts/run_test_002",
+    "test3": "ts-node ./scripts/run_test_003_no_error",
+    "test4": "ts-node ./scripts/run_test_004_fusebox",
+    "test5": "ts-node ./scripts/run_test_005_fusebox_option_errors",
+    "test6": "ts-node ./scripts/run_test_006_throw",
+    "test7": "ts-node ./scripts/run_test_007_print_without_inspect",
     "build": "node ./scripts/build"
   },
   "author": "Fusebox Community",
@@ -26,19 +32,18 @@
   },
   "devDependencies": {
     "@types/json5": "0.0.30",
-    "@types/node": "^12.6.8",
+    "@types/node": "^13.7.0",
     "@types/watch": "^1.0.1",
-    "fuse-box": "^4.0.0-next.127",
+    "fuse-box": "^4.0.0-next.165",
     "fuse-box-typechecker": "3.0.0-next.27",
-    "husky": "^3.0.5",
-    "lint-staged": "^9.2.5",
-    "prettier": "^1.18.2",
-    "ts-node": "^8.3.0",
-    "typescript": "^3.5.3"
+    "husky": "^4.2.1",
+    "lint-staged": "^10.0.7",
+    "prettier": "^1.19.1",
+    "typescript": "^3.7.5"
   },
   "dependencies": {
-    "json5": "^2.1.0",
-    "object.entries": "^1.1.0",
+    "json5": "^2.1.1",
+    "object.entries": "^1.1.1",
     "tslib": "^1.10.0",
     "watch": "^1.0.2"
   },
