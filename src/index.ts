@@ -82,10 +82,12 @@ export class TypeHelperClass {
     }
 
     public printOnly(errors: IResults) {
-        if(!errors  || errors && !errors.oldProgram){
-            Logger.info(`<black><bold><bgYellow> WARNING </bgYellow></bold></black>  <yellow><bold>No old program in params, auto running inspect first</yellow></bold>`)
+        if (!errors || (errors && !errors.oldProgram)) {
+            Logger.info(
+                `<black><bold><bgYellow> WARNING </bgYellow></bold></black>  <yellow><bold>No old program in params, auto running inspect first</yellow></bold>`
+            );
             return this.inspectAndPrint();
-        }else {
+        } else {
             return printResult(this.options, errors);
         }
     }
@@ -124,7 +126,9 @@ export class TypeHelperClass {
 
     public worker_print(): void {
         if (!this.worker) {
-            Logger.info('<black><bold><bgYellow> WARNING </bgYellow></bold></black> <yellow>Need to inspect code before printing first<yellow>');
+            Logger.info(
+                '<black><bold><bgYellow> WARNING </bgYellow></bold></black> <yellow>Need to inspect code before printing first<yellow>'
+            );
         } else {
             this.worker.send({ type: WorkerCommand.printResult, options: this.options });
         }
@@ -145,11 +149,16 @@ export class TypeHelperClass {
         this.worker.on('message', (msg: any) => {
             if (msg === 'error') {
                 // if error then exit
-                Logger.echo('<black><bold><bgYellow> WARNING </bgYellow></bold></black> <yellow>- error typechecker</yellow>');
+                Logger.echo(
+                    '<black><bold><bgYellow> WARNING </bgYellow></bold></black> <yellow>- error typechecker</yellow>'
+                );
                 process.exit(1);
             } else {
                 // if not error, then just kill worker
-                Logger.echo(`<black><bold><bgYellow> WARNING </bgYellow></bold></black> <yellow>`,`<yellow>Typechecker(${this.options.name}) killing worker</yellow>`);
+                Logger.echo(
+                    `<black><bold><bgYellow> WARNING </bgYellow></bold></black> <yellow>`,
+                    `<yellow>Typechecker(${this.options.name}) killing worker</yellow>`
+                );
                 this.worker_kill();
             }
         });
@@ -166,14 +175,19 @@ export function pluginTypeChecker(opts?: any) {
             // initial run
             if (opts) {
                 opts.isPlugin = true;
-                opts.homeDir = props.ctx.config.homeDir;
+                /*  
+                    Disabled so alpha for v3 wont break, ctx going away
+                    opts.homeDir = props.ctx.config.homeDir; 
+               */
             } else {
                 (<any>opts) = { isPlugin: true };
             }
             if (!opts.tsConfig && !opts.tsConfigJsonContent) {
-                opts.tsConfigJsonContent = props.ctx.tsConfig && {
+                /* 
+                    Disabled so alpha for v3 wont break
+                    opts.tsConfigJsonContent = props.ctx.tsConfig && {
                     compilerOptions: props.ctx.tsConfig.jsonCompilerOptions
-                };
+                }; */
                 if (opts.tsConfigJsonContentPrint) {
                     console.log(JSON.stringify(opts.tsConfigJsonContent));
                 }
