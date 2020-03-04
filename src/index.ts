@@ -220,7 +220,7 @@ export function pluginTypeChecker(opts?: any) {
             }
             return props;
         });
-        ctx.ict.on('rebundle_complete', (props: any) => {
+        ctx.ict.on('rebundle', (props: any) => {
             Logger.info(
                 `Typechecker (${opts.name ? opts.name : 'no-name'}):`,
                 `Calling thread for new report, please wait...`
