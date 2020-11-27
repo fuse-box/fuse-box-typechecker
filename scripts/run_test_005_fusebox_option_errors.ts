@@ -5,9 +5,8 @@ const Context = class {
     getConfig() {
         return fusebox({
             target: 'browser',
-            homeDir: '../test',
             output: `dist`,
-            entry: `test.ts`,
+            entry: `../test/test.ts`,
             webIndex: {
                 template: `../test/index.html`
             },
@@ -45,7 +44,7 @@ const Context = class {
 };
 const { task } = sparky(Context);
 
-task('default', async ctx => {
+task('default', async (ctx) => {
     ctx.runServer = true;
     const fuse = ctx.getConfig();
     await fuse.runDev();
