@@ -1,11 +1,11 @@
 ##### NB! This is readme for 3.0.0 - vNext version
 See [here for v2 docs](https://github.com/fuse-box/fuse-box-typechecker/tree/dee2380a88b66704299b1c2e3345d935ca21f651)
 
-# fuse-box-typechecker 3.0.0-vNext
+# fuse-box-typechecker 3.0.0
 Simple helper to do typechecking
 You need to install newest typescript to use this.
 
-```npm install fuse-box-typechecker@next```
+```npm install fuse-box-typechecker```
 
 
 ### Output sample with all options enabled
