@@ -10,6 +10,53 @@ import * as path from 'path';
 import { processTsDiagnostics } from './processTsDiagnostics';
 import { Logger } from './logger';
 
+export function getResult(options: ITypeCheckerOptions, errors: IResults) {
+    // get the lint errors messages
+    const tsErrorMessages: TypeCheckError[] = processTsDiagnostics(options, errors);
+
+    // group by filename
+    let groupedErrors: { [k: string]: TypeCheckError[] } = {};
+    tsErrorMessages.forEach((error: TypeCheckError) => {
+        if (!groupedErrors[error.fileName]) {
+            groupedErrors[error.fileName] = [] as TypeCheckError[];
+        }
+        groupedErrors[error.fileName].push(error);
+    });
+
+    let allErrors = Object.entries(groupedErrors).map(([fileName, errors]) => {
+        const short = options.shortenFilenames !== false ? true : false;
+        const fullFileName = path.resolve(fileName);
+        let shortFileName = fullFileName.split(options.basePath as string).join('.');
+        if (path.isAbsolute(shortFileName)) {
+            // most likely a tsconfig path
+            shortFileName = path.relative(process.cwd(), fullFileName);
+        } else {
+            // if somepne passes in basepath we need to use that in print
+            if (options.basePathSetup) {
+                shortFileName = path.join(options.basePathSetup, shortFileName);
+            }
+        }
+
+        return (
+            `   <cyan><bold><underline>${shortFileName}</underline></bold></cyan> <grey> - ${errors.length} errors.</grey>\n` +
+            errors
+                .map((err: TypeCheckError) => {
+                    const fName = short ? shortFileName : fullFileName;
+                    let text = `<yellow>    -  ${fName}:${err.line}:${err.char}</yellow><dim> (${
+                        (<ITSError>err).category
+                    }</dim><dim> ${(<ITSError>err).code})</dim><dim> ${
+                        (<ITSError>err).message
+                    }</dim>`;
+
+                    return text;
+                })
+                .join(END_LINE)
+        );
+    });
+
+    return allErrors;
+}
+
 export function printResult(options: ITypeCheckerOptions, errors: IResults): TotalErrorsFound {
     // get the lint errors messages
     const tsErrorMessages: TypeCheckError[] = processTsDiagnostics(options, errors);

@@ -6,7 +6,7 @@ import * as ts from 'typescript';
 import './register.json5';
 import { getPath } from './getPath';
 import { inspectCode } from './inspectCode';
-import { printResult } from './printResult';
+import { getResult, printResult } from './printResult';
 import { printSettings } from './printSettings';
 import { Logger } from './logger';
 
@@ -75,6 +75,11 @@ export class TypeHelperClass {
     public inspectAndPrint(): number {
         const lastResult = inspectCode(this.options);
         return printResult(this.options, lastResult);
+    }
+
+    public getResult(): string[] {
+        const lastResult = inspectCode(this.options);
+        return getResult(this.options, lastResult);
     }
 
     public inspectOnly(oldProgram: ts.EmitAndSemanticDiagnosticsBuilderProgram) {
