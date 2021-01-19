@@ -65,30 +65,32 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
     // print if any
     if (allErrors.length > 0) {
         // insert header
-        Logger.echo('')
+        Logger.echo('');
         Logger.info(
             `<white><bold><bgRed> ERROR </bgRed></bold></white> <red>Typechecker inspection - (${
                 name ? name : 'no-name'
             }):</red>`,
             `<gray>${totalsErrors} errors.<gray>`
         );
-        Logger.echo('')
+        Logger.echo('');
         Logger.echo(allErrors.join(END_LINE));
     } else {
-        Logger.echo('')
+        Logger.echo('');
         Logger.info(
             `<white><bold><bgGreen> SUCCESS </bgGreen></bold></white> <green>Typechecker inspection - (${
                 name ? name : 'no-name'
             }):<green>`,
             `<green>No Errors found</green>`
         );
-        Logger.echo('')
+        Logger.echo('');
     }
 
     // print option errors
     if (errors.optionsErrors.length) {
-        Logger.info(`\n   <cyan><bold><underline>Option errors:</underline></bold></cyan>`,
-            `<grey>${errors.optionsErrors.length} errors.</grey>`);
+        Logger.info(
+            `\n   <cyan><bold><underline>Option errors:</underline></bold></cyan>`,
+            `<grey>${errors.optionsErrors.length} errors.</grey>`
+        );
         let optionErrorsText = Object.entries(errors.optionsErrors).map(([no, err]) => {
             let messageText = (<any>err).messageText;
             if (typeof messageText === 'object' && messageText !== null) {
@@ -105,8 +107,10 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
     // todo: this needs testing, how do I create a global error??
     try {
         if (errors.globalErrors.length) {
-            Logger.info(`\n   <red><bold><underline>Option errors:</underline></bold></red>`,
-                `<grey>${errors.globalErrors.length} errors.</grey>`);
+            Logger.info(
+                `\n   <red><bold><underline>Option errors:</underline></bold></red>`,
+                `<grey>${errors.globalErrors.length} errors.</grey>`
+            );
             let globalErrorsText = Object.entries(errors.globalErrors).map(([no, err]) => {
                 let messageText = (<any>err).messageText;
                 if (typeof messageText === 'object' && messageText !== null) {
@@ -151,5 +155,5 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
         Logger.info(`Typechecker inspection time:`, `<dim>${errors.elapsedInspectionTime}ms</dim>`);
     }
 
-    return allErrors;
+    return totalsErrors;
 }
