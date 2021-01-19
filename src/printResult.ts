@@ -151,5 +151,5 @@ export function printResult(options: ITypeCheckerOptions, errors: IResults): Tot
         Logger.info(`Typechecker inspection time:`, `<dim>${errors.elapsedInspectionTime}ms</dim>`);
     }
 
-    return totalsErrors;
+    return allErrors;
 }
