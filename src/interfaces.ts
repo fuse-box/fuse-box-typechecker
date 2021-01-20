@@ -26,17 +26,17 @@ export interface ITypeCheckerOptions {
     skipTsErrors?: SkipError;
 
     // plugin options
-    printFirstRun: boolean; // default true when used as plugin
+    printFirstRun?: boolean; // default true when used as plugin
 
     // print settings
     print_summary?: boolean; //default false
     print_runtime?: boolean; //default false
 
     // internals
-    tsConfigJsonContent: any;
-    isPlugin: boolean;
+    tsConfigJsonContent?: any;
+    isPlugin?: boolean;
     basePathSetup?: string;
-    homeDir: string;
+    homeDir?: string;
 }
 
 export type TotalErrorsFound = number;
